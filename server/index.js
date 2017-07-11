@@ -37,26 +37,12 @@ function listen() {
 	});
 }
 
-/*
-db
-	.on('error', console.error)
-	.on('disconnected', setupDB)
-	.once('open', () => {
-		console.info(`Connected to mongodb ( host: ${db.host}, port: ${db.port}, name: ${db.name} )`);
+db.authenticate()
+	.then(() => {
+		db.sync();
+
 		listen();
+	})
+	.catch(() => {
+		console.error(`Could not authenticate to database ${process.env.DB_NAME}`);
 	});
-	*/
-	db.authenticate()
-		.then(() => {
-			db.sync();
-			/*
-			db.query("SELECT * FROM information_schema.tables where table_schema = 'public' ORDER BY table_schema,table_name").then(function(rows) {
-			    //console.log(JSON.stringify(rows));
-			    console.log(rows[0]);
-			});
-			*/
-			listen();
-		})
-		.catch(() => {
-			console.error(`Could not authenticate to database ${process.env.DB_NAME}`);
-		});

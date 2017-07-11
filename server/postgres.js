@@ -11,7 +11,8 @@ const DB_PASS = process.env.DB_PASS;
  * @return {[function]} database
  */
 const db = new Sequelize(DB_NAME, DB_USER, DB_PASS, {
-		dialect: 'postgres',
+	host: DB_HOST,	
+	dialect: 'postgres',
 });
 
 export default db;

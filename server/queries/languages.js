@@ -9,10 +9,9 @@ const languageFields = {
 		args: { slug: { type: GraphQLString } },
 		resolve(_, {slug}) {
 			const language = Language.findOne({ where: { slug } });
-			return language.then((doc) => {
-				console.log(doc);
-				return doc;
-			});
+			return language.then(
+				doc => doc,
+				err => console.error(err));
 		},
 	},
 };
