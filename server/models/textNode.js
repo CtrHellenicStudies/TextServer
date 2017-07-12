@@ -10,7 +10,7 @@ const TextNodeModel = db.define('textNodes', {
 			type: Sequelize.INTEGER,
 		},
 		location: {
-			type: Sequelize.STRING,
+			type: Sequelize.ARRAY(Sequlize.INTEGER),
 		},
 		text: {
 			type: Sequelize.STRING,
