@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
 
 import textNodeType from '../types/models/textNode';
 import TextNode from '../models/textNode';
@@ -8,7 +8,7 @@ const textNodeFields = {
 	textNodesByWorkId: {
 		type: new GraphQLList(textNodeType),
 		args: {
-			id: { type: GraphQLString }
+			id: { type: GraphQLInt }
 		},
 		resolve(_, { id }) {
 

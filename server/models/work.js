@@ -15,7 +15,7 @@ const WorkModel = db.define('works', {
 		hash: {
 			type: Sequelize.STRING,
 		},
-		authors: {
+		author: {
 			type: Sequelize.STRING,
 		},
 		structure: {

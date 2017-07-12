@@ -10,13 +10,13 @@ const TextNodeModel = db.define('textNodes', {
 			type: Sequelize.INTEGER,
 		},
 		location: {
-			type: Sequelize.ARRAY(Sequlize.INTEGER),
+			type: Sequelize.ARRAY(Sequelize.INTEGER),
 		},
 		text: {
 			type: Sequelize.STRING,
 		},
 		workid: {
-			type: Sequelize.INT,
+			type: Sequelize.INTEGER,
 		},
 		corpus: {
 			type: Sequelize.STRING,
