@@ -8,12 +8,12 @@ const textNodeFields = {
 	textNodesByWorkId: {
 		type: new GraphQLList(textNodeType),
 		args: {
-			mid: { type: GraphQLString }
+			id: { type: GraphQLString }
 		},
-		resolve(_, { mid }) {
+		resolve(_, { id }) {
 
 			const textNodes = TextNode.findAll({ where: {
-				work: mid,
+				workid: id,
 			}, order: ['index']});
 
 			return textNodes.then(
@@ -30,7 +30,7 @@ const textNodeFields = {
 			return Work.findOne({ where: { slug } })
 				.then((work) => {
 					const textNodes = TextNode.findAll({ where: {
-						work: work.mid,
+						workid: work.id,
 					}, order: ['index'] });
 
 					return textNodes.then(

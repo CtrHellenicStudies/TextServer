@@ -6,9 +6,6 @@ const LanguageModel = db.define('languages', {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
 		},
-		mid: {
-			type: Sequelize.STRING,
-		},
 		title: {
 			type: Sequelize.STRING,
 		},
@@ -17,7 +14,7 @@ const LanguageModel = db.define('languages', {
 		},
 }, {
 		timestamps: false,
-		
+
 });
 
 const Language = db.models.languages;

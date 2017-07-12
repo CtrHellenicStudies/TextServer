@@ -6,9 +6,6 @@ const TextNodeModel = db.define('textNodes', {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
 		},
-		mid: {
-			type: Sequelize.STRING,
-		},
 		index: {
 			type: Sequelize.INTEGER,
 		},
@@ -18,10 +15,13 @@ const TextNodeModel = db.define('textNodes', {
 		text: {
 			type: Sequelize.STRING,
 		},
-		work: {
-			type: Sequelize.STRING,
+		workid: {
+			type: Sequelize.INT,
 		},
 		corpus: {
+			type: Sequelize.STRING,
+		},
+		language: {
 			type: Sequelize.STRING,
 		},
 		author: {

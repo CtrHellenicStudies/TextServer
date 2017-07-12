@@ -6,10 +6,7 @@ const AuthorModel = db.define('authors', {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
 		},
-		mid: {
-			type: Sequelize.STRING,
-		},
-		languages: {
+		language: {
 			type: Sequelize.STRING,
 		},
 		englishname: {

@@ -6,9 +6,6 @@ const CorpusModel = db.define('corpora', {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
 		},
-		mid: {
-			type: Sequelize.STRING,
-		},
 		title: {
 			type: Sequelize.STRING,
 		},
@@ -18,7 +15,7 @@ const CorpusModel = db.define('corpora', {
 		link: {
 			type: Sequelize.STRING,
 		},
-		languages: {
+		language: {
 			type: Sequelize.STRING,
 		},
 }, {

@@ -6,9 +6,6 @@ const WorkModel = db.define('works', {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
 		},
-		mid: {
-			type: Sequelize.STRING,
-		},
 		edition: {
 			type: Sequelize.STRING,
 		},
