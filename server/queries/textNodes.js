@@ -5,38 +5,70 @@ import TextNode from '../models/textNode';
 import Work from '../models/work';
 
 const textNodeFields = {
-	textNodesByWorkId: {
+	textNodesByWork: {
 		type: new GraphQLList(textNodeType),
 		args: {
-			id: { type: GraphQLInt }
+			id: { type: GraphQLInt },
+			index: { type: GraphQLInt },
+			slug : { type: GraphQLString },
+			location: { type: new GraphQLList(GraphQLInt) },
+			startsAtLocation: { type: new GraphQLList(GraphQLInt) },
+			startsAtIndex: { type: GraphQLInt },
+			offset: { type: GraphQLInt },
 		},
-		resolve(_, { id }) {
+		resolve(_, { id, location, offset, index, startsAtLocation, startsAtIndex}) {
 
-			const textNodes = TextNode.findAll({ where: {
-				workid: id,
-			}, order: ['index']});
+			const query = {
+				where: {
+					workid: id
+				},
+				order: ['index'],
+				limit: 100,
+			};
 
-			return textNodes.then(
-				doc => doc,
-				err => console.error(err));
-		},
-	},
-	textNodesByWorkSlug: {
-		type: new GraphQLList(textNodeType),
-		args: {
-			slug: { type: GraphQLString }
-		},
-		resolve(_, { slug }) {
-			return Work.findOne({ where: { slug } })
-				.then((work) => {
-					const textNodes = TextNode.findAll({ where: {
-						workid: work.id,
-					}, order: ['index'] });
+			if (location) {
+				query.where.location = location;
+			}
 
-					return textNodes.then(
+			if (index) {
+				query.where.index = index;
+			}
+
+			if (startsAtIndex) {
+				query.where.index = {
+					$gte: startsAtIndex,
+				};
+			}
+
+			if (offset) {
+				query.offset = offset;
+			}
+
+			if (startsAtLocation) {
+				query.where.location = startsAtLocation;
+				return TextNode.findOne(query).then((node) => {
+
+					if (!node) {
+						// TODO: Handle error
+
+						return null;
+					}
+
+					delete query.where.location;
+
+					query.where.index = {
+						$gte: node.index,
+					};
+
+					return TextNode.findAll(query).then(
 						doc => doc,
 						err => console.error(err));
 				});
+			}
+
+			return TextNode.findAll(query).then(
+				doc => doc,
+				err => console.error(err));
 		},
 	},
 };
