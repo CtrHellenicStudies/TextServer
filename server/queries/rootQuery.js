@@ -5,6 +5,7 @@ import corpusFields from './corpora';
 import languageFields from './languages';
 import textNodeFields from './textNodes';
 import workFields from './works';
+import countFields from './counts';
 
 const RootQuery = new GraphQLObjectType({
 	name: 'RootQueryType',
@@ -14,6 +15,7 @@ const RootQuery = new GraphQLObjectType({
 		...languageFields,
 		...textNodeFields,
 		...workFields,
+		...countFields,
 	}
 });
 

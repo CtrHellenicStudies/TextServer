@@ -1,4 +1,4 @@
-import { GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
 import workType from '../types/models/work';
 import Work from '../models/work';
@@ -6,10 +6,17 @@ import Work from '../models/work';
 const workFields = {
 	works: {
 		type: new GraphQLList(workType),
-		args: { },
+		args: { offset: { type: GraphQLInt } },
 		resolve(_, {}) {
-			const works = Work.findAll();
-			return works.then(
+			const query = {
+				limit: 21,
+			};
+
+			if (offset) {
+				query.offset = offset;
+			}
+
+			return Work.findAll(query).then(
 				doc => doc,
 				err => console.error(err));
 		},
