@@ -7,7 +7,7 @@ const workFields = {
 	works: {
 		type: new GraphQLList(workType),
 		args: { offset: { type: GraphQLInt } },
-		resolve(_, {}) {
+		resolve(_, { offset }) {
 			const query = {
 				limit: 21,
 			};
@@ -36,6 +36,16 @@ const workFields = {
 		args: { slug: { type: GraphQLString } },
 		resolve(_, {slug}) {
 			const work = Work.findOne({ where: { slug } });
+			return work.then(
+				doc => doc,
+				err => console.error(err));
+		},
+	},
+	workById: {
+		type: workType,
+		args: { id: { type: GraphQLInt } },
+		resolve(_, { id }) {
+			const work = Work.findOne({ where: { id } });
 			return work.then(
 				doc => doc,
 				err => console.error(err));
