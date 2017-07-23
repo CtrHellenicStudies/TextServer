@@ -82,9 +82,14 @@ const textNodeFields = {
 			const query = {
 				where: {
 					workid,
-				 	location,
 				},
+				order: ['index'],
 			}
+
+			if (location) {
+				query.where.location = location;
+			}
+
 			return TextNode.findOne(query).then((node) => {
 				delete query.where.location;
 
@@ -93,7 +98,6 @@ const textNodeFields = {
 				};
 
 				query.limit = offset;
-				query.order = ['index'];
 
 				return TextNode.findAll(query).then((nodes) => {
 					if (!nodes || !nodes.length || !node.length === offset) {
@@ -116,9 +120,14 @@ const textNodeFields = {
 			const query = {
 				where: {
 					workid,
-				 	location,
 				},
+				order: ['index'],
 			}
+
+			if (location) {
+				query.where.location = location;
+			}
+
 			return TextNode.findOne(query).then((node) => {
 				delete query.where.location;
 
