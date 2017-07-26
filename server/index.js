@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import dotenv from 'dotenv/config';
 import express from 'express';
 import fs from 'fs';
 import path from 'path';
@@ -12,8 +12,6 @@ import graphqlHTTP from 'express-graphql';
 import db from './postgres';
 
 import RootSchema from './rootSchema';
-
-dotenv.config();
 
 const app = express();
 
