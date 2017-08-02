@@ -27,6 +27,7 @@
     "pg": "^6.4.0",
     "pq": "^0.0.3",
     "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "react-recaptcha": "^2.3.2",
     "react-redux": "^5.0.5",
     "redux": "^3.7.1",
@@ -51,12 +52,16 @@
     "flow-bin": "^0.47.0",
     "leaked-handles": "^5.2.0",
     "nodemon": "^1.11.0",
+    "sequelize-cli": "^2.7.0",
     "tape": "^4.6.3"
   },
   "scripts": {
-    "lint": "eslint .",
-    "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
-    "start": "nodemon server --exec babel-node"
+	"db:migrate": "sequelize --config config/config.js db:migrate",
+	"db:rollback": "sequelize --config config/config.js db:migrate:undo",
+	"db:migration:create": "sequelize --config config/config.js migration:create",
+	"lint": "eslint .",
+    "start": "nodemon server --exec babel-node",
+    "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet"
   },
   "repository": {
     "type": "git",
