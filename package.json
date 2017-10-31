@@ -34,6 +34,7 @@
     "sax": "^1.2.2",
     "scroll-to-element": "^2.0.0",
     "sequelize": "^4.3.0",
+    "slugify": "^1.2.1",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
@@ -56,10 +57,10 @@
     "tape": "^4.6.3"
   },
   "scripts": {
-	"db:migrate": "sequelize --config config/config.js db:migrate",
-	"db:rollback": "sequelize --config config/config.js db:migrate:undo",
-	"db:migration:create": "sequelize --config config/config.js migration:create",
-	"lint": "eslint .",
+    "db:migrate": "sequelize --config config/config.js db:migrate",
+    "db:rollback": "sequelize --config config/config.js db:migrate:undo",
+    "db:migration:create": "sequelize --config config/config.js migration:create",
+    "lint": "eslint .",
     "start": "nodemon server --exec babel-node",
     "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet"
   },
