@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLList } from 'graphql';
 
-import authorType from '../types/models/author';
-import Author from '../models/author';
+import authorType from '../types/author';
+import Author from '../../models/author';
 
 const authorFields = {
 	authors: {
@@ -14,9 +14,13 @@ const authorFields = {
 				err => console.error(err));
 		},
 	},
-	authorBySlug: {
+	author: {
 		type: authorType,
-		args: { slug: { type: GraphQLString } },
+		args: {
+			slug: {
+				type: GraphQLString,
+			}, 
+		},
 		resolve(_, {slug}) {
 			const author = Author.findOne({ where: { slug } });
 			return author.then(

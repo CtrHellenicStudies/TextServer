@@ -1,7 +1,5 @@
 import { GraphQLObjectType } from 'graphql';
 
-// import userMutationFields from './user';
-
 /**
  * Root mutations
  * @type {GraphQLObjectType}

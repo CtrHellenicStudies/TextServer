@@ -7,6 +7,10 @@ import textNodeFields from './textNodes';
 import workFields from './works';
 import countFields from './counts';
 
+/**
+ * Root Query
+ * @type {GraphQLObjectType}
+ */
 const RootQuery = new GraphQLObjectType({
 	name: 'RootQueryType',
 	fields: {

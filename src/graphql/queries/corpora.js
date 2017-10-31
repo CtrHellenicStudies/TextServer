@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLList } from 'graphql';
 
-import corpusType from '../types/models/corpus';
-import Corpus from '../models/corpus';
+import corpusType from '../types/corpus';
+import Corpus from '../../models/corpus';
 
 const corpusFields = {
 	corpora: {

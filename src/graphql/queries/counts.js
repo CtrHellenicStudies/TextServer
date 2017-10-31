@@ -1,7 +1,7 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
-import Author from '../models/author';
-import Work from '../models/work';
+import Author from '../../models/author';
+import Work from '../../models/work';
 
 const countFields = {
 	authorsCount: {

@@ -1,7 +1,7 @@
 import { GraphQLString, GraphQLList } from 'graphql';
 
-import languageType from '../types/models/language';
-import Language from '../models/language';
+import languageType from '../types/language';
+import Language from '../../models/language';
 
 const languageFields = {
 	languages: {

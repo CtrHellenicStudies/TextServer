@@ -1,12 +1,19 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
-import workType from '../types/models/work';
-import Work from '../models/work';
+import workType from '../types/work';
+import Work from '../../models/work';
 
 const workFields = {
 	works: {
 		type: new GraphQLList(workType),
-		args: { offset: { type: GraphQLInt } },
+		args: {
+			offset: {
+				type: GraphQLInt,
+			},
+			limit: {
+				type: GraphQLInt,
+			},
+		},
 		resolve(_, { offset }) {
 			const query = {
 				limit: 21,
@@ -21,29 +28,16 @@ const workFields = {
 				err => console.error(err));
 		},
 	},
-	worksByLanguage: {
-		type: new GraphQLList(workType),
-		args: { language: { type: GraphQLString } },
-		resolve(_, {language}) {
-			const works = Work.findAll({ where: { language } });
-			return works.then(
-				doc => doc,
-				err => console.error(err));
-		},
-	},
-	workBySlug: {
+	work: {
 		type: workType,
-		args: { slug: { type: GraphQLString } },
-		resolve(_, {slug}) {
-			const work = Work.findOne({ where: { slug } });
-			return work.then(
-				doc => doc,
-				err => console.error(err));
+		args: {
+			id: {
+				type: GraphQLInt,
+			},
+			slug: {
+				type: GraphQLString,
+			},
 		},
-	},
-	workById: {
-		type: workType,
-		args: { id: { type: GraphQLInt } },
 		resolve(_, { id }) {
 			const work = Work.findOne({ where: { id } });
 			return work.then(

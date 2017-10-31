@@ -1,8 +1,8 @@
 import { GraphQLBoolean, GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
 
-import textNodeType from '../types/models/textNode';
-import TextNode from '../models/textNode';
-import Work from '../models/work';
+import textNodeType from '../types/textNode';
+import TextNode from '../../models/textNode';
+import Work from '../../models/work';
 
 const textNodeFields = {
 	textNodesByWork: {
