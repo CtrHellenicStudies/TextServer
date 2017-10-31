@@ -13,8 +13,8 @@ import {
 import GraphQLJSON from 'graphql-type-json';
 
 // types
-import { TextNodeType, TextNodeInputType } from '/imports/graphql/types/models/textNode';
-import { RemoveType } from '/imports/graphql/types/index';
+import { TextNodeType, TextNodeInputType } from '../types/textNode';
+import RemoveType from '../types/remove';
 
 // logic
 import TextNodeService from '../logic/textNodes';

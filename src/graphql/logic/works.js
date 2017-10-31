@@ -1,5 +1,5 @@
-import Works from '../../models/works';
 import PermissionsService from './PermissionsService';
+import Works from '../../models/work';
 
 /**
  * Logic-layer service for dealing with works

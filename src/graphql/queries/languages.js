@@ -1,28 +1,37 @@
-import { GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
 
-import languageType from '../types/language';
-import Language from '../../models/language';
+import LanguageType from '../types/language';
+import LanguageService from '../logic/languages';
 
 const languageFields = {
 	languages: {
-		type: new GraphQLList(languageType),
-		args: {},
-		resolve(_, {}) {
-			const languages = Language.findAll();
-
-			return languages.then(
-				doc => doc,
-				err => console.error(err));
+		type: new GraphQLList(LanguageType),
+		args: {
+			limit: {
+				type: GraphQLInt,
+			},
+			offset: {
+				type: GraphQLInt,
+			},
+		},
+		async resolve(_, { limit, offset, }, { token }) {
+			const languageService = new LanguageService(token);
+			return await languageService.getLanguages(limit, offset);
 		},
 	},
-	languageBySlug: {
-		type: languageType,
-		args: { slug: { type: GraphQLString } },
-		resolve(_, {slug}) {
-			const language = Language.findOne({ where: { slug } });
-			return language.then(
-				doc => doc,
-				err => console.error(err));
+	language: {
+		type: LanguageType,
+		args: {
+			id: {
+				type: GraphQLInt,
+			},
+			slug: {
+				type: GraphQLString,
+			},
+		},
+		async resolve(_, { id, slug }, { token }) {
+			const languageService = new LanguageService(token);
+			return await languageService.getLanguage(id, slug);
 		},
 	},
 };

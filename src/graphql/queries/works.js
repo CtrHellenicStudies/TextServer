@@ -1,35 +1,25 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
-import workType from '../types/work';
-import Work from '../../models/work';
+import WorkType from '../types/work';
 
 const workFields = {
 	works: {
-		type: new GraphQLList(workType),
+		type: new GraphQLList(WorkType),
 		args: {
-			offset: {
-				type: GraphQLInt,
-			},
 			limit: {
 				type: GraphQLInt,
 			},
+			offset: {
+				type: GraphQLInt,
+			},
 		},
-		resolve(_, { offset }) {
-			const query = {
-				limit: 21,
-			};
-
-			if (offset) {
-				query.offset = offset;
-			}
-
-			return Work.findAll(query).then(
-				doc => doc,
-				err => console.error(err));
+		async resolve(_, { limite, offset }, { token }) {
+			const workService = new WorkService(token);
+			return await workService.getWorks(limit, offset);
 		},
 	},
 	work: {
-		type: workType,
+		type: WorkType,
 		args: {
 			id: {
 				type: GraphQLInt,
@@ -38,11 +28,9 @@ const workFields = {
 				type: GraphQLString,
 			},
 		},
-		resolve(_, { id }) {
-			const work = Work.findOne({ where: { id } });
-			return work.then(
-				doc => doc,
-				err => console.error(err));
+		async resolve(_, { id, slug }, { token }) {
+			const workService = new WorkService(token);
+			return await workService.getWorks(limit, offset);
 		},
 	},
 };

@@ -1,151 +1,44 @@
 import { GraphQLBoolean, GraphQLString, GraphQLInt, GraphQLList } from 'graphql';
 
-import textNodeType from '../types/textNode';
-import TextNode from '../../models/textNode';
-import Work from '../../models/work';
+import TextNodeType from '../types/textNode';
+import TextNodeService from '../logic/textNodes';
 
 const textNodeFields = {
-	textNodesByWork: {
-		type: new GraphQLList(textNodeType),
-		args: {
-			workid: { type: GraphQLInt },
-			index: { type: GraphQLInt },
-			slug : { type: GraphQLString },
-			location: { type: new GraphQLList(GraphQLInt) },
-			startsAtLocation: { type: new GraphQLList(GraphQLInt) },
-			startsAtIndex: { type: GraphQLInt },
-			offset: { type: GraphQLInt },
-		},
-		resolve(_, { workid, location, offset, index, startsAtLocation, startsAtIndex}) {
-
-			const query = {
-				where: {
-					workid,
-				},
-				order: ['index'],
-				limit: 30,
-			};
-
-			if (location) {
-				query.where.location = location;
-			}
-
-			if (index) {
-				query.where.index = index;
-			}
-
-			if (startsAtIndex) {
-				query.where.index = {
-					$gte: startsAtIndex,
-				};
-			}
-
-			if (offset) {
-				query.offset = offset;
-			}
-
-			if (startsAtLocation) {
-				query.where.location = startsAtLocation;
-				return TextNode.findOne(query).then((node) => {
-
-					if (!node) {
-						// TODO: Handle error
-
-						return null;
-					}
-
-					delete query.where.location;
-
-					query.where.index = {
-						$gte: node.index,
-					};
-
-					return TextNode.findAll(query).then(
-						doc => doc,
-						err => console.error(err));
-				});
-			}
-
-			return TextNode.findAll(query).then(
-				doc => doc,
-				err => console.error(err));
-		},
-	},
 	textLocationNext: {
 		type: new GraphQLList(GraphQLInt),
 		args: {
-			workid: { type: GraphQLInt },
-			location: { type: new GraphQLList(GraphQLInt) },
-			offset: { type: GraphQLInt },
+			work: {
+				type: GraphQLInt,
+			 },
+			location: {
+				type: new GraphQLList(GraphQLInt),
+			},
+			offset: {
+				type: GraphQLInt,
+			},
 		},
-		resolve(_, { workid, location, offset}) {
-			const query = {
-				where: {
-					workid,
-				},
-				order: ['index'],
-			}
-
-			if (location) {
-				query.where.location = location;
-			}
-
-			return TextNode.findOne(query).then((node) => {
-				delete query.where.location;
-
-				query.where.index = {
-					$gte: node.index
-				};
-
-				query.limit = offset;
-
-				return TextNode.findAll(query).then((nodes) => {
-					if (!nodes || !nodes.length || !node.length === offset) {
-						return [];
-					}
-
-					return nodes[nodes.length - 1].location;
-				});
-			});
-		}
+		async resolve(_, { work, location, offset }, { token }) {
+			const textNodeService = new TextNodeService(token);
+			return await textNodeService.textLocationNext(work, location, offset);
+		},
 	},
 	textLocationPrev: {
 		type: new GraphQLList(GraphQLInt),
 		args: {
-			workid: { type: GraphQLInt },
-			location: { type: new GraphQLList(GraphQLInt) },
-			offset: { type: GraphQLInt },
+			work: {
+				type: GraphQLInt,
+			},
+			location: {
+				type: new GraphQLList(GraphQLInt),
+			},
+			offset: {
+				type: GraphQLInt,
+			},
 		},
-		resolve(_, { workid, location, offset}) {
-			const query = {
-				where: {
-					workid,
-				},
-				order: ['index'],
-			}
-
-			if (location) {
-				query.where.location = location;
-			}
-
-			return TextNode.findOne(query).then((node) => {
-				delete query.where.location;
-
-				query.where.index = {
-					$lt: node.index,
-				};
-				query.order = [['index', 'DESC']];
-				query.limit = offset;
-
-				return TextNode.findAll(query).then((nodes) => {
-					if (!nodes || !nodes.length) {
-						return [];
-					}
-
-					return nodes[nodes.length - 1].location;
-				});
-			});
-		}
+		async resolve(_, { work, location, offset }, { token }) {
+			const textNodeService = new TextNodeService(token);
+			return await textNodeService.textLocationPrev(work, location, offset);
+		},
 	},
 };
 

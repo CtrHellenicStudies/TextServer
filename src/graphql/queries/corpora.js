@@ -1,27 +1,37 @@
-import { GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
 
-import corpusType from '../types/corpus';
-import Corpus from '../../models/corpus';
+import CorpusType from '../types/corpus';
+import CorpusService from '../logic/corpora';
 
 const corpusFields = {
 	corpora: {
-		type: new GraphQLList(corpusType),
-		args: { },
-		resolve(_, {}) {
-			const corpora = Corpus.findAll();
-			return corpora.then(
-				doc => doc,
-				err => console.error(err));
+		type: new GraphQLList(CorpusType),
+		args: {
+			limit: {
+				type: GraphQLInt,
+			},
+			offset: {
+				type: GraphQLInt,
+			},
+		},
+		async resolve(_, { limit, offset, }, { token }) {
+			const corpusService = new CorpusService(token);
+			return await corpusService.getCorpora(limit, offset);
 		},
 	},
-	corpusBySlug: {
-		type: corpusType,
-		args: { slug: { type: GraphQLString } },
-		resolve(_, {slug}) {
-			const corpus = Corpus.findOne({ where: { slug } });
-			return corpus.then(
-				doc => doc,
-				err => console.error(err));
+	corpus: {
+		type: CorpusType,
+		args: {
+			id: {
+				type: GraphQLInt,
+			},
+			slug: {
+				type: GraphQLString,
+			},
+		},
+		async resolve(_, { id, slug }, { token }) {
+			const corpusService = new CorpusService(token);
+			return await corpusService.getCorpus(id, slug);
 		},
 	},
 };

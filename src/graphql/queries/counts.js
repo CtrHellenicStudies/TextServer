@@ -1,27 +1,37 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
-import Author from '../../models/author';
-import Work from '../../models/work';
+import AuthorService from '../logic/authors';
+import CorpusService from '../logic/corpora';
+import LanguageService from '../logic/languages';
+import WorkService from '../logic/works';
 
 const countFields = {
 	authorsCount: {
 		type: GraphQLInt,
-		args: { },
-		resolve(_, {}) {
-			const count = Author.count();
-			return count.then(
-				doc => doc,
-				err => console.error(err));
+		async resolve(_, {}, { token }) {
+			const authorService = AuthorService(token);
+			return await authorService.count();
+		},
+	},
+	corporaCount: {
+		type: GraphQLInt,
+		async resolve(_, {}, { token }) {
+			const corpusService = CorpusService(token);
+			return await corpusService.count();
+		},
+	},
+	languagesCount: {
+		type: GraphQLInt,
+		async resolve(_, {}, { token }) {
+			const languageService = LanguageService(token);
+			return await languageService.count();
 		},
 	},
 	worksCount: {
 		type: GraphQLInt,
-		args: { },
-		resolve(_, {}) {
-			const count = Work.count();
-			return count.then(
-				doc => doc,
-				err => console.error(err));
+		async resolve(_, {}, { token }) {
+			const workService = WorkService(token);
+			return await workService.count();
 		},
 	},
 };

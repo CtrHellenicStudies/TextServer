@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLSchema, GraphQLInt, GraphQLString } from 'graphql';
+import { GraphQLObjectType, GraphQLInputObjectType } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
 import TextNode from '../../models/textNode';
@@ -15,4 +15,14 @@ const textNodeType = new GraphQLObjectType({
 	fields: _.assign(attributeFields(TextNode)),
 });
 
-export default textNodeType;
+/**
+ * Text Nodes input model type
+ * @type {GraphQLInputObjectType}
+ */
+const textNodeInputType = new GraphQLInputObjectType({
+	name: 'TextNodeInput',
+	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
+	fields: _.assign(attributeFields(TextNode)),
+});
+
+export { textNodeType, textNodeInputType };

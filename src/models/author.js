@@ -2,22 +2,21 @@ import Sequelize from 'sequelize';
 import db from '../db';
 
 const Author = db.define('authors', {
-		id: {
-			type: Sequelize.INTEGER,
-			primaryKey: true,
-		},
-		englishname: {
-			type: Sequelize.STRING,
-		},
-		originalname: {
-			type: Sequelize.STRING,
-		},
-		slug: {
-			type: Sequelize.STRING,
-		},
+	id: {
+		type: Sequelize.INTEGER,
+		primaryKey: true,
+	},
+	englishname: {
+		type: Sequelize.STRING,
+	},
+	originalname: {
+		type: Sequelize.STRING,
+	},
+	slug: {
+		type: Sequelize.STRING,
+	},
 }, {
-		timestamps: false,
-
+	timestamps: false,
 });
 
 
