@@ -1,1 +1,1 @@
-# Text Server  
+# Center for Hellenic Studies Text Server 
