@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
-import db from '../postgres';
+import db from '../db';
 
-const WorkModel = db.define('works', {
+const Work = db.define('works', {
 		id: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -44,7 +44,10 @@ const WorkModel = db.define('works', {
 
 });
 
-const Work = db.models.works;
+Work.associate = ({ models }) => {
+	Work.belongsTo(models.authors);
+	Work.belongsTo(models.corpora);
+};
 
 
 export default Work;

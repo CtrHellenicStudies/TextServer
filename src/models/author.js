@@ -1,13 +1,10 @@
 import Sequelize from 'sequelize';
-import db from '../postgres';
+import db from '../db';
 
-const AuthorModel = db.define('authors', {
+const Author = db.define('authors', {
 		id: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
-		},
-		language: {
-			type: Sequelize.STRING,
 		},
 		englishname: {
 			type: Sequelize.STRING,
@@ -23,7 +20,11 @@ const AuthorModel = db.define('authors', {
 
 });
 
-const Author = db.models.authors;
+
+Author.associate = ({ models }) => {
+	Author.hasMany(models.works);
+	Author.belongsTo(models.corpora);
+};
 
 
 export default Author;

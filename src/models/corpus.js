@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
-import db from '../postgres';
+import db from '../db';
 
-const CorpusModel = db.define('corpora', {
+const Corpus = db.define('corpora', {
 		id: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -15,15 +15,15 @@ const CorpusModel = db.define('corpora', {
 		link: {
 			type: Sequelize.STRING,
 		},
-		language: {
-			type: Sequelize.STRING,
-		},
 }, {
 		timestamps: false,
 		tableName: 'corpora',
 });
 
-const Corpus = db.models.corpora;
+Corpus.associate = ({ models }) => {
+	Corpus.hasMany(models.authors);
+	Corpus.hasMany(models.works);
+};
 
 
 export default Corpus;

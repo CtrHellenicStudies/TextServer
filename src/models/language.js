@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
-import db from '../postgres';
+import db from '../db';
 
-const LanguageModel = db.define('languages', {
+const Language = db.define('languages', {
 		id: {
 			type: Sequelize.INTEGER,
 			primaryKey: true,
@@ -17,7 +17,8 @@ const LanguageModel = db.define('languages', {
 
 });
 
-const Language = db.models.languages;
-
+Language.associate = ({ models }) => {
+	Language.belongsTo(models.works);
+};
 
 export default Language;

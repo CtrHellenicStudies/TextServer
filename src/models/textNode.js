@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
-import db from '../postgres';
+import db from '../db';
 
-const TextNodeModel = db.define('textNodes', {
+const TextNode = db.define('textNodes', {
 	id: {
 		type: Sequelize.INTEGER,
 		primaryKey: true,
@@ -14,9 +14,6 @@ const TextNodeModel = db.define('textNodes', {
 	},
 	text: {
 		type: Sequelize.STRING,
-	},
-	workid: {
-		type: Sequelize.INTEGER,
 	},
 	corpus: {
 		type: Sequelize.STRING,
@@ -32,7 +29,9 @@ const TextNodeModel = db.define('textNodes', {
 	tableName: 'textnodes',
 });
 
-const TextNode = db.models.textNodes;
-
+TextNode.associate = ({ models }) => {
+	TextNode.hasMany(models.words);
+	TextNode.belongsTo(models.works);
+};
 
 export default TextNode;
