@@ -43,9 +43,13 @@
     "sax": "^1.2.2",
     "scroll-to-element": "^2.0.0",
     "sequelize": "^4.3.0",
+    "simple-git": "^1.80.1",
     "slugify": "^1.2.1",
     "twitter": "^1.7.1",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "winston": "^2.4.0",
+    "xmldom": "^0.1.27",
+    "xpath": "^0.0.24"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
@@ -70,10 +74,11 @@
     "db:migrate": "sequelize --config config/config.js db:migrate",
     "db:rollback": "sequelize --config config/config.js db:migrate:undo",
     "db:migration:create": "sequelize --config config/config.js migration:create",
+    "ingest-corpora": "babel-node ./scripts/ingest-corpora",
     "lint": "eslint .",
     "start": "NODE_ENV=development nodemon src --exec babel-node",
     "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
-		"jsdoc": "jsdoc src scripts -r -c .jsdoc.json -d docs"
+    "jsdoc": "jsdoc src scripts -r -c .jsdoc.json -d docs"
   },
   "repository": {
     "type": "git",
