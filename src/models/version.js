@@ -20,8 +20,7 @@ const Version = db.define('versions', {
 		type: Sequelize.STRING,
 	},
 }, {
-		timestamps: false,
-		tableName: 'collections',
+	timestamps: false,
 });
 
 Version.associate = ({ models }) => {

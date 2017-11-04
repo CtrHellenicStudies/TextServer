@@ -1,4 +1,8 @@
-import Work from '../../../models/work';
+import Work from '../../../../models/work';
+import Version from './Version';
+import Exemplar from './Exemplar';
+import TextNode from './TextNode';
+
 
 /** Class representing a work in a textgroup */
 class _Work {

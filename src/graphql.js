@@ -29,7 +29,7 @@ const getGraphQLContext = req => ({
 
 /**
  * Set up the graphQL HTTP endpoint
- * @param  {Object} app 	express app instance
+ * @param	{Object} app 	express app instance
  */
 export default function setupGraphql(app) {
 	app.use('/graphql', jwtAuthenticate, graphqlExpress(req => ({

@@ -20,8 +20,7 @@ const Exemplar = db.define('exemplars', {
 		type: Sequelize.STRING,
 	},
 }, {
-		timestamps: false,
-		tableName: 'collections',
+	timestamps: false,
 });
 
 Exemplar.associate = ({ models }) => {

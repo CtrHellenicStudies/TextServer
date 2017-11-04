@@ -20,12 +20,11 @@ const Collection = db.define('collections', {
 		type: Sequelize.STRING,
 	},
 }, {
-		timestamps: false,
-		tableName: 'collections',
+	timestamps: false,
 });
 
 Collection.associate = ({ models }) => {
-	Collection.hasMany(models.works);
+	Collection.hasMany(models.textgroups);
 };
 
 

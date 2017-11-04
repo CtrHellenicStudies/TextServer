@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 
 import dotenvSetup from '../src/dotenv';
+import * as models from '../src/models';
 import db, { dbSetup } from '../src/db';
 import { ingestCollections } from '../src/modules/cts';
 
@@ -16,4 +17,7 @@ db.authenticate()
 
 		// ingest collections
 		ingestCollections();
+
+		// close db connection
+		db.close();
 	});

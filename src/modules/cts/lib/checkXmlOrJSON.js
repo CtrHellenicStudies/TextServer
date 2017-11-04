@@ -3,16 +3,17 @@ import fs from 'fs';
 /**
  * Check if is xml or json data in the collection repo
  */
-const checkXmlOrJSON = corpus => {
-	const corpusFiles = fs.readdirSync(corpus);
+const checkXmlOrJSON = collection => {
+	const collectionFiles = fs.readdirSync(collection);
 	if (
-			~corpusFiles.indexOf('data')
-		&& !(~corpusFiles.indexOf('cltk_json'))
+			~collectionFiles.indexOf('data')
+		&& !(~collectionFiles.indexOf('cltk_json'))
 	) {
-		return true;
+		return 'xml';
 	}
 
-	return false;
+	return 'json';
 };
+
 
 export default checkXmlOrJSON;

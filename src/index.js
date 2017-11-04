@@ -60,7 +60,7 @@ app.use('/auth', authenticationRouter);
 // App server listen
 const listen = () => {
 	app.listen(app.get('port'), () => {
-	  console.info(`App is now running on http://localhost:${APP_PORT}`);
+		console.info(`App is now running on http://localhost:${APP_PORT}`);
 	});
 };
 

@@ -43,7 +43,7 @@ class _Collection {
 
 	/**
 	 * Save all textgroups in collection inventory (will save all hierarchical
-   * related data in the collection>>textgroup>>work>>textNode tree)
+	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
 	ingest() {
 		this.textGroups.forEach(textGroup => {

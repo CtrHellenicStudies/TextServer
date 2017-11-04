@@ -4,6 +4,8 @@ import slugify from 'slugify';
 import xmldom from 'xmldom';
 import xpath from 'xpath';
 
+import TextGroup from '../../../../models/TextGroup';
+import Work from './Work';
 
 class _TextGroup {
 

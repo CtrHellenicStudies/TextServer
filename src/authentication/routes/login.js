@@ -9,9 +9,9 @@ import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
 
 /**
  * Login user with password and username
- * @param  {Object} res      Express response object
- * @param  {String} username Username
- * @param  {String} password Password
+ * @param	{Object} res			Express response object
+ * @param	{String} username Username
+ * @param	{String} password Password
  */
 export const loginPWD = async (res, username, password) => {
 	const user = await User.findByUsername(username);
@@ -29,9 +29,9 @@ export const loginPWD = async (res, username, password) => {
 
 /**
  * Login with OAuth v.2
- * @param  {Object} res      	Express response object
- * @param  {String} accessToken oAuth access token
- * @param  {String} network     Name of network (e.g. facebook)
+ * @param	{Object} res				Express response object
+ * @param	{String} accessToken oAuth access token
+ * @param	{String} network		 Name of network (e.g. facebook)
  */
 export const loginOAuth2 = async (res, accessToken, network) => {
 
@@ -51,10 +51,10 @@ export const loginOAuth2 = async (res, accessToken, network) => {
 
 /**
  * Login with OAuth v.1
- * @param  {Object} res      	Express response object
- * @param  {string} oauthToken       oAuth access token
- * @param  {string} oauthTokenSecret oAuth access secret
- * @param  {string} network     Name of network (e.g. facebook)
+ * @param	{Object} res				Express response object
+ * @param	{string} oauthToken			 oAuth access token
+ * @param	{string} oauthTokenSecret oAuth access secret
+ * @param	{string} network		 Name of network (e.g. facebook)
  */
 export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
 

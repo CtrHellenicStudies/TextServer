@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import slugify from 'slugify';
 
-import Collection from '../../../models/collection';
+import Collection from '../../../../models/collection';
 import TextGroup from './TextGroup';
 
 
@@ -43,7 +43,7 @@ class _Collection {
 
 	/**
 	 * Save all textgroups in collection inventory (will save all hierarchical
-   * related data in the collection>>textgroup>>work>>textNode tree)
+	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
 	ingest() {
 		this.textGroups.forEach(textGroup => {

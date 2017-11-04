@@ -11,7 +11,7 @@ import TextNodeType from '../types/textNode';
  */
 const workType = new GraphQLObjectType({
 	name: 'Work',
-	description: 'A work in a corpus, associated with authors or possibly textgroups',
+	description: 'A work in a collection, associated with authors or possibly textgroups',
 	fields: {
 
 		textNodes: {

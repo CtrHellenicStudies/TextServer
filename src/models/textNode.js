@@ -4,7 +4,7 @@ import db from '../db';
 /**
  * A textnode (or passage) in a work
  */
-const TextNode = db.define('textNodes', {
+const TextNode = db.define('textnodes', {
 	id: {
 		type: Sequelize.INTEGER,
 		primaryKey: true,
@@ -20,7 +20,6 @@ const TextNode = db.define('textNodes', {
 	},
 }, {
 	timestamps: false,
-	tableName: 'textnodes',
 });
 
 TextNode.associate = ({ models }) => {

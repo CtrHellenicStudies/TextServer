@@ -5,7 +5,7 @@ import winston from 'winston';
 
 import checkXmlOrJSON from './lib/checkXmlOrJSON';
 import cloneRepo from './lib/cloneRepo';
-import { ingestXmlData, ingestJsonData } from './ingestTexts';
+import { ingestXmlData, ingestJsonData } from './lib/ingestTexts';
 
 
 const ingestCollections = () => {
@@ -13,7 +13,7 @@ const ingestCollections = () => {
 	// setup tmp dir
 	const dir = './tmp';
 	if (!fs.existsSync(dir)){
-	  fs.mkdirSync(dir);
+		fs.mkdirSync(dir);
 	}
 
 	// change to dir to clone repos
@@ -28,18 +28,19 @@ const ingestCollections = () => {
 		winston.info(` -- cloning ${repository}`);
 
 		let _repositoryLocal = repository.substring(repository.lastIndexOf('/'));
+		_repositoryLocal = path.join('.', _repositoryLocal.replace(path.extname(_repositoryLocal), ''));
 		cloneRepo(repository, repository);
 
 		// determine xml or cltk_json
-		const isXmlCorpus = checkIsXmlCorpus(repository);
-		if (isXmlCorpus) {
-				parseXmlData({
+		const xmlOrJSON = checkXmlOrJSON(_repositoryLocal);
+		if (xmlOrJSON === 'xml') {
+				ingestXmlData({
 					repoRemote: repository,
 					repoLocal: _repositoryLocal,
 					collectionDataType: 'xml',
 				});
-		} else {
-				parseJsonData({
+		} else if (xmlOrJSON === 'json'){
+				ingestJsonData({
 					repoRemote: repository,
 					repoLocal: _repositoryLocal,
 					collectionDataType: 'json',

@@ -17,8 +17,7 @@ const Language = db.define('languages', {
 		unique: true,
 	},
 }, {
-		timestamps: false,
-
+	timestamps: false,
 });
 
 Language.associate = ({ models }) => {

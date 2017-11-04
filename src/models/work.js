@@ -26,14 +26,13 @@ const Work = db.define('works', {
 		unique: true,
 	},
 	structure: {
-		type: Sequelize.Array(Sequelize.STRING),
+		type: Sequelize.ARRAY(Sequelize.STRING),
 	},
 	form: {
 		type: Sequelize.STRING,
 	},
 }, {
-		timestamps: false,
-
+	timestamps: false,
 });
 
 Work.associate = ({ models }) => {

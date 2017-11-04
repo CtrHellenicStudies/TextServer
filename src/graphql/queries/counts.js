@@ -1,7 +1,7 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
 import AuthorService from '../logic/authors';
-import CorpusService from '../logic/collections';
+import CollectionService from '../logic/collections';
 import LanguageService from '../logic/languages';
 import WorkService from '../logic/works';
 
@@ -16,8 +16,8 @@ const countFields = {
 	collectionsCount: {
 		type: GraphQLInt,
 		async resolve(_, {}, { token }) {
-			const corpusService = CorpusService(token);
-			return await corpusService.count();
+			const collectionService = CollectionService(token);
+			return await collectionService.count();
 		},
 	},
 	languagesCount: {

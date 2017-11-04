@@ -43,9 +43,9 @@ export default class TextNodesService extends PermissionsService {
 	 * @param {number} subworkN - number of subwork
 	 * @param {string} editionSlug - slug of edition
 	 * @param {number} lineFrom - number of line that textnodes should be greater
-	 *   than or equal to
+	 *	 than or equal to
 	 * @param {number} lineTo - number of line that textnodes should be less than
-	 *   or equal to
+	 *	 or equal to
 	 * @returns {Object[]} array of text nodes
 	 */
 	textNodesGet(id, tenantId, limit, skip, workSlug, subworkN, editionSlug, lineFrom, lineTo) {

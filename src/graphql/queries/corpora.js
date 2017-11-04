@@ -1,11 +1,11 @@
 import { GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
 
-import CorpusType from '../types/corpus';
-import CorpusService from '../logic/collections';
+import CollectionType from '../types/collection';
+import CollectionService from '../logic/collections';
 
-const corpusFields = {
+const collectionFields = {
 	collections: {
-		type: new GraphQLList(CorpusType),
+		type: new GraphQLList(CollectionType),
 		args: {
 			limit: {
 				type: GraphQLInt,
@@ -15,12 +15,12 @@ const corpusFields = {
 			},
 		},
 		async resolve(_, { limit, offset, }, { token }) {
-			const corpusService = new CorpusService(token);
-			return await corpusService.getCorpora(limit, offset);
+			const collectionService = new CollectionService(token);
+			return await collectionService.getCollection(limit, offset);
 		},
 	},
-	corpus: {
-		type: CorpusType,
+	collection: {
+		type: CollectionType,
 		args: {
 			id: {
 				type: GraphQLInt,
@@ -30,10 +30,10 @@ const corpusFields = {
 			},
 		},
 		async resolve(_, { id, slug }, { token }) {
-			const corpusService = new CorpusService(token);
-			return await corpusService.getCorpus(id, slug);
+			const collectionService = new CollectionService(token);
+			return await collectionService.getCollection(id, slug);
 		},
 	},
 };
 
-export default corpusFields;
+export default collectionFields;
