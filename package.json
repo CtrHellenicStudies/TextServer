@@ -74,7 +74,7 @@
     "db:migrate": "sequelize --config config/config.js db:migrate",
     "db:rollback": "sequelize --config config/config.js db:migrate:undo",
     "db:migration:create": "sequelize --config config/config.js migration:create",
-    "ingest-corpora": "babel-node ./scripts/ingest-corpora",
+    "ingest-corpora": "babel-node ./scripts/ingest-collections",
     "lint": "eslint .",
     "start": "NODE_ENV=development nodemon src --exec babel-node",
     "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",

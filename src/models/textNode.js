@@ -1,6 +1,9 @@
 import Sequelize from 'sequelize';
 import db from '../db';
 
+/**
+ * A textnode (or passage) in a work
+ */
 const TextNode = db.define('textNodes', {
 	id: {
 		type: Sequelize.INTEGER,
@@ -15,22 +18,12 @@ const TextNode = db.define('textNodes', {
 	text: {
 		type: Sequelize.STRING,
 	},
-	corpus: {
-		type: Sequelize.STRING,
-	},
-	language: {
-		type: Sequelize.STRING,
-	},
-	author: {
-		type: Sequelize.STRING,
-	},
 }, {
 	timestamps: false,
 	tableName: 'textnodes',
 });
 
 TextNode.associate = ({ models }) => {
-	TextNode.hasMany(models.words);
 	TextNode.belongsTo(models.works);
 };
 

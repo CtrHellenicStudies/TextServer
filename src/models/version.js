@@ -2,9 +2,9 @@ import Sequelize from 'sequelize';
 import db from '../db';
 
 /**
- * A language of a work
+ * A version of a work
  */
-const Language = db.define('languages', {
+const Version = db.define('versions', {
 	id: {
 		type: Sequelize.INTEGER,
 		primaryKey: true,
@@ -16,13 +16,17 @@ const Language = db.define('languages', {
 		type: Sequelize.STRING,
 		unique: true,
 	},
+	description: {
+		type: Sequelize.STRING,
+	},
 }, {
 		timestamps: false,
-
+		tableName: 'collections',
 });
 
-Language.associate = ({ models }) => {
-	Language.belongsTo(models.works);
+Version.associate = ({ models }) => {
+	Version.belongsTo(models.works);
 };
 
-export default Language;
+
+export default Version;

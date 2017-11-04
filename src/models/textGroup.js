@@ -2,17 +2,14 @@ import Sequelize from 'sequelize';
 import db from '../db';
 
 /**
- * An author of a work
+ * A textgroup in a collection
  */
-const Author = db.define('authors', {
+const TextGroup = db.define('textgroups', {
 	id: {
 		type: Sequelize.INTEGER,
 		primaryKey: true,
 	},
-	english_name: {
-		type: Sequelize.STRING,
-	},
-	original_name: {
+	title: {
 		type: Sequelize.STRING,
 	},
 	slug: {
@@ -23,11 +20,10 @@ const Author = db.define('authors', {
 	timestamps: false,
 });
 
-
-Author.associate = ({ models }) => {
-	Author.hasMany(models.works);
+TextGroup.associate = ({ models }) => {
+	TextGroup.belongsTo(models.collections);
+	TextGroup.hasMany(models.works);
 };
 
 
-
-export default Author;
+export default TextGroup;

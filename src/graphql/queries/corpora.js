@@ -1,10 +1,10 @@
 import { GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
 
 import CorpusType from '../types/corpus';
-import CorpusService from '../logic/corpora';
+import CorpusService from '../logic/collections';
 
 const corpusFields = {
-	corpora: {
+	collections: {
 		type: new GraphQLList(CorpusType),
 		args: {
 			limit: {

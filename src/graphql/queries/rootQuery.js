@@ -1,7 +1,7 @@
 import { GraphQLObjectType } from 'graphql';
 
 import authorFields from './authors';
-import corpusFields from './corpora';
+import corpusFields from './collections';
 import languageFields from './languages';
 import textNodeFields from './textNodes';
 import workFields from './works';
