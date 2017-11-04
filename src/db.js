@@ -9,7 +9,7 @@ const DB_PASS = process.env.DB_PASS;
 
 /**
  * Sets up the MySQL connection based on the process.env settings.
- * @return {[function]} database
+ * @return {function} database
  */
 const db = new Sequelize(
   DB_NAME,

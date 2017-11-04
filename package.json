@@ -72,7 +72,8 @@
     "db:migration:create": "sequelize --config config/config.js migration:create",
     "lint": "eslint .",
     "start": "NODE_ENV=development nodemon src --exec babel-node",
-    "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet"
+    "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
+		"jsdoc": "jsdoc src scripts -r -c .jsdoc.json -d docs"
   },
   "repository": {
     "type": "git",
