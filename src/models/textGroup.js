@@ -16,6 +16,9 @@ const TextGroup = db.define('textgroups', {
 		type: Sequelize.STRING,
 		unique: true,
 	},
+	ctsUrn: {
+		type: Sequelize.STRING,
+	},
 }, {
 	timestamps: false,
 });

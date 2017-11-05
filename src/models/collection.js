@@ -16,7 +16,7 @@ const Collection = db.define('collections', {
 		type: Sequelize.STRING,
 		unique: true,
 	},
-	repositoryURL: {
+	repositoryUrl: {
 		type: Sequelize.STRING,
 	},
 }, {

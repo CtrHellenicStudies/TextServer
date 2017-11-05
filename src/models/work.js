@@ -31,6 +31,9 @@ const Work = db.define('works', {
 	form: {
 		type: Sequelize.STRING,
 	},
+	ctsUrn: {
+		type: Sequelize.STRING,
+	},
 }, {
 	timestamps: false,
 });

@@ -19,6 +19,9 @@ const Version = db.define('versions', {
 	description: {
 		type: Sequelize.STRING,
 	},
+	ctsUrn: {
+		type: Sequelize.STRING,
+	},
 }, {
 	timestamps: false,
 });

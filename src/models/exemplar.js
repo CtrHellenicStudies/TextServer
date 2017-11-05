@@ -19,6 +19,9 @@ const Exemplar = db.define('exemplars', {
 	description: {
 		type: Sequelize.STRING,
 	},
+	ctsUrn: {
+		type: Sequelize.STRING,
+	},
 }, {
 	timestamps: false,
 });
