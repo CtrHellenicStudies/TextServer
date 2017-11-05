@@ -17,7 +17,7 @@ const TextGroup = db.define('textgroups', {
 		type: Sequelize.STRING,
 		unique: true,
 	},
-	ctsUrn: {
+	urn: {
 		type: Sequelize.STRING,
 	},
 }, {

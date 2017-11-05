@@ -20,7 +20,7 @@ const Exemplar = db.define('exemplars', {
 	description: {
 		type: Sequelize.STRING,
 	},
-	ctsUrn: {
+	urn: {
 		type: Sequelize.STRING,
 	},
 }, {

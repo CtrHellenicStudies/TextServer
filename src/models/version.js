@@ -20,7 +20,7 @@ const Version = db.define('versions', {
 	description: {
 		type: Sequelize.STRING,
 	},
-	ctsUrn: {
+	urn: {
 		type: Sequelize.STRING,
 	},
 }, {

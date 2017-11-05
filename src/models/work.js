@@ -32,7 +32,7 @@ const Work = db.define('works', {
 	form: {
 		type: Sequelize.STRING,
 	},
-	ctsUrn: {
+	urn: {
 		type: Sequelize.STRING,
 	},
 }, {
