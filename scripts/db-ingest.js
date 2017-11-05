@@ -28,6 +28,7 @@ db.authenticate()
 		const sync = await db.sync();
 
 		// run ingest
+		winston.info('Beginning ingest of designated repositories');
 		const ingestResult = await ingest();
 		winston.info(ingestResult);
 

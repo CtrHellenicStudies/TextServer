@@ -4,9 +4,9 @@ import slugify from 'slugify';
 import { DOMParser } from 'xmldom';
 import xpath from 'xpath';
 
+import ctsNamespace from '../../lib/ctsNamespace';
 import TextGroup from '../../../../models/TextGroup';
 import Work from './Work';
-import ctsNamespace from '../../lib/ctsNamespace';
 
 class _TextGroup {
 
@@ -25,7 +25,6 @@ class _TextGroup {
 	 * parse metadata about this textgroup from the __cts__.xml input file
 	 */
 	_parseMetadataFromXml() {
-		// console.log(this._textGroupXML);
 		const textGroupElems = this._textGroupXML.getElementsByTagNameNS(ctsNamespace, 'textgroup');
 		const groupNameElems = this._textGroupXML.getElementsByTagNameNS(ctsNamespace, 'groupname');
 		this.urn = textGroupElems[0].getAttributeNode('urn').value;
@@ -45,7 +44,10 @@ class _TextGroup {
 				const _workXML = new DOMParser().parseFromString(_workMetadataFile);
 
 				// create a new textGroup
-				const work = new Work(workDir, _workXML);
+				const work = new Work({
+					workDir,
+					_workXML
+				});
 
 				// parse metadata about work xml file textNodes
 				work.generateInventory()

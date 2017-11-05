@@ -18,6 +18,7 @@ db.authenticate()
 		const sync = await db.sync();
 
 		// destory all
+		winston.info('Dropping all tables in database');
 		await Author.destroy({
 			where: {},
 		});

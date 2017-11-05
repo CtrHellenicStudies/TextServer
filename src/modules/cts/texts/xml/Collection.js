@@ -13,7 +13,8 @@ class _Collection {
 	/**
 	 * Create a collection
 	 */
-	constructor({ repoRemote, repoLocal, collectionDataType }) {
+	constructor({ title, repoRemote, repoLocal, collectionDataType }) {
+		this.title = title;
 		this.repoRemote = repoRemote;
 		this.repoLocal = repoLocal;
 		this.collectionDataType = collectionDataType;

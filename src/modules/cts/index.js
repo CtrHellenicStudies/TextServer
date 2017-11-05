@@ -16,18 +16,19 @@ const cloneRepos = async () => {
 	repositoriesJSON.repositories.forEach(async repository => {
 
 		// set local repo path
-		let repositoryLocal = repository.substring(repository.lastIndexOf('/'));
+		let repositoryLocal = repository.url.substring(repository.url.lastIndexOf('/'));
 		repositoryLocal = path.join('./tmp/', repositoryLocal.replace(path.extname(repositoryLocal), ''));
-		winston.info(` -- cloning ${repository} into ${repositoryLocal}`);
+		winston.info(` -- cloning ${repository.title} into ${repositoryLocal}`);
 
 		// keep copy of all cloned repos' remote/local data
 		clonedRepos.push({
-			repoRemote: repository,
+			title: repository.title,
+			repoRemote: repository.url,
 			repoLocal: repositoryLocal,
 		});
 
 		// clone repo
-		clonePromises.push(cloneRepo(repository, repositoryLocal));
+		clonePromises.push(cloneRepo(repository.url, repositoryLocal));
 	});
 
 	await Promise.all(clonePromises);
