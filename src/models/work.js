@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
@@ -45,6 +46,13 @@ Work.associate = ({ models }) => {
 	Work.hasMany(models.versions);
 	Work.hasMany(models.exemplars);
 };
+
+SequelizeSlugify.slugifyModel(Work, {
+    source: ['english_title'],
+    slugOptions: { lower: true },
+    overwrite: false,
+    column: 'slug'
+});
 
 
 export default Work;

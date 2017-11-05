@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
@@ -27,6 +28,13 @@ TextGroup.associate = ({ models }) => {
 	TextGroup.belongsTo(models.collections);
 	TextGroup.hasMany(models.works);
 };
+
+SequelizeSlugify.slugifyModel(TextGroup, {
+    source: ['title'],
+    slugOptions: { lower: true },
+    overwrite: false,
+    column: 'slug'
+});
 
 
 export default TextGroup;

@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
@@ -26,6 +27,13 @@ const Collection = db.define('collections', {
 Collection.associate = ({ models }) => {
 	Collection.hasMany(models.textgroups);
 };
+
+SequelizeSlugify.slugifyModel(Collection, {
+    source: ['title'],
+    slugOptions: { lower: true },
+    overwrite: false,
+    column: 'slug'
+});
 
 
 export default Collection;

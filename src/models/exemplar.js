@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
@@ -29,6 +30,13 @@ const Exemplar = db.define('exemplars', {
 Exemplar.associate = ({ models }) => {
 	Exemplar.belongsTo(models.works);
 };
+
+SequelizeSlugify.slugifyModel(Exemplar, {
+    source: ['title'],
+    slugOptions: { lower: true },
+    overwrite: false,
+    column: 'slug'
+});
 
 
 export default Exemplar;

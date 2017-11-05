@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
@@ -23,5 +24,13 @@ const Language = db.define('languages', {
 Language.associate = ({ models }) => {
 	Language.belongsTo(models.works);
 };
+
+SequelizeSlugify.slugifyModel(Language, {
+    source: ['title'],
+    slugOptions: { lower: true },
+    overwrite: false,
+    column: 'slug'
+});
+
 
 export default Language;

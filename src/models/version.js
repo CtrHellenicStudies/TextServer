@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
@@ -29,6 +30,14 @@ const Version = db.define('versions', {
 Version.associate = ({ models }) => {
 	Version.belongsTo(models.works);
 };
+
+SequelizeSlugify.slugifyModel(Version, {
+    source: ['title'],
+    slugOptions: { lower: true },
+    overwrite: false,
+    column: 'slug'
+});
+
 
 
 export default Version;

@@ -1,4 +1,5 @@
 import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
@@ -27,6 +28,13 @@ const Author = db.define('authors', {
 Author.associate = ({ models }) => {
 	Author.hasMany(models.works);
 };
+
+SequelizeSlugify.slugifyModel(Author, {
+    source: ['english_name'],
+    slugOptions: { lower: true },
+    overwrite: false,
+    column: 'slug'
+});
 
 
 
