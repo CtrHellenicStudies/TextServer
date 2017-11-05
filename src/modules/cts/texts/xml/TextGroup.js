@@ -6,12 +6,16 @@ import xpath from 'xpath';
 
 import TextGroup from '../../../../models/TextGroup';
 import Work from './Work';
+import ctsNamespace from '../../lib/ctsNamespace';
 
 class _TextGroup {
 
 	constructor({ textGroupDir, _textGroupXML }) {
 		this.textGroupDir = textGroupDir;
 		this._textGroupXML = _textGroupXML;
+		this.urn = '';
+		this.groupname = '';
+
 		this._parseMetadataFromXml();
 
 		this.works = [];
@@ -21,9 +25,11 @@ class _TextGroup {
 	 * parse metadata about this textgroup from the __cts__.xml input file
 	 */
 	_parseMetadataFromXml() {
-		console.log("####################################");
 		// console.log(this._textGroupXML);
-		console.log("####################################");
+		const textGroupElems = this._textGroupXML.getElementsByTagNameNS(ctsNamespace, 'textgroup');
+		const groupNameElems = this._textGroupXML.getElementsByTagNameNS(ctsNamespace, 'groupname');
+		this.urn = textGroupElems[0].getAttributeNode('urn').value;
+		this.groupname = groupNameElems[0].firstChild.nodeValue;
 	}
 
 	/**
