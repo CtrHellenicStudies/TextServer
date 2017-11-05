@@ -3,6 +3,7 @@ import path from 'path';
 import slugify from 'slugify';
 import { DOMParser } from 'xmldom';
 import xpath from 'xpath';
+import winston from 'winston';
 
 
 import ctsNamespace from '../../lib/ctsNamespace';
@@ -26,6 +27,7 @@ class _Work {
 		this.groupUrn;
 		this.version;
 		this.exemplar;
+		this.refPatterns = [];
 		this.textNodes = [];
 
 		this._parseMetadataFromXml();
@@ -90,6 +92,56 @@ class _Work {
 	 * Generate the inventory of the textNodes in the work
 	 */
 	generateInventory() {
+		const workContents = fs.readdirSync(this.workDir);
+
+		workContents.forEach(workContent => {
+			if (!~workContent.indexOf('__cts__.xml')) {
+				const _workFile = fs.readFileSync(path.join(this.workDir, workContent), 'utf8');
+				const _workFileXml = new DOMParser().parseFromString(_workFile);
+				this._parseXMLFile(_workFileXml);
+			}
+		});
+
+	}
+
+	/**
+	 * Parse metadata and text nodes from the xml file of the work
+	 */
+	_parseXMLFile(_workFileXml) {
+
+		const refsElems = _workFileXml.getElementsByTagName('refsDecl');
+
+		if (refsElems && refsElems.length) {
+			const patternElems = refsElems[0].getElementsByTagName('cRefPattern');
+			if (patternElems) {
+				for (let i = 0; i < patternElems.length; i++) {
+					let patternElem = patternElems[`${i}`];
+					const label = patternElem.getAttributeNode('n');
+					const matchPattern = patternElem.getAttributeNode('matchPattern');
+					const replacementPattern = patternElem.getAttributeNode('replacementPattern');
+
+					let description = '';
+					const pElems = patternElem.getElementsByTagName('p');
+					if (pElems && pElems.length) {
+						description = pElems[0].firstChild.nodeValue;
+					}
+
+					this.refPatterns.push({
+						label,
+						matchPattern,
+						replacementPattern,
+						description,
+					});
+				}
+			} else {
+				winston.warn(`Refs declaration found but no ref patterns found for work ${this.workDir}. Skipping`);
+				return false;
+			}
+
+		} else {
+			winston.warn(`No refs declaration found for work ${this.workDir}. Skipping`);
+			return false;
+		}
 
 	}
 
