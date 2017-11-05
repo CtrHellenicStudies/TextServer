@@ -19,6 +19,7 @@ class _Collection {
 		this.repoLocal = repoLocal;
 		this.collectionDataType = collectionDataType;
 		this.textGroups = [];
+		this.id;
 	}
 
 	/**
@@ -48,7 +49,7 @@ class _Collection {
 				// create a new textGroup
 				const textGroup = new TextGroup({
 					textGroupDir: path.join(this.repoLocal, '/data/', textGroupContent),
-					_textGroupXML
+					_textGroupXML,
 				});
 
 				// parse metadata about all works in textgroup

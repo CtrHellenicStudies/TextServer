@@ -1,9 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import slugify from 'slugify';
-import { DOMParser } from 'xmldom';
+import { DOMParser, XMLSerializer } from 'xmldom';
 import xpath from 'xpath';
 import winston from 'winston';
+import crypto from 'crypto';
+import _ from 'underscore';
+import _s from 'underscore.string';
 
 
 import ctsNamespace from '../../lib/ctsNamespace';
@@ -22,9 +25,12 @@ class _Work {
 	constructor({ workDir, _workXML }) {
 		this.workDir = workDir;
 		this._workXML = _workXML;
-		this.title;
+		this.english_title;
+		this.original_title;
 		this.urn;
-		this.groupUrn;
+		this.filemd5hash;
+		this.filename;
+		this.structure;
 		this.version;
 		this.exemplar;
 		this.refPatterns = [];
@@ -50,7 +56,8 @@ class _Work {
 		// title
 		const titleElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'title');
 		if (titleElems && titleElems.length) {
-			this.title = titleElems[0].firstChild.nodeValue;
+			this.english_title = titleElems[0].firstChild.nodeValue;
+			this.original_title = this.english_title;
 		} else {
 			winston.info(`No title found for work ${this.workDir}`);
 		}
@@ -96,7 +103,14 @@ class _Work {
 
 		workContents.forEach(workContent => {
 			if (!~workContent.indexOf('__cts__.xml')) {
-				const _workFile = fs.readFileSync(path.join(this.workDir, workContent), 'utf8');
+				// set filename and open file
+				this.filename = path.join(this.workDir, workContent);
+				const _workFile = fs.readFileSync(this.filename, 'utf8');
+
+				// get hash of file
+				this.filemd5hash = crypto.createHash('md5').update(_workFile).digest('hex');
+
+				// parse as xml
 				const _workFileXml = new DOMParser().parseFromString(_workFile);
 				this._parseXMLFile(_workFileXml);
 			}
@@ -108,41 +122,160 @@ class _Work {
 	 * Parse metadata and text nodes from the xml file of the work
 	 */
 	_parseXMLFile(_workFileXml) {
+		this._getRefs(_workFileXml);
 
+		if (!this.refPatterns.length) {
+			winston.warn(`No ref patterns were identified for work ${this.workDir}. Skipping`);
+			return false;
+		}
+
+		this._getTextNodes(_workFileXml);
+	}
+
+	/**
+	 * get ref patterns from the xml file
+	 */
+	_getRefs(_workFileXml) {
 		const refsElems = _workFileXml.getElementsByTagName('refsDecl');
 
-		if (refsElems && refsElems.length) {
-			const patternElems = refsElems[0].getElementsByTagName('cRefPattern');
-			if (patternElems) {
-				for (let i = 0; i < patternElems.length; i++) {
-					let patternElem = patternElems[`${i}`];
-					const label = patternElem.getAttributeNode('n');
-					const matchPattern = patternElem.getAttributeNode('matchPattern');
-					const replacementPattern = patternElem.getAttributeNode('replacementPattern');
-
-					let description = '';
-					const pElems = patternElem.getElementsByTagName('p');
-					if (pElems && pElems.length) {
-						description = pElems[0].firstChild.nodeValue;
-					}
-
-					this.refPatterns.push({
-						label,
-						matchPattern,
-						replacementPattern,
-						description,
-					});
-				}
-			} else {
-				winston.warn(`Refs declaration found but no ref patterns found for work ${this.workDir}. Skipping`);
-				return false;
-			}
-
-		} else {
+		if (!refsElems || !refsElems.length) {
 			winston.warn(`No refs declaration found for work ${this.workDir}. Skipping`);
 			return false;
 		}
 
+		const patternElems = refsElems[0].getElementsByTagName('cRefPattern');
+		if (!patternElems) {
+			winston.warn(`Refs declaration found but no ref patterns found for work ${this.workDir}. Skipping`);
+			return false;
+		}
+
+		for (let i = 0; i < patternElems.length; i++) {
+			let patternElem = patternElems[`${i}`];
+			const label = patternElem.getAttributeNode('n').value;
+			const matchPattern = patternElem.getAttributeNode('matchPattern').value;
+			const replacementPattern = patternElem.getAttributeNode('replacementPattern').value;
+
+			let description = '';
+			const pElems = patternElem.getElementsByTagName('p');
+			if (pElems && pElems.length) {
+				description = pElems[0].firstChild.nodeValue;
+			}
+
+			this.refPatterns.push({
+				label,
+				matchPattern,
+				replacementPattern,
+				description,
+			});
+		}
+
+		// order ref patterns by pattern length
+		this.refPatterns = _.sortBy(this.refPatterns, (pattern) => { return pattern.replacementPattern.length });
+
+		// make pattern label structure
+		const patternLabels = [];
+		this.refPatterns.forEach(refPattern => {
+			patternLabels.push(refPattern.label.replace('-', ''));
+		});
+		this.structure = patternLabels.join('-');
+	}
+
+	/**
+	 * get text nodes from the work xml file
+	 */
+	_getTextNodes(_workFileXml) {
+		// query with tei namespace
+		const queryWithNamespaces = xpath.useNamespaces({
+			"tei": "http://www.tei-c.org/ns/1.0",
+		});
+
+		// text graph expressed as nodes and locations
+		const text = [];
+
+		// xml/html serializer
+		const xmlSerializer = new XMLSerializer();
+
+		// convert xml to text graph
+		const xmlToGraph = (node, location) => {
+
+			// localize current replacement pattern
+			let replacementPattern;
+			if (location.length) {
+	 			replacementPattern = this._getReplacementPattern(
+					this.refPatterns[location.length],
+					this.refPatterns[location.length - 1],
+				);
+			} else {
+	 			replacementPattern = this._getReplacementPattern(
+					this.refPatterns[location.length],
+				);
+			}
+
+			// query the current node with the current replacementPattern
+			const nodeList = queryWithNamespaces(replacementPattern, node)
+
+			nodeList.forEach((_node, i) => {
+					const _location = location.slice();
+					_location.push(i);
+
+					// equivalent of innerHTML
+					let html = '';
+					for (let nodeKey in _node.childNodes) {
+						let nodeValue = xmlSerializer.serializeToString(_node.childNodes[nodeKey])
+						if (nodeValue && nodeValue !== '??') {
+							html = `${html}${nodeValue} `;
+						}
+					}
+					html = _s.trim(html);
+
+					// serialize text node to text
+					if (_location.length === this.refPatterns.length) {
+
+						// push node to graph
+						text.push({
+							location: _location,
+							html,
+						});
+					} else {
+
+						// recurse
+						let parsedNode = new DOMParser().parseFromString(html);
+						xmlToGraph(parsedNode, _location);
+					}
+				});
+		}
+
+		// convert text to graph
+		xmlToGraph(_workFileXml, []);
+
+		// make textNodes from graph
+		text.forEach(({ location, html }, index) => {
+			const textNode = new TextNode({ location, html, index });
+			this.textNodes.push(textNode);
+		});
+	}
+
+	/**
+	 * get replacementPattern from pattern
+	 */
+	_getReplacementPattern(pattern, prevPattern) {
+		// remove xpath wrapper
+		let replacementPattern = _s.lstrip(pattern.replacementPattern, '#xpath(');
+		replacementPattern = _s.rstrip(replacementPattern, ')');
+
+		// Don't only get the nodes that have n='number'
+		// TODO: determine best method of handling numbering in the future
+		// this is a workaround to get to a simple solution first
+		const numberAttrQueryRegex = new RegExp(/\[@n='\$\d+'\]/g);
+		replacementPattern = replacementPattern.replace(numberAttrQueryRegex, '');
+
+		// localize more specific pattern by the nodes of the previous pattern
+		if (prevPattern) {
+			const prevReplacementPattern = this._getReplacementPattern(prevPattern);
+			replacementPattern = replacementPattern.replace(prevReplacementPattern, '');
+		}
+
+		return replacementPattern;
 	}
 
 	/**

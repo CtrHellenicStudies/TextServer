@@ -7,8 +7,11 @@ class _TextNode {
 	/**
 	 * Create a new text node
 	 */
-	constructor(props) {
-
+	constructor({ location, html, index }) {
+		this.location = location;
+		this.html = html;
+		this.index = index;
+		this.work;
 	}
 
 	/**

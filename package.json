@@ -48,6 +48,7 @@
     "slugify": "^1.2.1",
     "twitter": "^1.7.1",
     "underscore": "^1.8.3",
+    "underscore.string": "^3.3.4",
     "winston": "^2.4.0",
     "xmldom": "^0.1.27",
     "xpath": "^0.0.24"

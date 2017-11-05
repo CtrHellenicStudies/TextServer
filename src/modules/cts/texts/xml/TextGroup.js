@@ -50,8 +50,10 @@ class _TextGroup {
 				});
 
 				// parse metadata about work xml file textNodes
-				work.generateInventory()
-				this.works.push(work);
+				if (work.workDir === 'tmp/First1KGreek/data/ggm0001/ggm001') {
+					work.generateInventory()
+					this.works.push(work);
+				}
 			}
 		});
 	}
