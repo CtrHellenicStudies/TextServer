@@ -27,18 +27,18 @@ class _Collection {
 	generateInventory() {
 
 		// walk contents of textgroup dir
-		const textGroupContents = fs.readdirSync(`${this.repoLocal}/data/`);
+		const textGroupContents = fs.readdirSync(path.join(this.repoLocal, '/data/'));
 		textGroupContents.forEach(textGroupContent => {
 
 			// if the content object is a directory
-			if (fs.lstatSync(`${this.repoLocal}/data/${textGroupContent}`).isDirectory()) {
+			if (fs.lstatSync(path.join(this.repoLocal, '/data/', textGroupContent)).isDirectory()) {
 
 				// check textgroup for __cts__.xml metadata file
-				const _textGroupMetadataFile = fs.readFileSync(`${this.repoLocal}/data/${textGroupContent}/__cts__.xml`, 'utf8');
+				const _textGroupMetadataFile = fs.readFileSync(path.join(this.repoLocal, '/data/', textGroupContent, '/__cts__.xml'), 'utf8');
 
 				// handle case of no __cts__.xml file
 				if (!_textGroupMetadataFile) {
-					winston.info(`No metadata file for ${this.repoLocal}/data/${textGroupContent}/, skipping.`);
+					winston.info(`No metadata file for ${path.join(this.repoLocal, '/data/', textGroupContent)}, skipping.`);
 					return false;
 				}
 
@@ -47,7 +47,7 @@ class _Collection {
 
 				// create a new textGroup
 				const textGroup = new TextGroup({
-					textGroupDir: `${this.repoLocal}/data/${textGroupContent}/`,
+					textGroupDir: path.join(this.repoLocal, '/data/', textGroupContent),
 					_textGroupXML
 				});
 

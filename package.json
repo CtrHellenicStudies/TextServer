@@ -76,7 +76,7 @@
     "db:rollback": "sequelize --config config/config.js db:migrate:undo",
     "db:migration:create": "sequelize --config config/config.js migration:create",
     "db:clear": "babel-node ./scripts/db-clear",
-    "db:ingest": "babel-node ./scripts/db-ingest",
+    "db:ingest": "babel-node --max_old_space_size=10000 ./scripts/db-ingest",
     "lint": "eslint .",
     "start": "NODE_ENV=development nodemon src --exec babel-node",
     "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
