@@ -7,6 +7,7 @@ import db from '../db';
 const TextNode = db.define('textnodes', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	index: {

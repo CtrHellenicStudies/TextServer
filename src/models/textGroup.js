@@ -8,6 +8,7 @@ import db from '../db';
 const TextGroup = db.define('textgroups', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	title: {

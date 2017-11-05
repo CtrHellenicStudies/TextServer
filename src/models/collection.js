@@ -8,6 +8,7 @@ import db from '../db';
 const Collection = db.define('collections', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	title: {
@@ -17,7 +18,7 @@ const Collection = db.define('collections', {
 		type: Sequelize.STRING,
 		unique: true,
 	},
-	repositoryUrl: {
+	repository: {
 		type: Sequelize.STRING,
 	},
 }, {

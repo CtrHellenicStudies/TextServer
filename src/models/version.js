@@ -8,6 +8,7 @@ import db from '../db';
 const Version = db.define('versions', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	title: {

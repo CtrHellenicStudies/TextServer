@@ -8,6 +8,7 @@ import db from '../db';
 const Work = db.define('works', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	filemd5hash: {
