@@ -1,3 +1,4 @@
+import fs from 'fs';
 import git from 'simple-git';
 import winston from 'winston';
 
@@ -6,11 +7,12 @@ import winston from 'winston';
  * Clone a repository
  * TODO: determine optimal method of error handling with async/await
  */
-const cloneRepo = async repository => {
-	try {
-		await git().clone(repository);
-	} catch (e) {
-		winston.info(` -- repo already cloned ${repository}`);
+const cloneRepo = async (repository, repoLocal) => {
+	if (!fs.existsSync(repoLocal)) {
+		return await git().clone(repository, repoLocal);
+	} else {
+		winston.info(` -- repo already cloned at ${repositoryLOcal}`);
+		return false;
 	}
 }
 

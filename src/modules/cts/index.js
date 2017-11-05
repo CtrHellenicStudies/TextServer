@@ -3,12 +3,39 @@ import path from 'path';
 import slugify from 'slugify';
 import winston from 'winston';
 
-import checkXmlOrJSON from './lib/checkXmlOrJSON';
 import cloneRepo from './lib/cloneRepo';
-import { ingestXmlData, ingestJsonData } from './lib/ingestTexts';
+import ingestCollection from './lib/ingestCollection';
 
 
-const ingestCollections = () => {
+const cloneRepos = async () => {
+	const clonedRepos = [];
+	const clonePromises = [];
+
+	const repositoriesFile = fs.readFileSync(path.join('.', 'repositories.json'));
+	const repositoriesJSON = JSON.parse(repositoriesFile);
+	repositoriesJSON.repositories.forEach(async repository => {
+
+		// set local repo path
+		let repositoryLocal = repository.substring(repository.lastIndexOf('/'));
+		repositoryLocal = path.join('./tmp/', repositoryLocal.replace(path.extname(repositoryLocal), ''));
+		winston.info(` -- cloning ${repository} into ${repositoryLocal}`);
+
+		// keep copy of all cloned repos' remote/local data
+		clonedRepos.push({
+			repoRemote: repository,
+			repoLocal: repositoryLocal,
+		});
+
+		// clone repo
+		clonePromises.push(cloneRepo(repository, repositoryLocal));
+	});
+
+	await Promise.all(clonePromises);
+	return clonedRepos;
+};
+
+
+const ingestCollections = async () => {
 
 	// setup tmp dir
 	const dir = './tmp';
@@ -16,36 +43,16 @@ const ingestCollections = () => {
 		fs.mkdirSync(dir);
 	}
 
-	// change to dir to clone repos
-	process.chdir('./tmp');
-
 	// clone repos
-	const _repositoriesFile = fs.readFileSync(path.join('..', 'repositories.json'));
-	const _repositoriesJSON = JSON.parse(_repositoriesFile);
-
 	winston.info('Cloning repositories');
-	_repositoriesJSON.repositories.forEach(repository => {
-		winston.info(` -- cloning ${repository}`);
+	const _clonedRepos = await cloneRepos();
 
-		let _repositoryLocal = repository.substring(repository.lastIndexOf('/'));
-		_repositoryLocal = path.join('.', _repositoryLocal.replace(path.extname(_repositoryLocal), ''));
-		cloneRepo(repository, repository);
+	// Ingest collections from cloned repos
+	winston.info('Ingesting texts and metadata');
+	_clonedRepos.forEach(_clonedRepo => {
 
-		// determine xml or cltk_json
-		const xmlOrJSON = checkXmlOrJSON(_repositoryLocal);
-		if (xmlOrJSON === 'xml') {
-				ingestXmlData({
-					repoRemote: repository,
-					repoLocal: _repositoryLocal,
-					collectionDataType: 'xml',
-				});
-		} else if (xmlOrJSON === 'json'){
-				ingestJsonData({
-					repoRemote: repository,
-					repoLocal: _repositoryLocal,
-					collectionDataType: 'json',
-				});
-		}
+		// ingest data from texts in repo
+		ingestCollection(_clonedRepo);
 	});
 }
 

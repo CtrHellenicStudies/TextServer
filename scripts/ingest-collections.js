@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import winston from 'winston';
 
 import dotenvSetup from '../src/dotenv';
 import * as models from '../src/models';
@@ -9,15 +10,27 @@ import { ingestCollections } from '../src/modules/cts';
 dotenvSetup();
 dbSetup();
 
+const ingest = async () => {
+	let ingestResult;
+
+	try {
+		return await ingestCollections();
+	} catch (e) {
+		winston.error(e);
+		return 'Error with ingest. Aborting.';
+	}
+}
+
 db.authenticate()
-	.then(() => {
+	.then(async () => {
 
 		// sync database
-		db.sync();
+		const sync = await db.sync();
 
-		// ingest collections
-		ingestCollections();
+		// run ingest
+		const ingestResult = await ingest();
+		winston.info(ingestResult);
 
-		// close db connection
-		db.close();
+		// close db
+		return db.close();
 	});

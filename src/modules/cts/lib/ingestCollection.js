@@ -1,3 +1,4 @@
+import checkXmlOrJSON from './checkXmlOrJSON';
 import XMLCollection from '../texts/xml/Collection';
 import JSONCollection from '../texts/xml/Collection';
 
@@ -17,7 +18,7 @@ const ingestXmlData = ({ repoRemote, repoLocal, collectionDataType }) => {
 	collection.generateInventory();
 
 	// save textnodes from all texts to database
-	collection.ingestTexts();
+	collection.ingest();
 }
 
 /**
@@ -35,8 +36,30 @@ const ingestJsonData = ({ repoRemote, repoLocal, collectionDataType }) => {
 	collection.generateInventory();
 
 	// save textnodes from all texts to database
-	collection.ingestTexts();
+	collection.ingest();
+}
+
+/**
+ * Ingest a collection representated as git repository that has been cloned
+ */
+const ingestCollection = ({ repoRemote, repoLocal }) => {
+	// determine xml or cltk_json
+	const xmlOrJSON = checkXmlOrJSON(repoLocal);
+	if (xmlOrJSON === 'xml') {
+		ingestXmlData({
+			repoRemote,
+			repoLocal,
+			collectionDataType: 'xml',
+		});
+	} else if (xmlOrJSON === 'json'){
+		ingestJsonData({
+			repoRemote,
+			repoLocal,
+			collectionDataType: 'json',
+		});
+	}
 }
 
 
 export { ingestXmlData, ingestJsonData };
+export default ingestCollection;
