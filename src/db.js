@@ -28,15 +28,6 @@ const db = new Sequelize(
 			timestamps: false,
 			freezeTableName: true,
 		},
-		dialectOptions: {
-			requestTimeout: 100000,
-		},
-		pool: {
-			max: 30,
-			min: 0,
-			idle: 10000,
-			acquire: 40000
-		},
 		logging: false,
 	}
 );
