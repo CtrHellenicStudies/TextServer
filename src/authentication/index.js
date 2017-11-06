@@ -12,12 +12,12 @@ import validateTokenOAuth2 from './strategies/oauth2';
 export default function authSetup(app, redisClient) {
 
 	// setup JWT strategy
-	setupJWTStrategy(app, redisClient);
+	// setupJWTStrategy(app, redisClient);
 
 
 	// PASSPORT setup
 	// passport.serializeUser(User.serializeUser());
-	// passport.deserializeUser(User.deserializeUser());
+	//passport.deserializeUser(User.deserializeUser());
 	// app.use(passport.initialize());
 }
 
@@ -26,6 +26,7 @@ export default function authSetup(app, redisClient) {
  * Authentication Middleware
  */
 export function jwtAuthenticate(req, res, next) {
+	/*
 	passport.authenticate(['jwt'], {
 		session: false
 	}, (err, user, info) => {
@@ -35,6 +36,7 @@ export function jwtAuthenticate(req, res, next) {
 		req.user = user || null;
 		next();
 	})(req, res, next);
+	*/
 }
 
 // export strategies

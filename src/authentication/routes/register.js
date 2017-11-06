@@ -7,9 +7,6 @@ import providers from './providers';
 // authentication
 import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
 
-// email
-import OrpheusEmail from '../../email';
-
 
 export const registerPWD = (res, username, password) => {
 	User.register(new User({
