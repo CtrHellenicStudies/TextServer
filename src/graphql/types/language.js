@@ -9,10 +9,10 @@ import Language from '../../models/language';
  * Language model type
  * @type {GraphQLObjectType}
  */
-const languageType = new GraphQLObjectType({
+const LanguageType = new GraphQLObjectType({
 	name: 'Language',
 	description: 'A language of a work or text node',
 	fields: _.assign(attributeFields(Language)),
 });
 
-export default languageType;
+export default LanguageType;

@@ -6,14 +6,10 @@ import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 
 // types
 import { WorkType, WorkInputType } from '../types/work';
-import { RemoveType } from '../types/remove';
-
-// models
-import Works from '../../models/works';
+import RemoveType from '../types/remove';
 
 // logic
 import WorksService from '../logic/works';
-
 
 const worksMutationFields = {
 	workCreate: {

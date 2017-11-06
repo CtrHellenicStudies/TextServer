@@ -8,10 +8,10 @@ import Author from '../../models/author';
  * Author model type
  * @type {GraphQLObjectType}
  */
-const authorType = new GraphQLObjectType({
+const AuthorType = new GraphQLObjectType({
 	name: 'Author',
 	description: 'An author of a work (if available)',
 	fields: _.assign(attributeFields(Author)),
 });
 
-export default authorType;
+export default AuthorType;

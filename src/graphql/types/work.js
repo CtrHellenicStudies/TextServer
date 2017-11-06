@@ -1,19 +1,21 @@
 import _ from 'underscore';
-import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLSchema, GraphQLInt, GraphQLString } from 'graphql';
+import {
+	GraphQLObjectType, GraphQLInputObjectType, GraphQLNonNull, GraphQLList,
+	GraphQLSchema, GraphQLInt, GraphQLString
+} from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
 import Work from '../../models/work';
-import TextNodeType from '../types/textNode';
+import { TextNodeType } from './textNode';
 
 /**
  * Works model type
  * @type {GraphQLObjectType}
  */
-const workType = new GraphQLObjectType({
+const WorkType = new GraphQLObjectType({
 	name: 'Work',
 	description: 'A work in a collection, associated with authors or possibly textgroups',
 	fields: {
-
 		textNodes: {
 			type: new GraphQLList(TextNodeType),
 			args: {
@@ -82,4 +84,15 @@ const workType = new GraphQLObjectType({
 	},
 });
 
-export default workType;
+/**
+ * Work input model type
+ * @type {GraphQLInputObjectType}
+ */
+const WorkInputType = new GraphQLInputObjectType({
+	name: 'WorkInput',
+	description: 'Input type for a work',
+	fields: _.assign(attributeFields(Work)),
+});
+
+export { WorkType, WorkInputType };
+export default WorkType;

@@ -19,6 +19,7 @@ import RemoveType from '../types/remove';
 // logic
 import TextNodeService from '../logic/textNodes';
 
+
 const textNodeMutationFields = {
 	textNodeCreate: {
 		type: TextNodeType,
@@ -29,23 +30,24 @@ const textNodeMutationFields = {
 			},
 		},
 		async resolve(parent, { textNode }, { token }) {
-			const textNodeService = new TextNodeService({token});
-			return await textNodeService.textNodeCreate(textNode);
+			// const textNodeService = new TextNodeService({ token });
+			// return await textNodeService.textNodeCreate(textNode);
 		}
 	},
 	textNodeRemove: {
 		type: RemoveType,
 		description: 'Remove a single text node',
 		args: {
-			textNodeId: {
+			id: {
 				type: new GraphQLNonNull(GraphQLString)
 			}
 		},
-		async resolve(parent, {textNodeId}, {token}) {
-			const textNodeService = new TextNodeService({token});
-			return await textNodeService.textNodeRemove(textNodeId);
+		async resolve(parent, { textNodeId }, { token }) {
+			// const textNodeService = new TextNodeService({ token });
+			// return await textNodeService.textNodeRemove(textNodeId);
 		}
 	},
 };
+
 
 export default textNodeMutationFields;

@@ -9,10 +9,10 @@ import Collection from '../../models/collection';
  * Collection model type
  * @type {GraphQLObjectType}
  */
-const collectionType = new GraphQLObjectType({
+const CollectionType = new GraphQLObjectType({
 	name: 'Collection',
 	description: 'A collection of texts (usually described as a git repository)',
 	fields: _.assign(attributeFields(Collection)),
 });
 
-export default collectionType;
+export default CollectionType;

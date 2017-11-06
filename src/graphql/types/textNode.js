@@ -9,7 +9,7 @@ import TextNode from '../../models/textNode';
  * Text Nodes model type
  * @type {GraphQLObjectType}
  */
-const textNodeType = new GraphQLObjectType({
+const TextNodeType = new GraphQLObjectType({
 	name: 'TextNode',
 	description: 'A textNode in a work, similar to data model from Draft.js',
 	fields: _.assign(attributeFields(TextNode)),
@@ -19,10 +19,10 @@ const textNodeType = new GraphQLObjectType({
  * Text Nodes input model type
  * @type {GraphQLInputObjectType}
  */
-const textNodeInputType = new GraphQLInputObjectType({
+const TextNodeInputType = new GraphQLInputObjectType({
 	name: 'TextNodeInput',
 	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
 	fields: _.assign(attributeFields(TextNode)),
 });
 
-export { textNodeType, textNodeInputType };
+export { TextNodeType, TextNodeInputType };
