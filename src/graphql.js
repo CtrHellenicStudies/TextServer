@@ -32,7 +32,7 @@ const getGraphQLContext = req => ({
  * @param	{Object} app 	express app instance
  */
 export default function setupGraphql(app) {
-	app.use('/graphql', jwtAuthenticate, graphqlExpress(req => ({
+	app.use('/graphql', graphqlExpress(req => ({
 		schema: RootSchema,
 		context: getGraphQLContext(req),
 		formatError,

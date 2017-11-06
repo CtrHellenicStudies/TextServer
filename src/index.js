@@ -17,7 +17,7 @@ import db, { dbSetup } from './db';
 import dotenvSetup from './dotenv';
 
 // authentication
-import authSetup from './authentication';
+// import authSetup from './authentication';
 
 // cors
 import corsSetup from './cors';
@@ -26,7 +26,7 @@ import corsSetup from './cors';
 import setupGraphql from './graphql';
 
 // Routes
-import authenticationRouter from './authentication/routes';
+// import authenticationRouter from './authentication/routes';
 
 
 // environment variables setup
@@ -53,7 +53,7 @@ corsSetup(app);
 setupGraphql(app);
 
 // Routes
-app.use('/auth', authenticationRouter);
+// app.use('/auth', authenticationRouter);
 
 // App server listen
 const listen = () => {
@@ -64,8 +64,8 @@ const listen = () => {
 
 // Connect to db and then start express listen
 db.authenticate()
-	.then(() => {
-		db.sync();
+	.then(async () => {
+		await db.sync();
 
 		listen();
 	})
