@@ -1,4 +1,4 @@
-import Exemplar from '../../../models/Exemplar';
+import Exemplar from '../../../../models/Exemplar';
 
 /** Class representing an exemplar metadata information classifying a work */
 class _Exemplar {
@@ -11,7 +11,7 @@ class _Exemplar {
 	}
 
 	/**
-	 * Save information about exemplar to db 
+	 * Save information about exemplar to db
 	 */
 	ingest() {
 

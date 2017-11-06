@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import slugify from 'slugify';
 
-import Collection from '../../../models/collection';
+import Collection from '../../../../models/collection';
 import TextGroup from './TextGroup';
 
 
@@ -11,7 +11,8 @@ class _Collection {
 	/**
 	 * Create a collection
 	 */
-	constructor({ repoRemote, repoLocal, collectionDataType }) {
+	constructor({ title, repoRemote, repoLocal, collectionDataType }) {
+		this.title = title;
 		this.repoRemote = repoRemote;
 		this.repoLocal = repoLocal;
 		this.collectionDataType = collectionDataType;

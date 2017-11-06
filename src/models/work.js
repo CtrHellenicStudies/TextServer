@@ -28,7 +28,7 @@ const Work = db.define('works', {
 		unique: true,
 	},
 	structure: {
-		type: Sequelize.ARRAY(Sequelize.STRING),
+		type: Sequelize.STRING,
 	},
 	form: {
 		type: Sequelize.STRING,
@@ -46,6 +46,7 @@ Work.associate = ({ models }) => {
 	Work.hasMany(models.languages);
 	Work.hasMany(models.versions);
 	Work.hasMany(models.exemplars);
+	Work.hasMany(models.textnodes);
 };
 
 SequelizeSlugify.slugifyModel(Work, {

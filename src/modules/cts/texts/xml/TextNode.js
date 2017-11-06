@@ -1,3 +1,4 @@
+import winston from 'winston';
 import TextNode from '../../../../models/textNode';
 
 
@@ -11,14 +12,20 @@ class _TextNode {
 		this.location = location;
 		this.html = html;
 		this.index = index;
-		this.work;
 	}
 
 	/**
 	 * Save all information about the text node to the database
 	 */
-	ingest() {
+	async ingest(work) {
+		const textNode = await TextNode.create({
+			index: this.index,
+			location: this.location,
+			text: this.html,
+		})
 
+		await textNode.setWork(work);
+		return textNode;
 	}
 
 }

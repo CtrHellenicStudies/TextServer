@@ -33,5 +33,5 @@ db.authenticate()
 		winston.info(ingestResult);
 
 		// close db
-		return db.close();
+		// db.close();
 	});

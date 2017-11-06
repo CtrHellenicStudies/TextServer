@@ -26,10 +26,10 @@ class _Collection {
 	 * Get the inventory of this collection's textGroups
 	 */
 	generateInventory() {
-
+		winston.info(` -- generating inventory for ${this.title}`);
 		// walk contents of textgroup dir
 		const textGroupContents = fs.readdirSync(path.join(this.repoLocal, '/data/'));
-		textGroupContents.forEach(textGroupContent => {
+		textGroupContents.forEach((textGroupContent, i) => {
 
 			// if the content object is a directory
 			if (fs.lstatSync(path.join(this.repoLocal, '/data/', textGroupContent)).isDirectory()) {
@@ -65,10 +65,20 @@ class _Collection {
 	 * Save all textgroups in collection inventory (will save all hierarchical
 	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
-	ingest() {
-		this.textGroups.forEach(textGroup => {
-			textGroup.ingest();
+	async ingest() {
+		winston.info(` -- ingesting texts for ${this.title}`);
+
+		const collection = await Collection.create({
+			title: this.title,
+			repository: this.repoRemote,
 		});
+
+		this.textGroups.forEach(async _textGroup => {
+			const textGroup = await _textGroup.ingest(collection);
+			await collection.addTextgroup(textGroup);
+		});
+
+		return collection;
 	}
 }
 

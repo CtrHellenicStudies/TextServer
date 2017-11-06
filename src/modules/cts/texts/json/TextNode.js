@@ -1,4 +1,4 @@
-import TextNode from '../../../models/textNode';
+import TextNode from '../../../../models/textNode';
 
 /** Class representing a text node or passage in a work */
 class _TextNode {

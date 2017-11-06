@@ -1,10 +1,10 @@
-import Version from '../../../models/Version';
+import Version from '../../../../models/Version';
 
 /** Class representing a version of a work */
 class _Version {
 
 	/**
-	 * Create a new version 
+	 * Create a new version
 	 */
 	constructor(props) {
 

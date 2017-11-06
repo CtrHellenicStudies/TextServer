@@ -17,7 +17,7 @@ const TextNode = db.define('textnodes', {
 		type: Sequelize.ARRAY(Sequelize.INTEGER),
 	},
 	text: {
-		type: Sequelize.STRING,
+		type: Sequelize.TEXT,
 	},
 }, {
 	timestamps: false,

@@ -3,6 +3,7 @@ import path from 'path';
 import slugify from 'slugify';
 import { DOMParser } from 'xmldom';
 import xpath from 'xpath';
+import winston from 'winston';
 
 import ctsNamespace from '../../lib/ctsNamespace';
 import TextGroup from '../../../../models/TextGroup';
@@ -15,10 +16,9 @@ class _TextGroup {
 		this._textGroupXML = _textGroupXML;
 		this.urn = '';
 		this.groupname = '';
+		this.works = [];
 
 		this._parseMetadataFromXml();
-
-		this.works = [];
 	}
 
 	/**
@@ -35,6 +35,7 @@ class _TextGroup {
 	 * Get the inventory of this textgroup's works
 	 */
 	generateInventory() {
+		winston.info(` -- generating inventory for ${this.title}`);
 		const workDirs = fs.readdirSync(this.textGroupDir);
 
 		workDirs.forEach(workDir => {
@@ -50,10 +51,8 @@ class _TextGroup {
 				});
 
 				// parse metadata about work xml file textNodes
-				if (work.workDir === 'tmp/First1KGreek/data/ggm0001/ggm001') {
-					work.generateInventory()
-					this.works.push(work);
-				}
+				work.generateInventory()
+				this.works.push(work);
 			}
 		});
 	}
@@ -61,15 +60,22 @@ class _TextGroup {
 	/**
 	 * Save all textgroup data and work/textNode data in this textgroup
 	 */
-	ingest() {
+	async ingest(collection) {
+		winston.info(` -- ingesting texts for ${this.title}`);
 		// Save textGroup
-		const textGroup = new TextGroup({
-
+		const textGroup = await TextGroup.create({
+			title: this.groupname,
+			urn: this.urn,
 		});
 
-		this.works.forEach(work => {
-			work.ingest();
+		await textGroup.setCollection(collection);
+
+		this.works.forEach(async _work => {
+			const work = await _work.ingest(textGroup);
+			await textGroup.addWork(work);
 		});
+
+		return textGroup;
 	}
 
 }

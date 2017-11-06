@@ -1,4 +1,4 @@
-import Work from '../../../models/work';
+import Work from '../../../../models/work';
 
 /** Class representing a work in a textgroup */
 class _Work {

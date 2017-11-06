@@ -13,7 +13,7 @@ const cloneRepos = async () => {
 
 	const repositoriesFile = fs.readFileSync(path.join('.', 'repositories.json'));
 	const repositoriesJSON = JSON.parse(repositoriesFile);
-	repositoriesJSON.repositories.forEach(async repository => {
+	repositoriesJSON.repositories.forEach(repository => {
 
 		// set local repo path
 		let repositoryLocal = repository.url.substring(repository.url.lastIndexOf('/'));
@@ -50,10 +50,11 @@ const ingestCollections = async () => {
 
 	// Ingest collections from cloned repos
 	winston.info('Ingesting texts and metadata');
-	_clonedRepos.forEach(_clonedRepo => {
+	_clonedRepos.forEach(async _clonedRepo => {
+		winston.info(` -- ingesting ${_clonedRepo.title}`);
 
 		// ingest data from texts in repo
-		ingestCollection(_clonedRepo);
+		await ingestCollection(_clonedRepo);
 	});
 }
 

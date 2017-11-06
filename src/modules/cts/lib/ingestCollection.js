@@ -1,32 +1,34 @@
 import checkXmlOrJSON from './checkXmlOrJSON';
 import XMLCollection from '../texts/xml/Collection';
-import JSONCollection from '../texts/xml/Collection';
+import JSONCollection from '../texts/json/Collection';
 
 /**
  * Parse data from a collection repo with XML data (possibly TEI-formatted
  * XML files with some CTS compliant files)
  */
-const ingestXmlData = ({ repoRemote, repoLocal, collectionDataType }) => {
+const ingestXmlData = async ({ title, repoRemote, repoLocal, collectionDataType }) => {
 	// create collection
 	const collection = new XMLCollection({
+		title,
 		repoRemote,
 		repoLocal,
 		collectionDataType,
 	});
 
 	// generate collection inventory
-	collection.generateInventory();
+	await collection.generateInventory();
 
 	// save textnodes from all texts to database
-	collection.ingest();
+	await collection.ingest();
 }
 
 /**
  * Parse data from a collection repo with cltk_json data
  */
-const ingestJsonData = ({ repoRemote, repoLocal, collectionDataType }) => {
+const ingestJsonData = ({ title, repoRemote, repoLocal, collectionDataType }) => {
 	// create collection
 	const collection = new JSONCollection({
+		title,
 		repoRemote,
 		repoLocal,
 		collectionDataType,
@@ -42,17 +44,19 @@ const ingestJsonData = ({ repoRemote, repoLocal, collectionDataType }) => {
 /**
  * Ingest a collection representated as git repository that has been cloned
  */
-const ingestCollection = ({ repoRemote, repoLocal }) => {
+const ingestCollection = async ({ title, repoRemote, repoLocal }) => {
 	// determine xml or cltk_json
 	const xmlOrJSON = checkXmlOrJSON(repoLocal);
 	if (xmlOrJSON === 'xml') {
-		ingestXmlData({
+		await ingestXmlData({
+			title,
 			repoRemote,
 			repoLocal,
 			collectionDataType: 'xml',
 		});
 	} else if (xmlOrJSON === 'json'){
-		ingestJsonData({
+		await ingestJsonData({
+			title,
 			repoRemote,
 			repoLocal,
 			collectionDataType: 'json',

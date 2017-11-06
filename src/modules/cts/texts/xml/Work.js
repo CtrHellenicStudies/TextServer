@@ -99,6 +99,7 @@ class _Work {
 	 * Generate the inventory of the textNodes in the work
 	 */
 	generateInventory() {
+		winston.info(` -- generating inventory for ${this.english_title}`);
 		const workContents = fs.readdirSync(this.workDir);
 
 		workContents.forEach(workContent => {
@@ -212,7 +213,10 @@ class _Work {
 			}
 
 			// query the current node with the current replacementPattern
-			const nodeList = queryWithNamespaces(replacementPattern, node)
+			let nodeList = [];
+			if (replacementPattern) {
+				nodeList = queryWithNamespaces(replacementPattern, node)
+			}
 
 			nodeList.forEach((_node, i) => {
 					const _location = location.slice();
@@ -281,10 +285,28 @@ class _Work {
 	/**
 	 * Save all work data and textnodes in the work
 	 */
-	ingest() {
+	async ingest(textgroup) {
+		winston.info(` -- ingesting texts for ${this.english_title}`);
 
+		const work = await Work.create({
+			filemd5hash: this.filemd5hash,
+			filename: this.filename,
+			original_title: this.original_title,
+			english_title: this.english_title,
+			structure: this.structure,
+			form: this.form,
+			urn: this.urn,
+		})
+
+		await work.setTextgroup(textgroup);
+
+		this.textNodes.forEach(async _textNode => {
+			const textNode = await _textNode.ingest(work);
+			await work.addTextnode(textNode);
+		});
+
+		return work;
 	}
-
 }
 
 
