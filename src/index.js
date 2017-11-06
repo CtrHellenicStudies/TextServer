@@ -10,6 +10,7 @@ import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 
 // db
+import * as models from '../src/models';
 import db, { dbSetup } from './db';
 
 // dotenv
@@ -33,7 +34,7 @@ dotenvSetup();
 
 const app = express();
 
-app.set('port', (process.env.PORT || 3001));
+app.set('port', (process.env.PORT || 3000));
 
 app.use(logger('dev'));
 app.use(cookieParser());
@@ -51,16 +52,13 @@ corsSetup(app);
 // GraphQl setup
 setupGraphql(app);
 
-// OAuth setup
-oauthSetup(app);
-
 // Routes
 app.use('/auth', authenticationRouter);
 
 // App server listen
 const listen = () => {
 	app.listen(app.get('port'), () => {
-		console.info(`App is now running on http://localhost:${APP_PORT}`);
+		console.info(`App is now running on http://localhost:${app.get('port')}`);
 	});
 };
 
