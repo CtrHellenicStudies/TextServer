@@ -1,11 +1,12 @@
 import _ from 'underscore';
 import {
 	GraphQLObjectType, GraphQLInputObjectType, GraphQLNonNull, GraphQLList,
-	GraphQLSchema, GraphQLInt, GraphQLString
+	GraphQLSchema, GraphQLInt, GraphQLString, GraphQLID
 } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
 import Work from '../../models/work';
+import TextNodeService from '../logic/textNodes';
 import { TextNodeType } from './textNode';
 
 /**
@@ -16,6 +17,33 @@ const WorkType = new GraphQLObjectType({
 	name: 'Work',
 	description: 'A work in a collection, associated with authors or possibly textgroups',
 	fields: {
+		id: {
+			type: GraphQLID,
+		},
+		filemd5hash: {
+			type: GraphQLString,
+		},
+		filename: {
+			type: GraphQLString,
+		},
+		original_title: {
+			type: GraphQLString,
+		},
+		english_title: {
+			type: GraphQLString,
+		},
+		slug: {
+			type: GraphQLString,
+		},
+		structure: {
+			type: GraphQLString,
+		},
+		form: {
+			type: GraphQLString,
+		},
+		urn: {
+			type: GraphQLString,
+		},
 		textNodes: {
 			type: new GraphQLList(TextNodeType),
 			args: {
@@ -26,59 +54,9 @@ const WorkType = new GraphQLObjectType({
 				startsAtIndex: { type: GraphQLInt },
 				offset: { type: GraphQLInt },
 			},
-			resolve(parent, { location, offset, index, startsAtLocation, startsAtIndex }) {
-
-				const query = {
-					where: {
-						workid,
-					},
-					order: ['index'],
-					limit: 30,
-				};
-
-				if (location) {
-					query.where.location = location;
-				}
-
-				if (index) {
-					query.where.index = index;
-				}
-
-				if (startsAtIndex) {
-					query.where.index = {
-						$gte: startsAtIndex,
-					};
-				}
-
-				if (offset) {
-					query.offset = offset;
-				}
-
-				if (startsAtLocation) {
-					query.where.location = startsAtLocation;
-					return TextNode.findOne(query).then((node) => {
-
-						if (!node) {
-							// TODO: Handle error
-
-							return null;
-						}
-
-						delete query.where.location;
-
-						query.where.index = {
-							$gte: node.index,
-						};
-
-						return TextNode.findAll(query).then(
-							doc => doc,
-							err => console.error(err));
-					});
-				}
-
-				return TextNode.findAll(query).then(
-					doc => doc,
-					err => console.error(err));
+			resolve(parent, { location, offset, index, startsAtLocation, startsAtIndex }, { token }) {
+				const textNodeService = new TextNodesService({ token });
+				textNodeService.get(location, offset, index, startsAtLocation, startsAtIndex);
 			},
 		},
 	},

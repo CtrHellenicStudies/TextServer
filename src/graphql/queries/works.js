@@ -1,6 +1,7 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
 import WorkType from '../types/work';
+import WorkService from '../logic/works';
 
 const workFields = {
 	works: {
@@ -13,7 +14,7 @@ const workFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { limite, offset }, { token }) {
+		async resolve(_, { limit, offset }, { token }) {
 			const workService = new WorkService(token);
 			return await workService.getWorks(limit, offset);
 		},
@@ -30,7 +31,7 @@ const workFields = {
 		},
 		async resolve(_, { id, slug }, { token }) {
 			const workService = new WorkService(token);
-			return await workService.getWorks(limit, offset);
+			return await workService.getWork(id, slug);
 		},
 	},
 };

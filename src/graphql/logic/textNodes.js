@@ -5,7 +5,7 @@ import TextNodes from '../../models/textNode';
 /**
  * Logic-layer service for dealing with text nodes
  */
-export default class TextNodesService extends PermissionsService {
+export default class TextNodeService extends PermissionsService {
 
 	/**
 	 * Create a text node
@@ -48,59 +48,58 @@ export default class TextNodesService extends PermissionsService {
 	 *	 or equal to
 	 * @returns {Object[]} array of text nodes
 	 */
-	textNodesGet(id, tenantId, limit, skip, workSlug, subworkN, editionSlug, lineFrom, lineTo) {
-		if (this.userIsAdmin) {
-			const args = {};
-			const options = {
-				sort: {
-					'work.slug': 1,
-					'text.n': 1,
-				},
-			};
+	textNodesGet( location, offset, index, startsAtLocation, startsAtIndex ) {
+		const query = {
+			where: {
+				workid,
+			},
+			order: ['index'],
+			limit: 30,
+		};
 
-			if (_id) {
-				args._id = new Mongo.ObjectID(_id);
-			}
-			if (editionSlug) {
-				args['text.edition.slug'] = { $regex: slugify(editionSlug), $options: 'i'};
-			}
-			if (lineFrom) {
-				args['text.n'] = { $gte: lineFrom };
-			}
-			if (lineTo) {
-				args['text.n'] = { $lte: lineTo };
-			}
-
-			// TODO: reinstate search for line letter and text
-			// if (lineLetter) {
-			// 	args['text.letter'] = lineLetter;
-			// }
-			// if (text) {
-			// 	args['text.text'] = { $regex: text, $options: 'i'};
-			// }
-
-			if (workSlug) {
-				args['work.slug'] = slugify(workSlug);
-			}
-			if (subworkN) {
-				args['subwork.n'] = parseInt(subworkN, 10);
-			}
-
-			if (limit) {
-				options.limit = limit;
-			} else {
-				options.limit = 100;
-			}
-
-			if (skip) {
-				options.skip = skip;
-			} else {
-				options.skip = 0;
-			}
-
-			return TextNodes.find(args, options).fetch();
+		if (location) {
+			query.where.location = location;
 		}
-		return new Error('Not authorized');
+
+		if (index) {
+			query.where.index = index;
+		}
+
+		if (startsAtIndex) {
+			query.where.index = {
+				$gte: startsAtIndex,
+			};
+		}
+
+		if (offset) {
+			query.offset = offset;
+		}
+
+		if (startsAtLocation) {
+			query.where.location = startsAtLocation;
+			return TextNode.findOne(query).then((node) => {
+
+				if (!node) {
+					// TODO: Handle error
+
+					return null;
+				}
+
+				delete query.where.location;
+
+				query.where.index = {
+					$gte: node.index,
+				};
+
+				return TextNode.findAll(query).then(
+					doc => doc,
+					err => console.error(err));
+			});
+		}
+
+		return TextNode.findAll(query).then(
+			doc => doc,
+			err => console.error(err));
 	}
 
 	/**

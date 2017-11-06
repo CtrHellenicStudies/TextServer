@@ -1,7 +1,7 @@
 export default class PermissionsService {
 	constructor(props) {
-		this.user = props.user ? props.user : null;
-		
+		this.user;
+
 		// TODO: verify token privileges if necessary
 
 		this.userRolesForProject = [];
