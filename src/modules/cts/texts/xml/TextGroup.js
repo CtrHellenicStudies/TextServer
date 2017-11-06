@@ -41,6 +41,11 @@ class _TextGroup {
 		workDirs.forEach(workDir => {
 			// if the content object is a directory
 			if (fs.lstatSync(path.join(this.textGroupDir, workDir)).isDirectory()) {
+
+				if (!fs.existsSync(path.join(this.textGroupDir, workDir, '__cts__.xml'))){
+					return false;
+				}
+
 				const _workMetadataFile = fs.readFileSync(path.join(this.textGroupDir, workDir, '__cts__.xml'), 'utf8');
 				const _workXML = new DOMParser().parseFromString(_workMetadataFile);
 

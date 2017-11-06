@@ -1,5 +1,8 @@
 {
 	"repositories": [{
+		"title": "Canonical Greek Literature",
+		"url": "https://github.com/PerseusDL/canonical-greekLit.git"
+	}, {
 		"title": "The First Thousand Years of Greek",
 		"url": "https://github.com/OpenGreekAndLatin/First1KGreek.git"
 	}]

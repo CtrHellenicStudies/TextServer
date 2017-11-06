@@ -34,6 +34,10 @@ class _Collection {
 			// if the content object is a directory
 			if (fs.lstatSync(path.join(this.repoLocal, '/data/', textGroupContent)).isDirectory()) {
 
+				if (!fs.existsSync(path.join(this.repoLocal, '/data/', textGroupContent, '__cts__.xml'))){
+					return false;
+				}
+
 				// check textgroup for __cts__.xml metadata file
 				const _textGroupMetadataFile = fs.readFileSync(path.join(this.repoLocal, '/data/', textGroupContent, '/__cts__.xml'), 'utf8');
 

@@ -154,9 +154,24 @@ class _Work {
 
 		for (let i = 0; i < patternElems.length; i++) {
 			let patternElem = patternElems[`${i}`];
-			const label = patternElem.getAttributeNode('n').value;
-			const matchPattern = patternElem.getAttributeNode('matchPattern').value;
-			const replacementPattern = patternElem.getAttributeNode('replacementPattern').value;
+
+			let label = '';
+			const labelElem = patternElem.getAttributeNode('n');
+			if (labelElem) {
+				label = labelElem.value;
+			}
+
+			let matchPattern = '';
+			const matchPatternElem = patternElem.getAttributeNode('matchPattern');
+			if (matchPatternElem) {
+				matchPattern = matchPatternElem.value;
+			}
+
+			let replacementPattern = '';
+			const replacementPatternElem = patternElem.getAttributeNode('replacementPattern');
+			if (replacementPatternElem) {
+				replacementPattern = replacementPatternElem.value;
+			}
 
 			let description = '';
 			const pElems = patternElem.getElementsByTagName('p');
@@ -217,7 +232,11 @@ class _Work {
 			// query the current node with the current replacementPattern
 			let nodeList = [];
 			if (replacementPattern) {
-				nodeList = queryWithNamespaces(replacementPattern, node)
+				try {
+					nodeList = queryWithNamespaces(replacementPattern, node)
+				} catch (e) {
+					return false;
+				}
 			}
 
 			nodeList.forEach((_node, i) => {
