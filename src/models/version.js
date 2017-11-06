@@ -16,10 +16,10 @@ const Version = db.define('versions', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		unique: true,
+		// unique: true,
 	},
 	description: {
-		type: Sequelize.STRING,
+		type: Sequelize.TEXT,
 	},
 	urn: {
 		type: Sequelize.STRING,

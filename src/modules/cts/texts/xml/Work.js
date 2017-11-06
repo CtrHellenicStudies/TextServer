@@ -65,8 +65,9 @@ class _Work {
 		// edition (join for the moment as version)
 		const editionElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'edition');
 		if (editionElems && editionElems.length) {
+			const urn = editionElems[0].getAttributeNode('urn').value;
 			this.version = new Version({
-				workUrn: this.urn,
+				urn,
 				_versionXML: editionElems[0],
 			});
 		}
@@ -320,9 +321,14 @@ class _Work {
 		await work.setTextgroup(textGroup);
 		await textGroup.addWork(work);
 
+		if (this.version) {
+			await this.version.save(work);
+		}
+
 		for (let i = 0; i < this.textNodes.length; i++) {
 			await this.textNodes[i].save(work);
 		}
+
 	}
 }
 
