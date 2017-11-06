@@ -49,15 +49,13 @@ const ingestCollections = async () => {
 	const _clonedRepos = await cloneRepos();
 
 	// Ingest collections from cloned repos
-	const ingestPromises = [];
 	winston.info('Ingesting texts and metadata');
-	_clonedRepos.forEach(async _clonedRepo => {
-		winston.info(` -- ingesting from ${_clonedRepo.title}`);
+	for (let i = 0; i < _clonedRepos.length; i++) {
+		winston.info(` -- ingesting from ${_clonedRepos[i].title}`);
 
 		// ingest data from texts in repo
-		ingestPromises.push(ingestCollection(_clonedRepo));
-	});
-	return await Promise.all(ingestPromises); 
+		await ingestCollection(_clonedRepos[i]);
+	}
 }
 
 export { ingestCollections };
