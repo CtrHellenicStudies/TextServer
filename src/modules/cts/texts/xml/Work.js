@@ -347,6 +347,8 @@ class _Work {
 			title = 'English';
 		} else if (~this.filename.indexOf('lat')) {
 			title = 'Latin';
+		} else if (~this.filename.indexOf('ger')) {
+			title = 'German';
 		} else if (~this.filename.indexOf('mul')) {
 			title = 'Multiple';
 		} else {
