@@ -16,7 +16,7 @@ const Collection = db.define('collections', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		unique: true,
+		// unique: true,
 	},
 	repository: {
 		type: Sequelize.STRING,
@@ -30,10 +30,9 @@ Collection.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Collection, {
-    source: ['title'],
-    slugOptions: { lower: true },
-    overwrite: false,
-    column: 'slug'
+  source: ['title'],
+  slugOptions: { lower: true },
+  column: 'slug'
 });
 
 

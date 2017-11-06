@@ -3,6 +3,7 @@ import path from 'path';
 import slugify from 'slugify';
 import { DOMParser } from 'xmldom';
 import winston from 'winston';
+import waterfall from 'async/waterfall';
 
 import Collection from '../../../../models/collection';
 import TextGroup from './TextGroup';
@@ -19,14 +20,13 @@ class _Collection {
 		this.repoLocal = repoLocal;
 		this.collectionDataType = collectionDataType;
 		this.textGroups = [];
-		this.id;
 	}
 
 	/**
 	 * Get the inventory of this collection's textGroups
 	 */
-	generateInventory() {
-		winston.info(` -- generating inventory for ${this.title}`);
+	async generateInventory() {
+		winston.info(` -- generating inventory for collection ${this.title}`);
 		// walk contents of textgroup dir
 		const textGroupContents = fs.readdirSync(path.join(this.repoLocal, '/data/'));
 		textGroupContents.forEach((textGroupContent, i) => {
@@ -52,33 +52,27 @@ class _Collection {
 					_textGroupXML,
 				});
 
-				// parse metadata about all works in textgroup
-				textGroup.generateInventory()
-
 				// add to collection textgroups array
 				this.textGroups.push(textGroup);
 			}
 		});
+
+		return await this.save();
 	}
 
 	/**
 	 * Save all textgroups in collection inventory (will save all hierarchical
 	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
-	async ingest() {
-		winston.info(` -- ingesting texts for ${this.title}`);
-
+	async save() {
 		const collection = await Collection.create({
 			title: this.title,
 			repository: this.repoRemote,
 		});
 
-		this.textGroups.forEach(async _textGroup => {
-			const textGroup = await _textGroup.ingest(collection);
-			await collection.addTextgroup(textGroup);
-		});
-
-		return collection;
+		for (let i = 0; i < this.textGroups.length; i++) {
+			await this.textGroups[i].generateInventory(collection);
+		}
 	}
 }
 

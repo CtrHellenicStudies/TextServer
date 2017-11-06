@@ -17,15 +17,12 @@ const ingestXmlData = async ({ title, repoRemote, repoLocal, collectionDataType 
 
 	// generate collection inventory
 	await collection.generateInventory();
-
-	// save textnodes from all texts to database
-	await collection.ingest();
 }
 
 /**
  * Parse data from a collection repo with cltk_json data
  */
-const ingestJsonData = ({ title, repoRemote, repoLocal, collectionDataType }) => {
+const ingestJsonData = async ({ title, repoRemote, repoLocal, collectionDataType }) => {
 	// create collection
 	const collection = new JSONCollection({
 		title,
@@ -35,10 +32,7 @@ const ingestJsonData = ({ title, repoRemote, repoLocal, collectionDataType }) =>
 	});
 
 	// generate collection inventory
-	collection.generateInventory();
-
-	// save textnodes from all texts to database
-	collection.ingest();
+	await collection.generateInventory();
 }
 
 /**

@@ -16,7 +16,7 @@ const TextGroup = db.define('textgroups', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		unique: true,
+		// unique: true,
 	},
 	urn: {
 		type: Sequelize.STRING,
@@ -31,10 +31,9 @@ TextGroup.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(TextGroup, {
-    source: ['title'],
-    slugOptions: { lower: true },
-    overwrite: false,
-    column: 'slug'
+  source: ['title'],
+  slugOptions: { lower: true },
+  column: 'slug'
 });
 
 

@@ -34,8 +34,8 @@ class _TextGroup {
 	/**
 	 * Get the inventory of this textgroup's works
 	 */
-	generateInventory() {
-		winston.info(` -- generating inventory for ${this.title}`);
+	async generateInventory(collection) {
+		winston.info(` -- -- generating inventory for textgroup ${this.groupname}`);
 		const workDirs = fs.readdirSync(this.textGroupDir);
 
 		workDirs.forEach(workDir => {
@@ -44,24 +44,23 @@ class _TextGroup {
 				const _workMetadataFile = fs.readFileSync(path.join(this.textGroupDir, workDir, '__cts__.xml'), 'utf8');
 				const _workXML = new DOMParser().parseFromString(_workMetadataFile);
 
-				// create a new textGroup
+				// create a new work
 				const work = new Work({
 					workDir: path.join(this.textGroupDir, workDir),
 					_workXML
 				});
 
-				// parse metadata about work xml file textNodes
-				work.generateInventory()
 				this.works.push(work);
 			}
 		});
+
+		await this.save(collection);
 	}
 
 	/**
 	 * Save all textgroup data and work/textNode data in this textgroup
 	 */
-	async ingest(collection) {
-		winston.info(` -- ingesting texts for ${this.title}`);
+	async save(collection) {
 		// Save textGroup
 		const textGroup = await TextGroup.create({
 			title: this.groupname,
@@ -69,15 +68,12 @@ class _TextGroup {
 		});
 
 		await textGroup.setCollection(collection);
+		await collection.addTextgroup(textGroup);
 
-		this.works.forEach(async _work => {
-			const work = await _work.ingest(textGroup);
-			await textGroup.addWork(work);
-		});
-
-		return textGroup;
+		for (let i = 0; i < this.works.length; i++) {
+			await this.works[i].generateInventory(textGroup);
+		}
 	}
-
 }
 
 export default _TextGroup;

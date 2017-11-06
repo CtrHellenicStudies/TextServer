@@ -17,7 +17,7 @@ class _TextNode {
 	/**
 	 * Save all information about the text node to the database
 	 */
-	async ingest(work) {
+	async save(work) {
 		const textNode = await TextNode.create({
 			index: this.index,
 			location: this.location,
@@ -25,9 +25,10 @@ class _TextNode {
 		})
 
 		await textNode.setWork(work);
+		await work.addTextnode(textNode);
+
 		return textNode;
 	}
-
 }
 
 export default _TextNode;

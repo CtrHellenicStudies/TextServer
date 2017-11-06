@@ -33,10 +33,9 @@ Version.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Version, {
-    source: ['title'],
-    slugOptions: { lower: true },
-    overwrite: false,
-    column: 'slug'
+  source: ['title'],
+  slugOptions: { lower: true },
+  column: 'slug'
 });
 
 

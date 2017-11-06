@@ -98,8 +98,8 @@ class _Work {
 	/**
 	 * Generate the inventory of the textNodes in the work
 	 */
-	generateInventory() {
-		winston.info(` -- generating inventory for ${this.english_title}`);
+	async generateInventory(textGroup) {
+		winston.info(` -- --  -- generating inventory for work ${this.english_title}`);
 		const workContents = fs.readdirSync(this.workDir);
 
 		workContents.forEach(workContent => {
@@ -117,6 +117,8 @@ class _Work {
 			}
 		});
 
+
+		return await this.save(textGroup);
 	}
 
 	/**
@@ -285,9 +287,7 @@ class _Work {
 	/**
 	 * Save all work data and textnodes in the work
 	 */
-	async ingest(textgroup) {
-		winston.info(` -- ingesting texts for ${this.english_title}`);
-
+	async save(textGroup) {
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
 			filename: this.filename,
@@ -298,14 +298,12 @@ class _Work {
 			urn: this.urn,
 		})
 
-		await work.setTextgroup(textgroup);
+		await work.setTextgroup(textGroup);
+		await textGroup.addWork(work);
 
-		this.textNodes.forEach(async _textNode => {
-			const textNode = await _textNode.ingest(work);
-			await work.addTextnode(textNode);
-		});
-
-		return work;
+		for (let i = 0; i < this.textNodes.length; i++) {
+			await this.textNodes[i].save(work);
+		}
 	}
 }
 
