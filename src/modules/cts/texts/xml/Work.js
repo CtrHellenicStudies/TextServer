@@ -66,7 +66,11 @@ class _Work {
 		// edition (join for the moment as version)
 		const editionElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'edition');
 		if (editionElems && editionElems.length) {
-			const urn = editionElems[0].getAttributeNode('urn').value;
+			const urnAttr = editionElems[0].getAttributeNode('urn');
+			if (!urnAttr) {
+				return false;
+			}
+			const urn = urnAttr.value;
 			this.version = new Version({
 				urn,
 				_versionXML: editionElems[0],
