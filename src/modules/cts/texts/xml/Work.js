@@ -337,6 +337,10 @@ class _Work {
 	async _createLanguage(work) {
 		let title;
 
+		if (!this.filename) {
+			return false;
+		}
+
 		if (~this.filename.indexOf('grc')) {
 			title = 'Greek';
 		} else if (~this.filename.indexOf('eng')) {
