@@ -58,7 +58,7 @@ export default class WorkService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of works
 	 */
-	getWorks(textsearch, offset = 0, limit = 100) {
+	getWorks(textsearch, urn, offset = 0, limit = 100) {
 		const args = {};
 
 		if (textsearch) {
@@ -66,6 +66,15 @@ export default class WorkService extends PermissionsService {
 				english_title: {
 					[Sequelize.Op.like]: `%${textsearch}%`,
 				}
+			};
+		}
+
+		if (urn) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
+			args.where.urn = {
+				[Sequelize.Op.like]: `%${urn}%`,
 			};
 		}
 

@@ -10,6 +10,9 @@ const workFields = {
 			textsearch: {
 				type: GraphQLString,
 			},
+			urn: {
+				type: GraphQLString,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -17,9 +20,9 @@ const workFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { textsearch, limit, offset }, { token }) {
+		async resolve(_, { textsearch, urn, limit, offset }, { token }) {
 			const workService = new WorkService(token);
-			return await workService.getWorks(textsearch, limit, offset);
+			return await workService.getWorks(textsearch, urn, limit, offset);
 		},
 	},
 	work: {
