@@ -1,5 +1,6 @@
 import PermissionsService from './PermissionsService';
-import TextNodes from '../../models/textNode';
+import TextNode from '../../models/textNode';
+import Work from '../../models/work';
 
 
 /**
@@ -48,11 +49,14 @@ export default class TextNodeService extends PermissionsService {
 	 *	 or equal to
 	 * @returns {Object[]} array of text nodes
 	 */
-	textNodesGet( location, offset, index, startsAtLocation, startsAtIndex ) {
+	textNodesGet( workId, location, offset, index, startsAtLocation, startsAtIndex ) {
 		const query = {
-			where: {
-				workid,
-			},
+			include: [{
+				model: Work,
+				where: {
+					id: parseInt(workId),
+				},
+			}],
 			order: ['index'],
 			limit: 30,
 		};
@@ -75,6 +79,8 @@ export default class TextNodeService extends PermissionsService {
 			query.offset = offset;
 		}
 
+		console.log(query);
+
 		if (startsAtLocation) {
 			query.where.location = startsAtLocation;
 			return TextNode.findOne(query).then((node) => {
@@ -91,15 +97,11 @@ export default class TextNodeService extends PermissionsService {
 					$gte: node.index,
 				};
 
-				return TextNode.findAll(query).then(
-					doc => doc,
-					err => console.error(err));
+				return TextNode.findAll(query);
 			});
 		}
 
-		return TextNode.findAll(query).then(
-			doc => doc,
-			err => console.error(err));
+		return TextNode.findAll(query);
 	}
 
 	/**

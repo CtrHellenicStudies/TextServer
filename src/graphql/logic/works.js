@@ -1,3 +1,5 @@
+import Sequelize from 'sequelize';
+
 import PermissionsService from './PermissionsService';
 import Work from '../../models/work';
 
@@ -51,12 +53,28 @@ export default class WorkService extends PermissionsService {
 
 	/**
 	 * Get works
+	 * @param {string} textsearch
 	 * @param {number} offset
 	 * @param {number} limit
 	 * @returns {Object[]} array of works
 	 */
-	getWorks(offset = 0, limit = 100) {
-		return Work.findAll({}, {
+	getWorks(textsearch, offset = 0, limit = 100) {
+		const args = {};
+
+		if (textsearch) {
+			args.where = {
+				english_title: {
+					[Sequelize.Op.like]: `%${textsearch}%`,
+				}
+			};
+		}
+
+		return Work.findAll(args, {
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			]
 		});
 	}
 
@@ -66,8 +84,17 @@ export default class WorkService extends PermissionsService {
 	 * @param {string} slug - id of work
 	 * @returns {Object} array of works
 	 */
-	getWork(offset = 0, limit = 100) {
-		return Work.find({}, {
-		});
+	getWork(id, slug) {
+		const where = {};
+
+		if (id) {
+			where.id = id;
+		}
+
+		if (slug) {
+			where.slug = slug;
+		}
+
+		return Work.findOne(where);
 	}
 }

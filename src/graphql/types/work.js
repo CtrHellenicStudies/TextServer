@@ -7,7 +7,9 @@ import { attributeFields } from 'graphql-sequelize';
 
 import Work from '../../models/work';
 import TextNodeService from '../logic/textNodes';
+import LanguageService from '../logic/languages';
 import { TextNodeType } from './textNode';
+import LanguageType from './language';
 
 /**
  * Works model type
@@ -44,6 +46,13 @@ const WorkType = new GraphQLObjectType({
 		urn: {
 			type: GraphQLString,
 		},
+		language: {
+			type: LanguageType,
+			resolve(parent, {}, { token }) {
+				const languageService = new LanguageService({ token });
+				return languageService.getLanguage(parent.languageId);
+			},
+		},
 		textNodes: {
 			type: new GraphQLList(TextNodeType),
 			args: {
@@ -55,8 +64,8 @@ const WorkType = new GraphQLObjectType({
 				offset: { type: GraphQLInt },
 			},
 			resolve(parent, { location, offset, index, startsAtLocation, startsAtIndex }, { token }) {
-				const textNodeService = new TextNodesService({ token });
-				textNodeService.get(location, offset, index, startsAtLocation, startsAtIndex);
+				const textNodeService = new TextNodeService({ token });
+				return textNodeService.textNodesGet(parent.id, location, offset, index, startsAtLocation, startsAtIndex);
 			},
 		},
 	},
