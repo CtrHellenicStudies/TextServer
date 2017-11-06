@@ -5,5 +5,11 @@
 	}, {
 		"title": "Canonical Greek Literature",
 		"url": "https://github.com/PerseusDL/canonical-greekLit.git"
+	}, {
+		"title": "Canonical Latin Literature",
+		"url": "https://github.com/PerseusDL/canonical-latinLit.git"
+	}, {
+		"title": "Corpus Scriptorum Ecclesiasticorum Latinorum",
+		"url": "https://github.com/OpenGreekAndLatin/csel-dev.git"
 	}]
 }
