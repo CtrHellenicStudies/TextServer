@@ -43,7 +43,7 @@ const Work = db.define('works', {
 Work.associate = ({ models }) => {
 	Work.belongsTo(models.authors);
 	Work.belongsTo(models.textgroups);
-	Work.hasMany(models.languages);
+	Work.belongsTo(models.languages);
 	Work.hasMany(models.versions);
 	Work.hasMany(models.exemplars);
 	Work.hasMany(models.textnodes);

@@ -8,6 +8,7 @@ import db from '../db';
 const Exemplar = db.define('exemplars', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	title: {
@@ -15,7 +16,7 @@ const Exemplar = db.define('exemplars', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		unique: true,
+		// unique: true,
 	},
 	description: {
 		type: Sequelize.STRING,
@@ -32,10 +33,10 @@ Exemplar.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Exemplar, {
-    source: ['title'],
-    slugOptions: { lower: true },
-    overwrite: false,
-    column: 'slug'
+  source: ['title'],
+  slugOptions: { lower: true },
+  overwrite: false,
+  column: 'slug'
 });
 
 

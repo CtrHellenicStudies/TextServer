@@ -8,6 +8,7 @@ import db from '../db';
 const Author = db.define('authors', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	english_name: {
@@ -30,10 +31,10 @@ Author.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Author, {
-    source: ['english_name'],
-    slugOptions: { lower: true },
-    overwrite: false,
-    column: 'slug'
+  source: ['english_name'],
+  slugOptions: { lower: true },
+  overwrite: false,
+  column: 'slug'
 });
 
 

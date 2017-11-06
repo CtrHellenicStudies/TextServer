@@ -11,6 +11,7 @@ import _s from 'underscore.string';
 
 import ctsNamespace from '../../lib/ctsNamespace';
 import Work from '../../../../models/work';
+import Language from '../../../../models/language';
 import Version from './Version';
 import Exemplar from './Exemplar';
 import TextNode from './TextNode';
@@ -321,6 +322,8 @@ class _Work {
 		await work.setTextgroup(textGroup);
 		await textGroup.addWork(work);
 
+		await this._createLanguage(work);
+
 		if (this.version) {
 			await this.version.save(work);
 		}
@@ -329,6 +332,43 @@ class _Work {
 			await this.textNodes[i].save(work);
 		}
 
+	}
+
+	async _createLanguage(work) {
+		let title;
+
+		if (~this.filename.indexOf('grc')) {
+			title = 'Greek';
+		} else if (~this.filename.indexOf('eng')) {
+			title = 'English';
+		} else if (~this.filename.indexOf('lat')) {
+			title = 'Latin';
+		} else if (~this.filename.indexOf('mul')) {
+			title = 'Multiple';
+		} else {
+			winston.info("#######################################");
+			winston.info("#######################################");
+			winston.info("#######################################");
+			winston.info("#######################################");
+			winston.info("#######################################");
+			winston.info(this.filename);
+		}
+
+		let language;
+		language = await Language.findOne({
+			where: {
+				title,
+			}
+		});
+
+		if (!language) {
+			language = await Language.create({
+				title,
+			})
+		}
+
+		await work.setLanguage(language);
+		await language.addWork(work);
 	}
 }
 

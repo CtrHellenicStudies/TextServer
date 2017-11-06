@@ -8,6 +8,7 @@ import db from '../db';
 const Language = db.define('languages', {
 	id: {
 		type: Sequelize.INTEGER,
+		autoIncrement: true,
 		primaryKey: true,
 	},
 	title: {
@@ -15,21 +16,21 @@ const Language = db.define('languages', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		unique: true,
+		// unique: true,
 	},
 }, {
 	timestamps: false,
 });
 
 Language.associate = ({ models }) => {
-	Language.belongsTo(models.works);
+	Language.hasMany(models.works);
 };
 
 SequelizeSlugify.slugifyModel(Language, {
-    source: ['title'],
-    slugOptions: { lower: true },
-    overwrite: false,
-    column: 'slug'
+  source: ['title'],
+  slugOptions: { lower: true },
+  overwrite: false,
+  column: 'slug'
 });
 
 
