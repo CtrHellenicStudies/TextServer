@@ -106,4 +106,12 @@ export default class WorkService extends PermissionsService {
 
 		return Work.findOne(where);
 	}
+
+	/**
+	 * Count works
+	 * @returns {number} count of works
+	 */
+	count() {
+		return Work.count();
+	}
 }

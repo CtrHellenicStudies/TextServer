@@ -68,6 +68,42 @@ const WorkType = new GraphQLObjectType({
 				return textNodeService.textNodesGet(parent.id, location, offset, index, startsAtLocation, startsAtIndex);
 			},
 		},
+		textLocationNext: {
+			type: new GraphQLList(GraphQLInt),
+			args: {
+				work: {
+					type: GraphQLInt,
+				 },
+				location: {
+					type: new GraphQLList(GraphQLInt),
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			async resolve(_, { work, location, offset }, { token }) {
+				const textNodeService = new TextNodeService(token);
+				return await textNodeService.textLocationNext(work, location, offset);
+			},
+		},
+		textLocationPrev: {
+			type: new GraphQLList(GraphQLInt),
+			args: {
+				work: {
+					type: GraphQLInt,
+				},
+				location: {
+					type: new GraphQLList(GraphQLInt),
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			async resolve(_, { work, location, offset }, { token }) {
+				const textNodeService = new TextNodeService(token);
+				return await textNodeService.textLocationPrev(work, location, offset);
+			},
+		},
 	},
 });
 

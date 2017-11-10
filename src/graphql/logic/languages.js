@@ -13,4 +13,12 @@ export default class LanguageService extends PermissionsService {
 			},
 		});
 	}
+
+	/**
+	 * Count languages
+	 * @returns {number} count of languages
+	 */
+	count() {
+		return Language.count();
+	}
 }
