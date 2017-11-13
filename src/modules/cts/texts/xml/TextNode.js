@@ -24,6 +24,7 @@ class _TextNode {
 
 		let sanitized = html;
 
+		sanitized = sanitized.replace(/-\\n/g, ' ');
 		sanitized = sanitized.replace(/\\n|\\r\\n|\\r/g, '');
 		sanitized = _s.clean(sanitized);
 
