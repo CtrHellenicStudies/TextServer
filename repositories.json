@@ -14,5 +14,29 @@
 	}, {
 		"title": "Tanzil Quran Text",
 		"url": "https://github.com/cltk/arabic_text_quranic_corpus.git"
+	}, {
+		"title": "Classical Bengali Texts",
+		"url": "https://github.com/cltk/bengali_text_wikisource.git"
+	}, {
+		"title": "Classical Hindi Texts",
+		"url": "https://github.com/cltk/hindi_text_ltrc.git"
+	}, {
+		"title": "Corpus of Middle English Prose and Verse",
+		"url": "https://github.com/cltk/middle_english_text_cmepv.git"
+	}, {
+		"title": "Gita Supersite",
+		"url": "https://github.com/cltk/sanskrit_text_gitasupersite.git"
+	}, {
+		"title": "Poeti d'Italia in lingua latina",
+		"url": "https://github.com/cltk/latin_text_poeti_ditalia.git"
+	}, {
+		"title": "Canonical Old Norse Literature",
+		"url": "https://github.com/cltk/old_norse_text_perseus.git"
+	}, {
+		"title": "Old English Poetry",
+		"url": "https://github.com/cltk/old_english_text_sacred_texts.git",
+	}, {
+		"title": "Sefaria Jewish Texts",
+		"url": "https://github.com/cltk/hebrew_text_sefaria.git"
 	}]
 }
