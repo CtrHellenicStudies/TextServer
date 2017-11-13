@@ -1,4 +1,5 @@
 import https from 'https';
+import winston from 'winston';
 
 const validateTokenOAuth2 = (accessToken, url) => new Promise((resolve, reject) => {
 
@@ -7,7 +8,7 @@ const validateTokenOAuth2 = (accessToken, url) => new Promise((resolve, reject) 
 			statusCode
 		} = res;
 
-		console.log('statusCode', statusCode)
+		winston.info('statusCode', statusCode)
 
 		let error;
 		if (statusCode !== 200) {

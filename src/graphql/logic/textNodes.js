@@ -79,8 +79,6 @@ export default class TextNodeService extends PermissionsService {
 			query.offset = offset;
 		}
 
-		console.log(query);
-
 		if (startsAtLocation) {
 			query.where.location = startsAtLocation;
 			return TextNode.findOne(query).then((node) => {

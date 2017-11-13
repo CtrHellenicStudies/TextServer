@@ -1,3 +1,5 @@
+import winston from 'winston';
+
 import generateJWT from './jwt';
 import providers from './providers';
 
@@ -44,7 +46,7 @@ export const loginOAuth2 = async (res, accessToken, network) => {
 		}
 		return res.status(401).send({error: 'User not found'});
 	} catch (err) {
-		console.log('err', err);
+		winston.error(err);
 		res.status(500).send();
 	}
 };
@@ -67,7 +69,7 @@ export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) =>
 		}
 		return res.status(401).send({error: 'User not found'});
 	} catch (err) {
-		console.log('err', err);
+		winston.error(err);
 		res.status(500).send();
 	}
 };
