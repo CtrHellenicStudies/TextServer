@@ -18,6 +18,9 @@ const Collection = db.define('collections', {
 		type: Sequelize.STRING,
 		// unique: true,
 	},
+	urn: {
+		type: Sequelize.STRING,
+	},
 	repository: {
 		type: Sequelize.STRING,
 	},
