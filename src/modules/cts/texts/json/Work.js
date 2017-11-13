@@ -112,13 +112,13 @@ class _Work {
 		let language;
 		language = await Language.findOne({
 			where: {
-				title: _s(this.language).trim().capitalize().value(),
+				title: _s.humanize(this.language),
 			}
 		});
 
 		if (!language) {
 			language = await Language.create({
-				title: _s(this.language).trim().capitalize().value(),
+				title: _s.humanize(this.language),
 			})
 		}
 
