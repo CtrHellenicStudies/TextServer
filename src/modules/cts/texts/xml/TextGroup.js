@@ -48,14 +48,22 @@ class _TextGroup {
 
 				const _workMetadataFile = fs.readFileSync(path.join(this.textGroupDir, workDir, '__cts__.xml'), 'utf8');
 				const _workXML = new DOMParser().parseFromString(_workMetadataFile);
+				const workContents = fs.readdirSync(path.join(this.textGroupDir, workDir));
 
-				// create a new work
-				const work = new Work({
-					workDir: path.join(this.textGroupDir, workDir),
-					_workXML
+				workContents.forEach(workContent => {
+					if (!~workContent.indexOf('__cts__.xml')) {
+						// set filename and open file
+						const filename = path.join(this.textGroupDir, workDir, workContent);
+
+						// create a new work
+						const work = new Work({
+							filename,
+							_workXML,
+						});
+						this.works.push(work);
+					}
 				});
 
-				this.works.push(work);
 			}
 		});
 

@@ -1,4 +1,6 @@
 import winston from 'winston';
+import _s from 'underscore.string';
+
 import TextNode from '../../../../models/textNode';
 
 
@@ -10,8 +12,23 @@ class _TextNode {
 	 */
 	constructor({ location, html, index }) {
 		this.location = location;
-		this.html = html;
+		this.html = this._cleanHTML(html);
 		this.index = index;
+	}
+
+
+	/**
+	 * Clean HTML and continue adding rules here as required
+	 */
+	_cleanHTML(html) {
+
+		let sanitized = html;
+
+		sanitized = sanitized.replace(/\\n|\\r\\n|\\r/g, '');
+		sanitized = _s.clean(sanitized);
+
+
+		return sanitized;
 	}
 
 	/**

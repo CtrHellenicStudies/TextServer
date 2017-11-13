@@ -23,14 +23,13 @@ class _Work {
 	/**
 	 * Create a new work
 	 */
-	constructor({ workDir, _workXML }) {
-		this.workDir = workDir;
+	constructor({ filename, _workXML }) {
 		this._workXML = _workXML;
+		this.filename = filename;
 		this.english_title;
 		this.original_title;
 		this.urn;
 		this.filemd5hash;
-		this.filename;
 		this.structure;
 		this.version;
 		this.exemplar;
@@ -51,7 +50,7 @@ class _Work {
 			this.urn = workElems[0].getAttributeNode('urn').value;
 			this.textGroupUrn = workElems[0].getAttributeNode('groupUrn').value;
 		} else {
-			winston.info(`No information found about work ${this.workDir}`);
+			winston.info(`No information found about work ${this.filename}`);
 		}
 
 		// title
@@ -60,7 +59,7 @@ class _Work {
 			this.english_title = titleElems[0].firstChild.nodeValue;
 			this.original_title = this.english_title;
 		} else {
-			winston.info(`No title found for work ${this.workDir}`);
+			winston.info(`No title found for work ${this.filename}`);
 		}
 
 		// edition (join for the moment as version)
@@ -106,22 +105,14 @@ class _Work {
 	 */
 	async generateInventory(textGroup) {
 		winston.info(` -- --  -- generating inventory for work ${this.english_title}`);
-		const workContents = fs.readdirSync(this.workDir);
+		const _workFile = fs.readFileSync(this.filename, 'utf8');
 
-		workContents.forEach(workContent => {
-			if (!~workContent.indexOf('__cts__.xml')) {
-				// set filename and open file
-				this.filename = path.join(this.workDir, workContent);
-				const _workFile = fs.readFileSync(this.filename, 'utf8');
+		// get hash of file
+		this.filemd5hash = crypto.createHash('md5').update(_workFile).digest('hex');
 
-				// get hash of file
-				this.filemd5hash = crypto.createHash('md5').update(_workFile).digest('hex');
-
-				// parse as xml
-				const _workFileXml = new DOMParser().parseFromString(_workFile);
-				this._parseXMLFile(_workFileXml);
-			}
-		});
+		// parse as xml
+		const _workFileXml = new DOMParser().parseFromString(_workFile);
+		this._parseXMLFile(_workFileXml);
 
 
 		return await this.save(textGroup);
@@ -134,7 +125,7 @@ class _Work {
 		this._getRefs(_workFileXml);
 
 		if (!this.refPatterns.length) {
-			winston.warn(`No ref patterns were identified for work ${this.workDir}. Skipping`);
+			winston.warn(`No ref patterns were identified for work ${this.filename}. Skipping`);
 			return false;
 		}
 
@@ -148,13 +139,13 @@ class _Work {
 		const refsElems = _workFileXml.getElementsByTagName('refsDecl');
 
 		if (!refsElems || !refsElems.length) {
-			winston.warn(`No refs declaration found for work ${this.workDir}. Skipping`);
+			winston.warn(`No refs declaration found for work ${this.filename}. Skipping`);
 			return false;
 		}
 
 		const patternElems = refsElems[0].getElementsByTagName('cRefPattern');
 		if (!patternElems) {
-			winston.warn(`Refs declaration found but no ref patterns found for work ${this.workDir}. Skipping`);
+			winston.warn(`Refs declaration found but no ref patterns found for work ${this.filename}. Skipping`);
 			return false;
 		}
 
@@ -355,6 +346,8 @@ class _Work {
 			title = 'German';
 		} else if (~this.filename.indexOf('mul')) {
 			title = 'Multiple';
+		} else if (~this.filename.indexOf('fre')) {
+			title = 'French';
 		} else {
 			winston.error(`Could not identify language for file ${this.filename}`);
 		}
