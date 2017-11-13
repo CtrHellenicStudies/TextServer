@@ -74,10 +74,13 @@ class _TextGroup {
 	 * Save all textgroup data and work/textNode data in this textgroup
 	 */
 	async save(collection) {
+		let title = this.groupname || '';
+		let urn = this.urn || '';
+
 		// Save textGroup
 		const textGroup = await TextGroup.create({
-			title: this.groupname,
-			urn: this.urn,
+			title: title.slice(0, 250),
+			urn: urn.slice(0, 250),
 		});
 
 		await textGroup.setCollection(collection);

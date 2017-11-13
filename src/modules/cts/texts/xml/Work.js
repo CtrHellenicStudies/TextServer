@@ -304,14 +304,24 @@ class _Work {
 	 * Save all work data and textnodes in the work
 	 */
 	async save(textGroup) {
+
+		let english_title = this.english_title;
+		let original_title = this.original_title;
+		if (!english_title || !original_title) {
+			winston.error(`Error ingesting Work ${this.filename}`);
+			return null;
+		}
+
+		let urn = this.urn || '';
+
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
 			filename: this.filename,
-			original_title: this.original_title,
-			english_title: this.english_title,
+			original_title: original_title.slice(0, 250),
+			english_title: english_title.slice(0, 250),
 			structure: this.structure,
 			form: this.form,
-			urn: this.urn,
+			urn: urn.slice(0, 250),
 		})
 
 		await work.setTextgroup(textGroup);

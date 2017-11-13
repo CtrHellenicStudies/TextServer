@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import winston from 'winston';
 import slugify from 'slugify';
 
 import {
@@ -76,8 +77,14 @@ class _Collection {
 	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
 	async save() {
+		let title = this.title;
+		if (!this.title) {
+			winston.error(`Error ingesting Collection ${this.repoLocal}`);
+			return false;
+		}
+
 		const collection = await Collection.create({
-			title: this.title,
+			title: title.slice(0, 250),
 			repository: this.repoRemote,
 			urn: this.urn,
 		});

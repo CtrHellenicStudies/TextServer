@@ -17,7 +17,7 @@ const validateTokenOAuth2 = (accessToken, url) => new Promise((resolve, reject) 
 		}
 
 		if (error) {
-			console.error(error.message);
+			winston.error(error.message);
 			// consume response data to free up memory
 			res.resume();
 			return;
@@ -33,11 +33,11 @@ const validateTokenOAuth2 = (accessToken, url) => new Promise((resolve, reject) 
 				const parsedData = JSON.parse(rawData);
 				resolve(parsedData);
 			} catch (e) {
-				console.error(e.message);
+				winston.error(e.message);
 			}
 		});
 	}).on('error', (e) => {
-		console.error(`Got error: ${e.message}`);
+		winston.error(`Got error: ${e.message}`);
 		reject(e);
 	});
 });

@@ -1,5 +1,6 @@
 // models
 // import User from '../../models/user';
+import winston from 'winston';
 
 export const generateResetPassword = async (res, username) => {
 
@@ -10,7 +11,7 @@ export const generateResetPassword = async (res, username) => {
 		}
 		return res.json({ ok: false });
 	} catch (err) {
-		console.error('err', err);
+		winston.error('err', err);
 		return res.status(500).send();
 	}
 };
@@ -24,7 +25,7 @@ export const resetPassword = async (res, resetPasswordToken, newPassword) => {
 		}
 		return res.json({ ok: false });
 	} catch (err) {
-		console.error('err', err);
+		winston.error('err', err);
 		if (err.passwordStrength) return res.status(200).send(err);
 		return res.status(500).send();
 	}

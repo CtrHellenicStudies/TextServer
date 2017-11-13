@@ -69,8 +69,15 @@ class _Collection {
 	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
 	async save() {
+		let title = this.title;
+
+		if (!title) {
+			winston.error(`Error ingesting Collection ${this.repoLocal}`);
+			return null;
+		}
+
 		const collection = await Collection.create({
-			title: this.title,
+			title: title.slice(0, 250),
 			repository: this.repoRemote,
 		});
 

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import crypto from 'crypto';
+import winston from 'winston';
 import _s from 'underscore.string';
 
 import { getCltkTextgroupUrn } from '../../lib/getCltkUrns';
@@ -36,6 +37,7 @@ class _Work {
 	 * Generate the inventory of the textNodes in the work
 	 */
 	async generateInventory(collection) {
+		winston.info(` -- --  -- generating inventory for work ${this.english_title}`);
 
 		const jsonToTextNodes = (node, location = []) => {
 			for (let key in node) {
@@ -75,14 +77,23 @@ class _Work {
 			});
 		}
 
+		let english_title = this.english_title;
+		let original_title = this.original_title;
+		if (!english_title || !original_title) {
+			winston.error(`Error ingesting Work ${this.filename}`);
+			return null;
+		}
+
+		let urn = this.urn || '';
+
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
 			filename: this.filename,
-			original_title: this.original_title,
-			english_title: this.english_title,
+			original_title: original_title.slice(0, 255),
+			english_title: english_title.slice(0, 255),
 			structure: this.structure,
 			form: this.form,
-			urn: this.urn,
+			urn: urn.slice(0, 255),
 		});
 
 		await work.setTextgroup(textGroup);

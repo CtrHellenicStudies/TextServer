@@ -2,6 +2,7 @@
 import express from 'express';
 import fs from 'fs';
 import request from 'request';
+import winston from 'winston';
 
 // middleware
 import bodyParser from 'body-parser';
@@ -70,5 +71,5 @@ db.authenticate()
 		listen();
 	})
 	.catch(() => {
-		console.error(`Could not authenticate to database ${process.env.DB_NAME}`);
+		winston.error(`Could not authenticate to database ${process.env.DB_NAME}`);
 	});
