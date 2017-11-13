@@ -2,11 +2,11 @@ import fs from 'fs';
 import crypto from 'crypto';
 import _s from 'underscore.string';
 
+import { getCltkTextgroupUrn } from '../../lib/getCltkUrns';
 import Language from '../../../../models/language';
 import TextGroup from '../../../../models/textGroup';
 import Work from '../../../../models/work';
 import TextNode from './TextNode';
-import { getCltkTextgroupUrn } from '../../lib/getCltkUrns';
 
 
 
@@ -62,7 +62,11 @@ class _Work {
 	 * Save all work data and textnodes in the work
 	 */
 	async save(collection) {
-		let textGroup = await TextGroup.findOne({ title: this.text.author });
+		let textGroup = await TextGroup.findOne({
+			where: {
+				title: this.text.author,
+			},
+		});
 
 		if (!textGroup) {
 			textGroup = await TextGroup.create({
@@ -84,7 +88,7 @@ class _Work {
 		await work.setTextgroup(textGroup);
 		await textGroup.addWork(work);
 
-		await this._createLanguage();
+		await this._createLanguage(work);
 
 		// ingest all textnodes
 		for (let i = 0; i < this.textNodes.length; i++) {
@@ -92,7 +96,7 @@ class _Work {
 		}
 	}
 
-	async _createLanguage() {
+	async _createLanguage(work) {
 
 		let language;
 		language = await Language.findOne({

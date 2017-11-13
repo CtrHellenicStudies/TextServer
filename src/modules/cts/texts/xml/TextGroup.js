@@ -6,7 +6,7 @@ import xpath from 'xpath';
 import winston from 'winston';
 
 import ctsNamespace from '../../lib/ctsNamespace';
-import TextGroup from '../../../../models/TextGroup';
+import TextGroup from '../../../../models/textGroup';
 import Work from './Work';
 
 class _TextGroup {

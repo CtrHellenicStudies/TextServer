@@ -4,7 +4,6 @@ import slugify from 'slugify';
 import xmldom from 'xmldom';
 import xpath from 'xpath';
 
-import Collection from '../../../../models/collection';
 import TextGroup from '../../../../models/textGroup';
 
 
