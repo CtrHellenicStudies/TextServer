@@ -11,5 +11,8 @@
 	}, {
 		"title": "Corpus Scriptorum Ecclesiasticorum Latinorum",
 		"url": "https://github.com/OpenGreekAndLatin/csel-dev.git"
+	}, {
+		"title": "Tanzil Quran Text",
+		"url": "https://github.com/cltk/arabic_text_quranic_corpus.git"
 	}]
 }
