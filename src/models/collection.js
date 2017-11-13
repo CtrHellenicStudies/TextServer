@@ -16,7 +16,7 @@ const Collection = db.define('collections', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		// unique: true,
+		unique: true,
 	},
 	urn: {
 		type: Sequelize.STRING,

@@ -16,7 +16,7 @@ const Language = db.define('languages', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		// unique: true,
+		unique: true,
 	},
 }, {
 	timestamps: false,

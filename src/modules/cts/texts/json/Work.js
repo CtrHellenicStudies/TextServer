@@ -1,5 +1,6 @@
 import fs from 'fs';
 import crypto from 'crypto';
+import _s from 'underscore.string';
 
 import Language from '../../../../models/language';
 import TextGroup from '../../../../models/textGroup';
@@ -96,13 +97,13 @@ class _Work {
 		let language;
 		language = await Language.findOne({
 			where: {
-				title: this.language,
+				title: _s(this.language).trim().capitalize().value(),
 			}
 		});
 
 		if (!language) {
 			language = await Language.create({
-				title: this.language,
+				title: _s(this.language).trim().capitalize().value(),
 			})
 		}
 

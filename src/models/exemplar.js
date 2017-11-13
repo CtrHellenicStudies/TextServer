@@ -16,7 +16,7 @@ const Exemplar = db.define('exemplars', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		// unique: true,
+		unique: true,
 	},
 	description: {
 		type: Sequelize.STRING,

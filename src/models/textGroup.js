@@ -16,7 +16,7 @@ const TextGroup = db.define('textgroups', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		// unique: true,
+		unique: true,
 	},
 	urn: {
 		type: Sequelize.STRING,

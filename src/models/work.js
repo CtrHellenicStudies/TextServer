@@ -25,7 +25,7 @@ const Work = db.define('works', {
 	},
 	slug: {
 		type: Sequelize.STRING,
-		// unique: true,
+		unique: true,
 	},
 	structure: {
 		type: Sequelize.STRING,
