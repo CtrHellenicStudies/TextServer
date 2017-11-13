@@ -356,12 +356,7 @@ class _Work {
 		} else if (~this.filename.indexOf('mul')) {
 			title = 'Multiple';
 		} else {
-			winston.info("#######################################");
-			winston.info("#######################################");
-			winston.info("#######################################");
-			winston.info("#######################################");
-			winston.info("#######################################");
-			winston.info(this.filename);
+			winston.error(`Could not identify language for file ${this.filename}`);
 		}
 
 		let language;
