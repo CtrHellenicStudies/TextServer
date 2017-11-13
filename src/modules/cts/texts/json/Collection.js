@@ -2,8 +2,13 @@ import fs from 'fs';
 import path from 'path';
 import slugify from 'slugify';
 
+import {
+	getCltkCollectionUrn, getCltkTextgroupUrn, getCltkWorkUrn
+} from '../../lib/getCltkUrns';
+
 import Collection from '../../../../models/collection';
 import TextGroup from './TextGroup';
+import Work from './Work';
 
 
 class _Collection {
@@ -16,42 +21,77 @@ class _Collection {
 		this.repoRemote = repoRemote;
 		this.repoLocal = repoLocal;
 		this.collectionDataType = collectionDataType;
+		this.source;
+		this.sourceLink;
+		this.urn;
 		this.textGroups = [];
+		this.works = [];
+		this.urn = getCltkCollectionUrn(repoRemote);
 	}
 
 	/**
 	 * Get the inventory of this collection's textGroups
 	 */
-	generateInventory() {
+	async generateInventory() {
 
-		const textGroupDirs = fs.readdirSync(`${this.repoLocal}/data/`);
+		const collectionFiles = fs.readdirSync(`${this.repoLocal}/cltk_json/`);
 
-		textGroupDirs.forEach(textGroupDir => {
-			_textGroupMetadataFile = fs.readFileSync(`${this.repoLocal}/data/${textGroupDir}/__cts__.xml`);
-			_textGroupXML = new DOMParser().parseFromString(_textGroupMetadataFile);
+		collectionFiles.forEach(filename => {
+			const jsonTextFile = fs.readFileSync(`${this.repoLocal}/cltk_json/${filename}`);
+			const text = JSON.parse(jsonTextFile);
+
+			// all cltk_json formatted texts should have source and sourceLink
+			if ('source' in text && !this.source) {
+				this.source = text.source;
+			}
+			if ('sourceLink' in text && !this.sourceLink) {
+				this.sourceLink = text.sourceLink;
+			}
 
 			// create a new textGroup
-			const textGroup = new TextGroup(textGroupDir, _textGroupXML);
+			if (!this.textGroups.some(textGroup => {
+				return textGroup.title === text.author;
+			})) {
+				const textGroup = new TextGroup({
+					author: text.author,
+					urn: getCltkTextgroupUrn(this.urn, text.author),
+				});
+				this.textGroups.push(textGroup);
+			}
 
-			// parse metadata about all works in textgroup
-			textGroup.generateInventory()
-
-			// add to collection textgroups array
-			this.textGroups.push(textGroup);
+			// create a new work
+			const work = new Work({
+				urn: getCltkWorkUrn(this.urn, text.author, text.englishTitle),
+				text,
+				filename: `${this.repoLocal}/cltk_json/${filename}`,
+			});
+			this.works.push(work);
 		});
 
+		return await this.save();
 	}
 
 	/**
 	 * Save all textgroups in collection inventory (will save all hierarchical
 	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
-	ingest() {
-		this.textGroups.forEach(textGroup => {
-			textGroup.ingest();
+	async save() {
+		const collection = await Collection.create({
+			title: this.title,
+			repository: this.repoRemote,
+			urn: this.urn,
 		});
-	}
 
+		// ingest all textGroups
+		for (let i = 0; i < this.textGroups.length; i++) {
+			await this.textGroups[i].save(collection);
+		}
+
+		// ingest all works and textnodes
+		for (let i = 0; i < this.works.length; i++) {
+			await this.works[i].generateInventory(collection);
+		}
+	}
 }
 
 

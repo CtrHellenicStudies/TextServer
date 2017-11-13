@@ -1,4 +1,4 @@
-import Version from '../../../../models/Version';
+import Version from '../../../../models/version';
 
 /** Class representing a version of a work */
 class _Version {
