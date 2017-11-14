@@ -32,7 +32,7 @@ const CollectionType = new GraphQLObjectType({
 			async resolve(parent, { textsearch, limit, offset }, { token }) {
 				const collectionId = parent.id;
 				const textGroupService = new TextGroupService(token);
-				return await textGroupService.getTextGroups(textsearch, limit, offset, collectionId);
+				return await textGroupService.getTextGroups(textsearch, offset, limit, collectionId);
 			},
 		},
 	},

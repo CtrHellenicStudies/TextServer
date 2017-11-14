@@ -19,7 +19,7 @@ const textGroupFields = {
 		},
 		async resolve(_, { textsearch, limit, offset }, { token }) {
 			const textGroupService = new TextGroupService(token);
-			return await textGroupService.getTextGroups(textsearch, limit, offset);
+			return await textGroupService.getTextGroups(textsearch, offset, limit);
 		},
 	},
 	textGroup: {
@@ -31,10 +31,13 @@ const textGroupFields = {
 			slug: {
 				type: GraphQLString,
 			},
+			urn: {
+				type: GraphQLString,
+			},
 		},
-		async resolve(_, { id, slug }, { token }) {
+		async resolve(_, { id, slug, urn }, { token }) {
 			const textGroupService = new TextGroupService(token);
-			return await textGroupService.getTextGroups(limit, offset);
+			return await textGroupService.getTextGroup(id, slug, urn);
 		},
 	},
 };

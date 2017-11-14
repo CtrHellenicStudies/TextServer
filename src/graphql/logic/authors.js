@@ -22,7 +22,13 @@ export default class AuthorService extends PermissionsService {
 	 * @returns {Object[]} array of authors
 	 */
 	getAuthors(textsearch, offset = 0, limit = 100) {
-		const args = {};
+		const args = {
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			],
+		};
 
 		if (textsearch) {
 			args.where = {
@@ -32,13 +38,7 @@ export default class AuthorService extends PermissionsService {
 			};
 		}
 
-		return Author.findAll(args, {
-			limit,
-			offset,
-			order: [
-				['slug', 'ASC']
-			]
-		});
+		return Author.findAll(args);
 	}
 
 	/**

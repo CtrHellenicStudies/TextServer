@@ -22,7 +22,13 @@ export default class LanguageService extends PermissionsService {
 	 * @returns {Object[]} array of languages
 	 */
 	getLanguages(textsearch, offset = 0, limit = 100) {
-		const args = {};
+		const args = {
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			],
+		};
 
 		if (textsearch) {
 			args.where = {
@@ -32,13 +38,7 @@ export default class LanguageService extends PermissionsService {
 			};
 		}
 
-		return Language.findAll(args, {
-			limit,
-			offset,
-			order: [
-				['slug', 'ASC']
-			]
-		});
+		return Language.findAll(args);
 	}
 
 	/**

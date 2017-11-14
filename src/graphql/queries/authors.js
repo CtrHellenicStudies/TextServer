@@ -19,7 +19,7 @@ const authorFields = {
 		},
 		async resolve(_, { textsearch, limit, offset, }, { token }) {
 			const authorService = new AuthorService(token);
-			return await authorService.getAuthors(textsearch, limit, offset);
+			return await authorService.getAuthors(textsearch, offset, limit);
 		},
 	},
 	author: {

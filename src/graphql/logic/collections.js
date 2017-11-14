@@ -24,7 +24,13 @@ export default class CollectionService extends PermissionsService {
 	 * @returns {Object[]} array of collections
 	 */
 	getCollections(textsearch, offset = 0, limit = 100) {
-		const args = {};
+		const args = {
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			],
+		};
 
 		if (textsearch) {
 			args.where = {
@@ -34,13 +40,7 @@ export default class CollectionService extends PermissionsService {
 			};
 		}
 
-		return Collection.findAll(args, {
-			limit,
-			offset,
-			order: [
-				['slug', 'ASC']
-			]
-		});
+		return Collection.findAll(args);
 	}
 
 	/**
@@ -64,6 +64,6 @@ export default class CollectionService extends PermissionsService {
 			where.urn = urn;
 		}
 
-		return Collection.findOne(where);
+		return Collection.findOne({ where });
 	}
 }

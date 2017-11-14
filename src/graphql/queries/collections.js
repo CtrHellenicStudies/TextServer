@@ -19,7 +19,7 @@ const collectionFields = {
 		},
 		async resolve(_, { textsearch, limit, offset, }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.getCollections(textsearch, limit, offset);
+			return await collectionService.getCollections(textsearch, offset, limit);
 		},
 	},
 	collection: {

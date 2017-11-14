@@ -19,7 +19,7 @@ const workFields = {
 		},
 		async resolve(_, { textsearch, limit, offset }, { token }) {
 			const workService = new WorkService(token);
-			return await workService.getWorks(textsearch, limit, offset);
+			return await workService.getWorks(textsearch, offset, limit);
 		},
 	},
 	work: {

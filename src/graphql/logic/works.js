@@ -58,24 +58,34 @@ export default class WorkService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of works
 	 */
-	getWorks(textsearch, offset = 0, limit = 100) {
-		const args = {};
-
-		if (textsearch) {
-			args.where = {
-				english_title: {
-					[Sequelize.Op.like]: `%${textsearch}%`,
-				}
-			};
-		}
-
-		return Work.findAll(args, {
+	getWorks(textsearch, offset = 0, limit = 100, textGroupId = null) {
+		const args = {
 			limit,
 			offset,
 			order: [
 				['slug', 'ASC']
-			]
-		});
+			],
+		};
+
+		if (textsearch) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
+
+			args.where.english_title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
+			};
+		}
+
+		if (textGroupId !== null) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
+
+			args.where.textgroupId = textGroupId;
+		}
+
+		return Work.findAll(args);
 	}
 
 	/**

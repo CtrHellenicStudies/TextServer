@@ -19,7 +19,7 @@ const languageFields = {
 		},
 		async resolve(_, { textsearch, limit, offset }, { token }) {
 			const languageService = new LanguageService(token);
-			return await languageService.getLanguages(textsearch, limit, offset);
+			return await languageService.getLanguages(textsearch, offset, limit);
 		},
 	},
 	language: {

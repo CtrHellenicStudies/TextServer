@@ -19,26 +19,36 @@ export default class TextGroupService extends PermissionsService {
 	 * @param {string} textsearch
 	 * @param {number} offset
 	 * @param {number} limit
+	 * @param {number} collectionId
 	 * @returns {Object[]} array of textGroups
 	 */
-	getTextGroups(textsearch, offset = 0, limit = 100) {
-		const args = {};
-
-		if (textsearch) {
-			args.where = {
-				title: {
-					[Sequelize.Op.like]: `%${textsearch}%`,
-				}
-			};
-		}
-
-		return TextGroup.findAll(args, {
+	getTextGroups(textsearch, offset = 0, limit = 100, collectionId = null) {
+		const args = {
 			limit,
 			offset,
 			order: [
 				['slug', 'ASC']
-			]
-		});
+			],
+		};
+
+		if (textsearch) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
+			args.where.title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
+			};
+		}
+
+		if (collectionId !== null) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
+
+			args.where.collectionId = collectionId;
+		}
+
+		return TextGroup.findAll(args);
 	}
 
 	/**
