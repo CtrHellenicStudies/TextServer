@@ -1,4 +1,6 @@
 import { GraphQLScalarType } from 'graphql';
+import { Kind } from 'graphql/language';
+
 
 /**
  * Custom graphql scalar type representing a CTS URN as individual input components
@@ -6,22 +8,43 @@ import { GraphQLScalarType } from 'graphql';
 const CtsUrn = new GraphQLScalarType({
 	name: 'CtsUrn',
 	description: 'GraphQL custom scalar type to represent a CTS URN',
-	serialize(value) {
-	 let result;
-	 // Implement your own behavior here by setting the 'result' variable
+	parseValue(value) {
+	 let result = {
+		 ctsNamespace: null,
+		 work: null,
+		 passage: null,
+	 };
+
+	 let ctsUrnParams = value.split(':');
+
+	 if (ctsUrnParms.length) {
+		 result.ctsNamespace = ctsUrnParms[2];
+		 result.work = ctsUrnParams[3].split('.');
+		 result.passage = ctsUrnParams[4].split('-');
+	 }
+
 	 return result;
 	},
-	parseValue(value) {
-	 let result;
-	 // Implement your own behavior here by setting the 'result' variable
+	serialize(value) {
+	 let result = `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
+
 	 return result;
 	},
 	parseLiteral(ast) {
-	 switch (ast.kind) {
-		 // Implement your own behavior here by returning what suits your needs
-		 // depending on ast.kind
-	 }
-	}
+		let result = ''
+
+		switch (ast.kind) {
+		case Kind.STRING:
+			let value = ast.value;
+			result = `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
+			break;
+		default:
+			result = null;
+			break;
+		}
+
+		return result;
+	},
 });
 
 
