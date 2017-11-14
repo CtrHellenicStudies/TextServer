@@ -177,4 +177,28 @@ export default class TextNodeService extends PermissionsService {
 			});
 		});
 	}
+
+	/**
+	 * Get text nodes
+	 * @param {string} id - id of text node
+	 */
+	getTextNodeURN(parent) {
+		let urn = '';
+		let passageUrn = '';
+		let workUrn = '';
+
+		if (parent.dataValues) {
+			const location = parent.dataValues.location;
+
+			const work = parent.work.dataValues;
+			if (work) {
+				workUrn = work.urn;
+				urn = `${workUrn}:`;
+			}
+
+			urn = `${urn}${location.join('.')}`;
+		}
+
+		return urn;
+	}
 }

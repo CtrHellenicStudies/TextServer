@@ -1,8 +1,10 @@
 import _ from 'underscore';
-import { GraphQLObjectType, GraphQLInputObjectType } from 'graphql';
+import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
 import TextNode from '../../models/textNode';
+import TextNodeService from '../logic/textNodes';
+
 
 
 /**
@@ -12,7 +14,16 @@ import TextNode from '../../models/textNode';
 const TextNodeType = new GraphQLObjectType({
 	name: 'TextNode',
 	description: 'A textNode in a work, similar to data model from Draft.js',
-	fields: _.assign(attributeFields(TextNode)),
+	fields: {
+		..._.assign(attributeFields(TextNode)),
+		urn: {
+			type: GraphQLString,
+			resolve(parent, {}, { token }) {
+				const textNodeService = new TextNodeService({ token });
+				return textNodeService.getTextNodeURN(parent);
+			},
+		},
+	},
 });
 
 /**
