@@ -26,7 +26,7 @@ export default class AuthorService extends PermissionsService {
 
 		if (textsearch) {
 			args.where = {
-				title: {
+				english_name: {
 					[Sequelize.Op.like]: `%${textsearch}%`,
 				}
 			};
