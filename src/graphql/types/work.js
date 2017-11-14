@@ -10,6 +10,7 @@ import TextNodeService from '../logic/textNodes';
 import LanguageService from '../logic/languages';
 import { TextNodeType } from './textNode';
 import LanguageType from './language';
+import CtsUrn from '../../modules/cts/graphql/types/CtsUrn';
 
 /**
  * Works model type
@@ -63,17 +64,14 @@ const WorkType = new GraphQLObjectType({
 				startsAtIndex: { type: GraphQLInt },
 				offset: { type: GraphQLInt },
 			},
-			resolve(parent, { location, offset, index, startsAtLocation, startsAtIndex }, { token }) {
+			resolve(work, { location, offset, index, startsAtLocation, startsAtIndex }, { token }) {
 				const textNodeService = new TextNodeService({ token });
-				return textNodeService.textNodesGet(parent.id, location, offset, index, startsAtLocation, startsAtIndex);
+				return textNodeService.textNodesGet(work.id, location, offset, index, startsAtLocation, startsAtIndex);
 			},
 		},
 		textLocationNext: {
 			type: new GraphQLList(GraphQLInt),
 			args: {
-				work: {
-					type: GraphQLInt,
-				 },
 				location: {
 					type: new GraphQLList(GraphQLInt),
 				},
@@ -81,17 +79,14 @@ const WorkType = new GraphQLObjectType({
 					type: GraphQLInt,
 				},
 			},
-			async resolve(_, { work, location, offset }, { token }) {
+			async resolve(work, { location, offset }, { token }) {
 				const textNodeService = new TextNodeService(token);
-				return await textNodeService.textLocationNext(work, location, offset);
+				return await textNodeService.textLocationNext(work.id, location, offset);
 			},
 		},
 		textLocationPrev: {
 			type: new GraphQLList(GraphQLInt),
 			args: {
-				work: {
-					type: GraphQLInt,
-				},
 				location: {
 					type: new GraphQLList(GraphQLInt),
 				},
@@ -99,9 +94,9 @@ const WorkType = new GraphQLObjectType({
 					type: GraphQLInt,
 				},
 			},
-			async resolve(_, { work, location, offset }, { token }) {
+			async resolve(work, { location, offset }, { token }) {
 				const textNodeService = new TextNodeService(token);
-				return await textNodeService.textLocationPrev(work, location, offset);
+				return await textNodeService.textLocationPrev(work.id, location, offset);
 			},
 		},
 	},

@@ -7,6 +7,9 @@ const authorFields = {
 	authors: {
 		type: new GraphQLList(AuthorType),
 		args: {
+			textsearch: {
+				type: GraphQLString,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -14,9 +17,9 @@ const authorFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { limit, offset, }, { token }) {
+		async resolve(_, { textsearch, limit, offset, }, { token }) {
 			const authorService = new AuthorService(token);
-			return await authorService.getAuthors(limit, offset);
+			return await authorService.getAuthors(textsearch, limit, offset);
 		},
 	},
 	author: {

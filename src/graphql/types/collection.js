@@ -3,6 +3,8 @@ import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLSchema, GraphQLI
 import { attributeFields } from 'graphql-sequelize';
 
 import Collection from '../../models/collection';
+import TextGroupType from '../types/textGroup';
+import TextGroupService from '../logic/textGroups';
 
 
 /**
@@ -12,7 +14,28 @@ import Collection from '../../models/collection';
 const CollectionType = new GraphQLObjectType({
 	name: 'Collection',
 	description: 'A collection of texts (usually described as a git repository)',
-	fields: _.assign(attributeFields(Collection)),
+	fields: {
+		..._.assign(attributeFields(Collection)),
+		textGroups: {
+			type: new GraphQLList(TextGroupType),
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			async resolve(parent, { textsearch, limit, offset }, { token }) {
+				const collectionId = parent.id;
+				const textGroupService = new TextGroupService(token);
+				return await textGroupService.getTextGroups(textsearch, limit, offset, collectionId);
+			},
+		},
+	},
 });
 
 export default CollectionType;

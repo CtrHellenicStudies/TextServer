@@ -7,6 +7,9 @@ const textGroupFields = {
 	textGroups: {
 		type: new GraphQLList(TextGroupType),
 		args: {
+			textsearch: {
+				type: GraphQLString,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -14,9 +17,9 @@ const textGroupFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { limite, offset }, { token }) {
+		async resolve(_, { textsearch, limit, offset }, { token }) {
 			const textGroupService = new TextGroupService(token);
-			return await textGroupService.getTextGroups(limit, offset);
+			return await textGroupService.getTextGroups(textsearch, limit, offset);
 		},
 	},
 	textGroup: {

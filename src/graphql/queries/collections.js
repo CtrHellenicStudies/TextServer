@@ -7,6 +7,9 @@ const collectionFields = {
 	collections: {
 		type: new GraphQLList(CollectionType),
 		args: {
+			textsearch: {
+				type: GraphQLString,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -14,9 +17,9 @@ const collectionFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { limit, offset, }, { token }) {
+		async resolve(_, { textsearch, limit, offset, }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.getCollection(limit, offset);
+			return await collectionService.getCollections(textsearch, limit, offset);
 		},
 	},
 	collection: {
@@ -28,10 +31,13 @@ const collectionFields = {
 			slug: {
 				type: GraphQLString,
 			},
+			urn: {
+				type: GraphQLString,
+			},
 		},
-		async resolve(_, { id, slug }, { token }) {
+		async resolve(_, { id, slug, urn }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.getCollection(id, slug);
+			return await collectionService.getCollection(id, slug, urn);
 		},
 	},
 };
