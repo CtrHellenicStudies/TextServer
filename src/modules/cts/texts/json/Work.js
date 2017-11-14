@@ -116,14 +116,15 @@ class _Work {
 			}
 		});
 
-		if (!language) {
+		let _language = _s.humanize(this.language).trim();
+		if (!language && _language.length) {
 			language = await Language.create({
-				title: _s.humanize(this.language),
+				title: _language,
 			})
-		}
 
-		await work.setLanguage(language);
-		await language.addWork(work);
+			await work.setLanguage(language);
+			await language.addWork(work);
+		}
 	}
 }
 

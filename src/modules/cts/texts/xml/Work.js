@@ -358,6 +358,8 @@ class _Work {
 			title = 'Multiple';
 		} else if (~this.filename.indexOf('fre')) {
 			title = 'French';
+		} else if (~this.filename.indexOf('cop')) {
+			title = 'Coptic';
 		} else {
 			winston.error(`Could not identify language for file ${this.filename}`);
 		}
@@ -369,14 +371,15 @@ class _Work {
 			}
 		});
 
-		if (!language) {
+		let _language = _s.humanize(title).trim();
+		if (!language && _language.length) {
 			language = await Language.create({
-				title,
+				title: _language,
 			})
-		}
 
-		await work.setLanguage(language);
-		await language.addWork(work);
+			await work.setLanguage(language);
+			await language.addWork(work);
+		}
 	}
 }
 
