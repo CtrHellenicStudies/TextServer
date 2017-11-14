@@ -1,9 +1,10 @@
 import _ from 'underscore';
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, } from 'graphql';
+import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
 import TextNode from '../../models/textNode';
 import TextNodeService from '../logic/textNodes';
+import WordType from './word';
 
 
 
@@ -21,6 +22,13 @@ const TextNodeType = new GraphQLObjectType({
 			resolve(parent, {}, { token }) {
 				const textNodeService = new TextNodeService({ token });
 				return textNodeService.getTextNodeURN(parent);
+			},
+		},
+		words: {
+			type: new GraphQLList(WordType),
+			resolve(parent, {}, { token }) {
+				const textNodeService = new TextNodeService({ token });
+				return textNodeService.getTextNodeWords(parent);
 			},
 		},
 	},

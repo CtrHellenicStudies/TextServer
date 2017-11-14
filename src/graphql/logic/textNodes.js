@@ -1,3 +1,5 @@
+import _s from 'underscore.string';
+
 import PermissionsService from './PermissionsService';
 import TextNode from '../../models/textNode';
 import Work from '../../models/work';
@@ -179,8 +181,7 @@ export default class TextNodeService extends PermissionsService {
 	}
 
 	/**
-	 * Get text nodes
-	 * @param {string} id - id of text node
+	 * Get text node urn
 	 */
 	getTextNodeURN(parent) {
 		let urn = '';
@@ -197,6 +198,53 @@ export default class TextNodeService extends PermissionsService {
 			}
 
 			urn = `${urn}${location.join('.')}`;
+		}
+
+		return urn;
+	}
+
+	/**
+	 * Get text node words
+	 */
+	getTextNodeWords(parent) {
+		let words = [];
+
+		if (parent.dataValues) {
+			const sanitizedText = _s(parent.dataValues.text).stripTags().trim();
+			const _words = sanitizedText.split(' ');
+
+
+
+			_words.forEach(word => {
+				words.push({
+					word,
+					parent,
+				});
+			});
+		}
+
+
+		return words;
+	}
+
+	/**
+	 * Get word urn
+	 */
+	getWordURN(parent) {
+		let urn = '';
+		let passageUrn = '';
+		let workUrn = '';
+
+		if (parent.word && parent.parent) {
+			const location = parent.parent.dataValues.location;
+
+			const work = parent.parent.work.dataValues;
+			if (work) {
+				workUrn = work.urn;
+				urn = `${workUrn}:`;
+			}
+
+			urn = `${urn}${location.join('.')}@${parent.word}`;
 		}
 
 		return urn;
