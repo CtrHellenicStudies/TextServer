@@ -107,8 +107,8 @@
     "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
     "test-ci": "yarn && jest --ci",
     "jsdoc": "jsdoc src scripts -r -c .jsdoc.json -d docs",
-    "build": "babel server -d build/server",
-    "execute": "yarn pm2 start build/server/index.js --name express",
+    "build": "babel src -d build",
+    "execute": "yarn pm2 start build/index.js --name express",
     "build-and-execute": "yarn execute && yarn build"
   },
   "repository": {
