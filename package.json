@@ -105,6 +105,7 @@
     "lint": "eslint .",
     "start": "NODE_ENV=development nodemon src --exec babel-node",
     "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
+    "test-ci": "yarn && jest --ci",
     "jsdoc": "jsdoc src scripts -r -c .jsdoc.json -d docs",
     "build": "babel server -d build/server",
     "execute": "yarn pm2 start build/server/index.js --name express",

@@ -9,7 +9,7 @@ test:
     - npm i -g yarn
     - yarn install
   script:
-    - npm run test-client-ci
+    - npm run test-ci
 
 deploy:
   image: google/cloud-sdk:latest
@@ -29,14 +29,14 @@ deploy:
     - yarn build # Build app
     - shopt -s extglob # Enable bash extension
     - rm -rf !(build|Dockerfile|package.json|k8s) # Remove all files except build
-    - docker build -t cahl-orpheus . # Build docker image
-    - docker tag cahl-orpheus us.gcr.io/archimedes-01201/cahl-orpheus:$CI_COMMIT_SHA # Tag docker image for Google Cloud
+    - docker build -t chs-textserver . # Build docker image
+    - docker tag chs-textserver us.gcr.io/archimedes-01201/chs-textserver:$CI_COMMIT_SHA # Tag docker image for Google Cloud
     - echo "$GOOGLE_KEY" > key.json # Google Cloud service account key
     - gcloud auth activate-service-account --key-file key.json
     - gcloud config set compute/zone us-east1-b
     - gcloud config set project archimedes-01201
     - gcloud container clusters get-credentials archimedes-cluster
-    - gcloud docker -- push us.gcr.io/archimedes-01201/cahl-orpheus:$CI_COMMIT_SHA
-    - kubectl config set-context $(kubectl config current-context) --namespace=cahl-orpheus
+    - gcloud docker -- push us.gcr.io/archimedes-01201/chs-textserver:$CI_COMMIT_SHA
+    - kubectl config set-context $(kubectl config current-context) --namespace=chs-textserver
     - sed -ie "s/NEW_IMAGE_TAG/$CI_COMMIT_SHA/g" ./k8s/app-deployment.json
     - kubectl apply -f ./k8s/
