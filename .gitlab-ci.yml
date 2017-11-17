@@ -37,6 +37,6 @@ deploy:
     - gcloud config set project archimedes-01201
     - gcloud container clusters get-credentials archimedes-cluster
     - gcloud docker -- push us.gcr.io/archimedes-01201/chs-textserver:$CI_COMMIT_SHA
-    - kubectl config set-context $(kubectl config current-context) --namespace=chs-textserver
+    - kubectl config set-context $(kubectl config current-context) --namespace=chs
     - sed -ie "s/NEW_IMAGE_TAG/$CI_COMMIT_SHA/g" ./k8s/app-deployment.json
     - kubectl apply -f ./k8s/
