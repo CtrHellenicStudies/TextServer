@@ -20,6 +20,10 @@ import dotenvSetup from './dotenv';
 // authentication
 // import authSetup from './authentication';
 
+// Health Check
+
+import healthCheck from './health-check';
+
 // cors
 import corsSetup from './cors';
 
@@ -55,6 +59,7 @@ setupGraphql(app);
 
 // Routes
 // app.use('/auth', authenticationRouter);
+app.use('/', healthCheck);
 
 // App server listen
 const listen = () => {

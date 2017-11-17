@@ -1,16 +1,11 @@
-FROM node:4.6.1
+FROM node:8-wheezy
 
-RUN apt-get update && apt-get install -y graphicsmagick
 RUN mkdir /app
-COPY *.tar.gz /app/.
-RUN cd /app \
-	&& tar zxf *.tar.gz \
-	&& cd /app/bundle/programs/server \
-	&& npm install \
-	&& npm install babel-runtime \
-	&& mkdir -p /app/bundle/programs/server/tmp/uploads
-ENV PORT 3000
-ENV ROOT_URL http://localhost:$PORT
-ENV UPLOAD_TMP /tmp/uploads
-WORKDIR /app/bundle
-CMD ["node", "main.js"]
+COPY . /app/.
+WORKDIR /app
+RUN npm i -g yarn
+RUN yarn add serve
+RUN yarn add pm2
+RUN yarn pm2 install pm2-logrotate
+
+CMD ["yarn", "execute"]

@@ -1,0 +1,107 @@
+{
+	"kind":"Deployment",
+	"apiVersion":"extensions/v1beta1",
+	"metadata": {
+		"name":"chs-textserver-deployment",
+		"labels": {
+			"name":"chs-textserver-deployment"
+		}
+	},
+	"spec":{
+		"replicas": 1,
+		"template": {
+			"metadata": {
+				"labels": {
+					"name":"chs-textserver-pod"
+				}
+			},
+			"spec": {
+				"containers": [
+					{
+						"name": "chs-textserver-container",
+						"image": "us.gcr.io/archimedes-01201/chs-textserver:NEW_IMAGE_TAG",
+						"env": [
+							{
+								"name": "NODE_ENV",
+								"value": "production"
+							},
+							{
+								"name": "SESSION_SECRET",
+								"valueFrom": {
+									"secretKeyRef": {
+										"name": "secrets",
+										"key": "session"
+									}
+								}
+							},
+							{
+								"name": "JWT_SECRET",
+								"valueFrom": {
+									"secretKeyRef": {
+										"name": "secrets",
+										"key": "jwt"
+									}
+								}
+							},
+							{
+								"name": "DB_HOST",
+								"value": "35.188.205.126"
+							},
+							{
+								"name": "DB_NAME",
+								"value": "chs-textserver"
+							},
+							{
+								"name": "DB_USER",
+								"valueFrom": {
+									"secretKeyRef": {
+										"name": "database",
+										"key": "username"
+									}
+								}
+							},
+							{
+								"name": "DB_PASS",
+								"valueFrom": {
+									"secretKeyRef": {
+										"name": "database",
+										"key": "password"
+									}
+								}
+							},
+							{
+								"name": "CLIENT_SERVER",
+								"value": "orphe.us"
+							},
+							{
+								"name": "DEFAULT_LANGUAGE",
+								"value": "en"
+							},
+							{
+								"name": "AWS_BUCKET",
+								"value": "iiif-orpheus"
+							},
+							{
+								"name": "REDIS_HOST",
+								"value": "35.188.205.126"
+							},
+							{
+								"name": "REDIS_PORT",
+								"value": "6379"
+							},
+							{
+								"name": "REDIS_PASS",
+								"valueFrom": {
+									"secretKeyRef": {
+										"name": "redis",
+										"key": "password"
+									}
+								}
+							}
+						]
+					}
+				]
+			}
+		}
+	}
+}

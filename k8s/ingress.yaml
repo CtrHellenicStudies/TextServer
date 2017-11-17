@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: orpheus-ingress
+spec:
+  tls:
+  - secretName: orpheus-certchain
+  rules:
+  - host: textserver.chs.orphe.us
+    http:
+      paths:
+      - backend:
+          serviceName: chs-textserver-service
+          servicePort: 3001
+  backend:
+    serviceName: chs-textserver-service
+    servicePort: 3000
