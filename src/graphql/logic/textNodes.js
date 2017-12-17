@@ -61,6 +61,7 @@ export default class TextNodeService extends PermissionsService {
 			}],
 			order: ['index'],
 			limit: 30,
+			where: {},
 		};
 
 		if (location) {

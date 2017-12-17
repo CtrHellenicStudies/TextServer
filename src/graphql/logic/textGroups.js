@@ -54,10 +54,12 @@ export default class TextGroupService extends PermissionsService {
 	/**
 	 * Get textGroup
 	 * @param {number} id - id of textGroup
-	 * @param {string} slug - id of textGroup
-	 * @returns {Object} array of textGroups
+	 * @param {string} slug - slug of textGroup
+	 * @param {string} urn - urn of the textgroup
+	 * @param {string} collectionId - id of collection
+	 * @returns {Object} returned textGroup
 	 */
-	getTextGroup(id, slug, urn) {
+	getTextGroup(id, slug, urn, collectionId) {
 		const where = {};
 
 		if (id) {
@@ -72,6 +74,6 @@ export default class TextGroupService extends PermissionsService {
 			where.urn = urn;
 		}
 
-		return TextGroup.findOne(where);
+		return TextGroup.findOne({ where });
 	}
 }

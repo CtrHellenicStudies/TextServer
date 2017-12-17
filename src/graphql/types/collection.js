@@ -35,6 +35,25 @@ const CollectionType = new GraphQLObjectType({
 				return await textGroupService.getTextGroups(textsearch, offset, limit, collectionId);
 			},
 		},
+		textGroup: {
+			type: TextGroupType,
+			args: {
+				id: {
+					type: GraphQLInt,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+				urn: {
+					type: GraphQLString,
+				},
+			},
+			async resolve(parent, { id, slug, urn }, { token }) {
+				const collectionId = parent.id;
+				const textGroupService = new TextGroupService(token);
+				return await textGroupService.getTextGroup(id, slug, urn, collectionId);
+			},
+		},
 	},
 });
 

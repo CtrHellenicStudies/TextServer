@@ -109,7 +109,7 @@ export default class WorkService extends PermissionsService {
 			where.urn = urn;
 		}
 
-		return Work.findOne(where);
+		return Work.findOne({ where });
 	}
 
 	/**

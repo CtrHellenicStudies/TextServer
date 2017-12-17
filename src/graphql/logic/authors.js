@@ -47,7 +47,7 @@ export default class AuthorService extends PermissionsService {
 	 * @param {string} slug - id of author
 	 * @returns {Object} array of authors
 	 */
-	getAuthor(id, slug, urn) {
+	getAuthor(id, slug) {
 		const where = {};
 
 		if (id) {
@@ -58,10 +58,6 @@ export default class AuthorService extends PermissionsService {
 			where.slug = slug;
 		}
 
-		if (urn) {
-			where.urn = urn;
-		}
-
-		return Author.findOne(where);
+		return Author.findOne({ where });
 	}
 }

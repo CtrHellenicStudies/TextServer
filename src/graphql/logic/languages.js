@@ -47,7 +47,7 @@ export default class LanguageService extends PermissionsService {
 	 * @param {string} slug - id of language
 	 * @returns {Object} array of languages
 	 */
-	getLanguage(id, slug, urn) {
+	getLanguage(id, slug) {
 		const where = {};
 
 		if (id) {
@@ -58,10 +58,6 @@ export default class LanguageService extends PermissionsService {
 			where.slug = slug;
 		}
 
-		if (urn) {
-			where.urn = urn;
-		}
-
-		return Language.findOne(where);
+		return Language.findOne({ where });
 	}
 }

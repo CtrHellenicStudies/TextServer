@@ -29,9 +29,28 @@ const TextGroupType = new GraphQLObjectType({
 				},
 			},
 			async resolve(parent, { textsearch, offset, limit }, { token }) {
-				const workService = new WorkService(token);
 				const textGroupId = parent.id;
+				const workService = new WorkService(token);
 				return await workService.getWorks(textsearch, offset, limit, textGroupId);
+			},
+		},
+		work: {
+			type: WorkType,
+			args: {
+				id: {
+					type: GraphQLInt,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+				urn: {
+					type: GraphQLString,
+				},
+			},
+			async resolve(parent, { id, slug, urn }, { token }) {
+				const textGroupId = parent.id;
+				const workService = new WorkService(token);
+				return await workService.getWork(id, slug, urn, textGroupId);
 			},
 		},
 	},
