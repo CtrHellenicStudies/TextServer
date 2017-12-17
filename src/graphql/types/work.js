@@ -51,7 +51,7 @@ const WorkType = new GraphQLObjectType({
 			type: LanguageType,
 			resolve(parent, {}, { token }) {
 				const languageService = new LanguageService({ token });
-				return languageService.getLanguage(parent.languageId);
+				return languageService.getLanguage(parent.dataValues.languageId);
 			},
 		},
 		textNodes: {
