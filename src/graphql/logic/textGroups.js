@@ -62,6 +62,10 @@ export default class TextGroupService extends PermissionsService {
 	getTextGroup(id, slug, urn, collectionId) {
 		const where = {};
 
+		if (!id && !slug && !urn) {
+			return null;
+		}
+
 		if (id) {
 			where.id = id;
 		}

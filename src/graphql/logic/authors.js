@@ -49,6 +49,10 @@ export default class AuthorService extends PermissionsService {
 	 */
 	getAuthor(id, slug) {
 		const where = {};
+		
+		if (!id && !slug) {
+			return null;
+		}
 
 		if (id) {
 			where.id = id;

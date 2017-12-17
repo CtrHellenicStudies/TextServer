@@ -46,11 +46,16 @@ export default class CollectionService extends PermissionsService {
 	/**
 	 * Get collection
 	 * @param {number} id - id of collection
-	 * @param {string} slug - id of collection
+	 * @param {string} slug - slug of collection
+	 * @param {string} urn - urn of collection
 	 * @returns {Object} array of collections
 	 */
 	getCollection(id, slug, urn) {
 		const where = {};
+
+		if (!id && !slug && !urn) {
+			return null;
+		}
 
 		if (id) {
 			where.id = id;

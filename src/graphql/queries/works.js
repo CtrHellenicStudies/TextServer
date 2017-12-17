@@ -35,7 +35,7 @@ const workFields = {
 				type: GraphQLString,
 			},
 		},
-		async resolve(_, { id, slug }, { token }) {
+		async resolve(_, { id, slug, urn }, { token }) {
 			const workService = new WorkService(token);
 			return await workService.getWork(id, slug, urn);
 		},

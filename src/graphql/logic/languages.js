@@ -44,14 +44,18 @@ export default class LanguageService extends PermissionsService {
 	/**
 	 * Get language
 	 * @param {number} id - id of language
-	 * @param {string} slug - id of language
-	 * @returns {Object} array of languages
+	 * @param {string} slug - slug of language
+	 * @returns {Object} language record
 	 */
 	getLanguage(id, slug) {
 		const where = {};
 
+		if (!id && !slug) {
+			return null;
+		}
+
 		if (id) {
-			where.id = id;
+			where.id = parseInt(id, 10);
 		}
 
 		if (slug) {

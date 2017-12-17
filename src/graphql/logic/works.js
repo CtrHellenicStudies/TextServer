@@ -91,11 +91,16 @@ export default class WorkService extends PermissionsService {
 	/**
 	 * Get work
 	 * @param {number} id - id of work
-	 * @param {string} slug - id of work
-	 * @returns {Object} array of works
+	 * @param {string} slug - slug of work
+	 * @param {string} urn - urn of work
+	 * @returns {Object} work object record
 	 */
 	getWork(id, slug, urn) {
 		const where = {};
+
+		if (!id && !slug && !urn) {
+			return null;
+		}
 
 		if (id) {
 			where.id = id;
