@@ -3,7 +3,6 @@ import path from 'path';
 import slugify from 'slugify';
 import { DOMParser } from 'xmldom';
 import winston from 'winston';
-import waterfall from 'async/waterfall';
 
 import Collection from '../../../../models/collection';
 import TextGroup from './TextGroup';

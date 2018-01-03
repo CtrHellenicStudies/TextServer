@@ -348,6 +348,8 @@ class _Work {
 
 		if (~this.filename.indexOf('grc')) {
 			title = 'Greek';
+		} else if (~this.filename.indexOf('grk')) {
+			title = 'Greek';
 		} else if (~this.filename.indexOf('eng')) {
 			title = 'English';
 		} else if (~this.filename.indexOf('lat')) {
@@ -362,6 +364,7 @@ class _Work {
 			title = 'Coptic';
 		} else {
 			winston.error(`Could not identify language for file ${this.filename}`);
+			return null;
 		}
 
 		let language;
@@ -371,15 +374,14 @@ class _Work {
 			}
 		});
 
-		let _language = _s.humanize(title).trim();
-		if (!language && _language.length) {
+		if (!language) {
 			language = await Language.create({
-				title: _language,
-			})
-
-			await work.setLanguage(language);
-			await language.addWork(work);
+				title,
+			});
 		}
+
+		await work.setLanguage(language);
+		await language.addWork(work);
 	}
 }
 
