@@ -45,3 +45,4 @@ const TextNodeInputType = new GraphQLInputObjectType({
 });
 
 export { TextNodeType, TextNodeInputType };
+export default TextNodeType;

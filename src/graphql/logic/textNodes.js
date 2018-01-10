@@ -5,6 +5,17 @@ import TextNode from '../../models/textNode';
 import Work from '../../models/work';
 
 
+
+const parseUrnPassageToLocationQuery = (passage) => {
+	const locationQuery = [];
+	passage.split('-').forEach((location) => {
+		locationQuery.push(location.split('.'));
+	});
+
+	return locationQuery;
+};
+
+
 /**
  * Logic-layer service for dealing with text nodes
  */
@@ -104,6 +115,35 @@ export default class TextNodeService extends PermissionsService {
 
 		return TextNode.findAll(query);
 	}
+
+	/**
+	 * Get text nodes by urn
+	 * @param {string} urn - input cts urn
+	 * @param {number} limit - limit for orm
+	 * @param {number} skip - skip for orm
+	 * @returns {Object[]} array of text nodes
+	 */
+	textNodesGetByUrn(urn, limit, skip) {
+		const locationQuery = parseUrnPassageToLocationQuery(urn.passage);
+
+		const query = {
+			include: [{
+				model: Work,
+				where: {
+					urn: `${urn.ctsNamespace}:${urn.textGroup}.${urn.work}`,
+				},
+			}],
+			order: ['index'],
+			limit: 30,
+			where: {
+				location: locationQuery,
+			},
+		};
+
+
+		return TextNode.findAll(query);
+	}
+
 
 	/**
 	 * Get paginated text node location following specified location based on offset
