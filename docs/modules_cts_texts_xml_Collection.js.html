@@ -108,7 +108,7 @@ class _Collection {
 			repository: this.repoRemote,
 		});
 
-		for (let i = 0; i &lt; this.textGroups.length; i++) {
+		for (let i = 0; i &lt; this.textGroups.length; i += 1) {
 			await this.textGroups[i].generateInventory(collection);
 		}
 	}

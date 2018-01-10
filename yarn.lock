@@ -4707,6 +4707,10 @@ number-is-nan@^1.0.0:
   version "1.4.3"
   resolved "https://registry.yarnpkg.com/nwmatcher/-/nwmatcher-1.4.3.tgz#64348e3b3d80f035b40ac11563d278f8b72db89c"
 
+oauth-shim@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/oauth-shim/-/oauth-shim-1.1.1.tgz#1596c8b7aa5e430beadb35475c1c383c8f1f67a4"
+
 oauth-sign@~0.8.1, oauth-sign@~0.8.2:
   version "0.8.2"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"

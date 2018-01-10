@@ -86,8 +86,8 @@ class _TextGroup {
 		await textGroup.setCollection(collection);
 		await collection.addTextgroup(textGroup);
 
-		for (let i = 0; i < this.works.length; i++) {
-			await this.works[i].generateInventory(textGroup);
+		for (let i = 0; i < this.works.length; i += 1) {
+			await this.works[i].generateInventory(textGroup); // eslint-disable-line
 		}
 	}
 }

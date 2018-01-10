@@ -49,7 +49,7 @@ const WorkType = new GraphQLObjectType({
 		},
 		language: {
 			type: LanguageType,
-			resolve(parent, {}, { token }) {
+			resolve(parent, __, { token }) {
 				const languageService = new LanguageService({ token });
 				return languageService.getLanguage(parent.dataValues.languageId);
 			},

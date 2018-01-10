@@ -21,7 +21,7 @@ const WordType = new GraphQLObjectType({
 		},
 		urn: {
 			type: GraphQLString,
-			resolve(parent, {}, { token }) {
+			resolve(parent, __, { token }) {
 				const textNodeService = new TextNodeService({ token });
 				return textNodeService.getWordURN(parent);
 			},

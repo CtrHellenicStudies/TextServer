@@ -13,7 +13,7 @@
         lines = source[0].getElementsByTagName('li');
         totalLines = lines.length;
 
-        for (; i < totalLines; i++) {
+        for (; i < totalLines; i += 1) {
             lineNumber++;
             lineId = 'line' + lineNumber;
             lines[i].id = lineId;

@@ -80,8 +80,8 @@ class _Collection {
 			repository: this.repoRemote,
 		});
 
-		for (let i = 0; i < this.textGroups.length; i++) {
-			await this.textGroups[i].generateInventory(collection);
+		for (let i = 0; i < this.textGroups.length; i += 1) {
+			await this.textGroups[i].generateInventory(collection); // eslint-disable-line
 		}
 	}
 }

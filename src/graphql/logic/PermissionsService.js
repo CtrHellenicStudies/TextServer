@@ -1,6 +1,6 @@
 export default class PermissionsService {
 	constructor(props) {
-		this.user;
+		this.user = null;
 
 		// TODO: verify token privileges if necessary
 

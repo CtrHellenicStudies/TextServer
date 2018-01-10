@@ -1,4 +1,4 @@
-import Exemplar from '../../../../models/Exemplar';
+import Exemplar from '../../../../models/exemplar';
 
 /** Class representing an exemplar metadata information classifying a work */
 class _Exemplar {
@@ -6,7 +6,7 @@ class _Exemplar {
 	/**
 	 * Create a new exemplar
 	 */
-	constructor(props) {
+	constructor(props) { // eslint-disable-line
 
 	}
 

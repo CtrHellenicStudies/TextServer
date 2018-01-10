@@ -50,11 +50,11 @@ const ingestCollections = async () => {
 
 	// Ingest collections from cloned repos
 	winston.info('Ingesting texts and metadata');
-	for (let i = 0; i < _clonedRepos.length; i++) {
+	for (let i = 0; i < _clonedRepos.length; i += 1) {
 		winston.info(` -- ingesting from ${_clonedRepos[i].title}`);
 
 		// ingest data from texts in repo
-		await ingestCollection(_clonedRepos[i]);
+		await ingestCollection(_clonedRepos[i]); // eslint-disable-line
 	}
 };
 

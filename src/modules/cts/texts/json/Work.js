@@ -26,10 +26,10 @@ class _Work {
 		this.filemd5hash = crypto.createHash('md5').update(fs.readFileSync(filename, 'utf8')).digest('hex');
 		this.language = text.language;
 
-		this.structure;
-		this.form;
-		this.exemplar;
-		this.version;
+		this.structure = null;
+		this.form = null;
+		this.exemplar = null;
+		this.version = null;
 		this.textNodes = [];
 	}
 
@@ -40,7 +40,7 @@ class _Work {
 		winston.info(` -- --  -- generating inventory for work ${this.english_title}`);
 
 		const jsonToTextNodes = (node, location = []) => {
-			for (const key in node) {
+			for (const key in node) { // eslint-disable-line
 				const _location = location.slice();
 				_location.push(parseInt(key, 10));
 				if (typeof node[key] === 'string') {
@@ -77,9 +77,9 @@ class _Work {
 			});
 		}
 
-		const english_title = this.english_title;
-		const original_title = this.original_title;
-		if (!english_title || !original_title) {
+		const englishTitle = this.english_title;
+		const originalTitle = this.original_title;
+		if (!englishTitle || !originalTitle) {
 			winston.error(`Error ingesting Work ${this.filename}`);
 			return null;
 		}
@@ -89,8 +89,8 @@ class _Work {
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
 			filename: this.filename,
-			original_title: original_title.slice(0, 255),
-			english_title: english_title.slice(0, 255),
+			original_title: originalTitle.slice(0, 255),
+			english_title: englishTitle.slice(0, 255),
 			structure: this.structure,
 			form: this.form,
 			urn: urn.slice(0, 255),
@@ -102,8 +102,8 @@ class _Work {
 		await this._createLanguage(work);
 
 		// ingest all textnodes
-		for (let i = 0; i < this.textNodes.length; i++) {
-			await this.textNodes[i].save(i);
+		for (let i = 0; i < this.textNodes.length; i += 1) {
+			await this.textNodes[i].save(i); // eslint-disable-line
 		}
 	}
 

@@ -6,7 +6,7 @@ class _Exemplar {
 	/**
 	 * Create a new exemplar
 	 */
-	constructor(props) {
+	constructor(props) { // eslint-disable-line
 
 	}
 

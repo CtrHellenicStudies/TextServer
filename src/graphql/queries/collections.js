@@ -19,7 +19,8 @@ const collectionFields = {
 		},
 		async resolve(_, { textsearch, limit, offset, }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.getCollections(textsearch, offset, limit);
+			const collections = await collectionService.getCollections(textsearch, offset, limit);
+			return collections;
 		},
 	},
 	collection: {
@@ -37,7 +38,8 @@ const collectionFields = {
 		},
 		async resolve(_, { id, slug, urn }, { token }) {
 			const collectionService = new CollectionService(token);
-			return await collectionService.getCollection(id, slug, urn);
+			const collection = await collectionService.getCollection(id, slug, urn);
+			return collection;
 		},
 	},
 };

@@ -6,7 +6,7 @@ class _Version {
 	/**
 	 * Create a new version
 	 */
-	constructor(props) {
+	constructor(props) { // eslint-disable-line
 
 	}
 

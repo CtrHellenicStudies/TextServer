@@ -19,14 +19,14 @@ const TextNodeType = new GraphQLObjectType({
 		..._.assign(attributeFields(TextNode)),
 		urn: {
 			type: GraphQLString,
-			resolve(parent, {}, { token }) {
+			resolve(parent, __, { token }) {
 				const textNodeService = new TextNodeService({ token });
 				return textNodeService.getTextNodeURN(parent);
 			},
 		},
 		words: {
 			type: new GraphQLList(WordType),
-			resolve(parent, {}, { token }) {
+			resolve(parent, __, { token }) {
 				const textNodeService = new TextNodeService({ token });
 				return textNodeService.getTextNodeWords(parent);
 			},

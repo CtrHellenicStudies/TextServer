@@ -116,12 +116,12 @@ class _Collection {
 		});
 
 		// ingest all textGroups
-		for (let i = 0; i &lt; this.textGroups.length; i++) {
+		for (let i = 0; i &lt; this.textGroups.length; i += 1) {
 			await this.textGroups[i].save(collection);
 		}
 
 		// ingest all works and textnodes
-		for (let i = 0; i &lt; this.works.length; i++) {
+		for (let i = 0; i &lt; this.works.length; i += 1) {
 			await this.works[i].generateInventory(collection);
 		}
 	}

@@ -177,7 +177,7 @@ class _Work {
 			return false;
 		}
 
-		for (let i = 0; i &lt; patternElems.length; i++) {
+		for (let i = 0; i &lt; patternElems.length; i += 1) {
 			const patternElem = patternElems[`${i}`];
 
 			let label = '';
@@ -361,7 +361,7 @@ class _Work {
 			await this.version.save(work);
 		}
 
-		for (let i = 0; i &lt; this.textNodes.length; i++) {
+		for (let i = 0; i &lt; this.textNodes.length; i += 1) {
 			await this.textNodes[i].save(work);
 		}
 

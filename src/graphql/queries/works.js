@@ -1,6 +1,6 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
-import WorkType from '../types/work';
+import WorkType from '../types/work'; // eslint-disable-line
 import WorkService from '../logic/works';
 
 const workFields = {
@@ -19,7 +19,8 @@ const workFields = {
 		},
 		async resolve(_, { textsearch, limit, offset }, { token }) {
 			const workService = new WorkService(token);
-			return await workService.getWorks(textsearch, offset, limit);
+			const works = await workService.getWorks(textsearch, offset, limit);
+			return works;
 		},
 	},
 	work: {

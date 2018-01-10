@@ -22,9 +22,9 @@ class _Collection {
 		this.repoRemote = repoRemote;
 		this.repoLocal = repoLocal;
 		this.collectionDataType = collectionDataType;
-		this.source;
-		this.sourceLink;
-		this.urn;
+		this.source = null;
+		this.sourceLink = null;
+		this.urn = null;
 		this.textGroups = [];
 		this.works = [];
 		this.urn = getCltkCollectionUrn(repoRemote);
@@ -88,13 +88,13 @@ class _Collection {
 		});
 
 		// ingest all textGroups
-		for (let i = 0; i < this.textGroups.length; i++) {
-			await this.textGroups[i].save(collection);
+		for (let i = 0; i < this.textGroups.length; i += 1) {
+			await this.textGroups[i].save(collection); // eslint-disable-line
 		}
 
 		// ingest all works and textnodes
-		for (let i = 0; i < this.works.length; i++) {
-			await this.works[i].generateInventory(collection);
+		for (let i = 0; i < this.works.length; i += 1) {
+			await this.works[i].generateInventory(collection); // eslint-disable-line
 		}
 	}
 }

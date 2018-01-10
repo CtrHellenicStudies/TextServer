@@ -2,7 +2,7 @@ import winston from 'winston';
 import _s from 'underscore.string';
 
 import ctsNamespace from '../../lib/ctsNamespace';
-import Version from '../../../../models/Version';
+import Version from '../../../../models/version';
 
 /** Class representing a version of a work */
 class _Version {
@@ -12,8 +12,8 @@ class _Version {
 	 */
 	constructor({ urn, _versionXML }) {
 		this._versionXML = _versionXML;
-		this.title;
-		this.description;
+		this.title = null;
+		this.description = null;
 		this.urn = urn;
 
 		this._parseMetadataFromXml();

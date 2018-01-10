@@ -56,7 +56,7 @@ export default class TextNodeService extends PermissionsService {
 			include: [{
 				model: Work,
 				where: {
-					id: parseInt(workId),
+					id: parseInt(workId, 10),
 				},
 			}],
 			order: ['index'],

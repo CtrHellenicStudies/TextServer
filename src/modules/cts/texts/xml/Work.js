@@ -26,13 +26,13 @@ class _Work {
 	constructor({ filename, _workXML }) {
 		this._workXML = _workXML;
 		this.filename = filename;
-		this.english_title;
-		this.original_title;
-		this.urn;
-		this.filemd5hash;
-		this.structure;
-		this.version;
-		this.exemplar;
+		this.english_title = null;
+		this.original_title = null;
+		this.urn = null;
+		this.filemd5hash = null;
+		this.structure = null;
+		this.version = null;
+		this.exemplar = null;
 		this.refPatterns = [];
 		this.textNodes = [];
 
@@ -149,7 +149,7 @@ class _Work {
 			return false;
 		}
 
-		for (let i = 0; i < patternElems.length; i++) {
+		for (let i = 0; i < patternElems.length; i += 1) {
 			const patternElem = patternElems[`${i}`];
 
 			let label = '';
@@ -216,12 +216,12 @@ class _Work {
 			// localize current replacement pattern
 			let replacementPattern;
 			if (location.length) {
-	 			replacementPattern = this._getReplacementPattern(
+				replacementPattern = this._getReplacementPattern(
 					this.refPatterns[location.length],
 					this.refPatterns[location.length - 1],
 				);
 			} else {
-	 			replacementPattern = this._getReplacementPattern(
+				replacementPattern = this._getReplacementPattern(
 					this.refPatterns[location.length],
 				);
 			}
@@ -240,9 +240,9 @@ class _Work {
 				const _location = location.slice();
 				_location.push(i);
 
-					// equivalent of innerHTML
+				// equivalent of innerHTML
 				let html = '';
-				for (const nodeKey in _node.childNodes) {
+				for (const nodeKey in _node.childNodes) { // eslint-disable-line
 					const nodeValue = xmlSerializer.serializeToString(_node.childNodes[nodeKey]);
 					if (nodeValue && nodeValue !== '??') {
 						html = `${html}${nodeValue} `;
@@ -305,9 +305,9 @@ class _Work {
 	 */
 	async save(textGroup) {
 
-		const english_title = this.english_title;
-		const original_title = this.original_title;
-		if (!english_title || !original_title) {
+		const englishTitle = this.english_title;
+		const originalTitle = this.original_title;
+		if (!englishTitle || !originalTitle) {
 			winston.error(`Error ingesting Work ${this.filename}`);
 			return null;
 		}
@@ -317,8 +317,8 @@ class _Work {
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
 			filename: this.filename,
-			original_title: original_title.slice(0, 250),
-			english_title: english_title.slice(0, 250),
+			original_title: originalTitle.slice(0, 250),
+			english_title: englishTitle.slice(0, 250),
 			structure: this.structure,
 			form: this.form,
 			urn: urn.slice(0, 250),
@@ -333,8 +333,8 @@ class _Work {
 			await this.version.save(work);
 		}
 
-		for (let i = 0; i < this.textNodes.length; i++) {
-			await this.textNodes[i].save(work);
+		for (let i = 0; i < this.textNodes.length; i += 1) {
+			await this.textNodes[i].save(work); // eslint-disable-line
 		}
 
 	}

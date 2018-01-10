@@ -13,7 +13,7 @@ class _TextNode {
 		this.location = location;
 		this.text = text;
 		this.filename = filename;
-		this.index;
+		this.index = null;
 	}
 
 	/**

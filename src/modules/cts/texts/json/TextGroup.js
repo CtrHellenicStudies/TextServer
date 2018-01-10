@@ -12,7 +12,7 @@ class _TextGroup {
 	constructor({ author, urn }) {
 		this.title = author;
 		this.urn = urn;
-		this._id;
+		this._id = null;
 		this.works = [];
 	}
 

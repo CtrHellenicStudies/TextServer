@@ -3,7 +3,7 @@ import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLSchema, GraphQLI
 import { attributeFields } from 'graphql-sequelize';
 
 import TextGroup from '../../models/textGroup';
-import WorkType from './work';
+import WorkType from './work'; // eslint-disable-line
 import WorkService from '../logic/works';
 
 /**
