@@ -26,43 +26,27 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import PermissionsService from './PermissionsService';
-import Works from '../../models/work';
+            <pre class="prettyprint source linenums"><code>import Sequelize from 'sequelize';
+
+import PermissionsService from './PermissionsService';
+import Work from '../../models/work';
 
 /**
  * Logic-layer service for dealing with works
  */
-export default class WorksService extends PermissionsService {
-
-	/**
-	 * Rewrite subworks for modifiying works
-	 * @param {(Object|Array)} subworks
-	 * @returns {(Object|Array)} the new subwork
-	 */
-	rewriteSubworks(subworks) {
-		const newSubworks = [];
-		subworks.map(singleSubwork => {
-			newSubworks.push({
-				title: singleSubwork.title,
-				slug: singleSubwork.slug,
-				n: singleSubwork.n
-			});
-		});
-		return newSubworks;
-	}
-
+export default class WorkService extends PermissionsService {
 	/**
 	 * Create a work
 	 * @param {Object} work - candidate work to create
 	 * @returns {Object} newly created work
 	 */
-	workInsert(work) {
+	insert(work) {
 		if (this.userIsAdmin) {
 			const newWork = work;
 			newWork.subworks = this.rewriteSubworks(work.subworks);
 
-			const workId = Works.insert({...newWork});
-			return Works.findOne(workId);
+			const workId = Work.insert({...newWork});
+			return Work.findOne(workId);
 		}
 		return new Error('Not authorized');
 	}
@@ -73,39 +57,12 @@ export default class WorksService extends PermissionsService {
 	 * @param {Object} work - work to update
 	 * @returns {boolean} result from mongo orm update
 	 */
-	workUpdate(_id, work) {
+	update(_id, work) {
 		if (this.userIsAdmin) {
 			const newWork = work;
 			newWork.subworks = this.rewriteSubworks(work.subworks);
 
-			return Works.update(_id, {$set: newWork});
-		}
-		return new Error('Not authorized');
-	}
-
-	/**
-	 * Get works
-	 * @param {string} _id - id of work
-	 * @param {string} tenantId - id of current tenant
-	 * @returns {Object[]} array of works
-	 */
-	worksGet(_id, tenantId) {
-		if (this.userIsAdmin) {
-			const args = {};
-
-			if (tenantId) {
-				args.tenantId = tenantId;
-			}
-
-			if (_id) {
-				args._id = _id;
-			}
-
-			return Works.find(args, {
-				sort: {
-					slug: 1
-				}
-			}).fetch();
+			return Work.update(_id, {$set: newWork});
 		}
 		return new Error('Not authorized');
 	}
@@ -115,11 +72,85 @@ export default class WorksService extends PermissionsService {
 	 * @param {string} _id - id of work
 	 * @returns {boolean} result from mongo orm remove
 	 */
-	workRemove(_id) {
+	remove(_id) {
 		if (this.userIsAdmin) {
-			return Works.remove({ _id });
+			return Work.remove({ _id });
 		}
 		return new Error('Not authorized');
+	}
+
+	/**
+	 * Get works
+	 * @param {string} textsearch
+	 * @param {number} offset
+	 * @param {number} limit
+	 * @returns {Object[]} array of works
+	 */
+	getWorks(textsearch, offset = 0, limit = 100, textGroupId = null) {
+		const args = {
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			],
+		};
+
+		if (textsearch) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
+
+			args.where.english_title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
+			};
+		}
+
+		if (textGroupId !== null) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
+
+			args.where.textgroupId = textGroupId;
+		}
+
+		return Work.findAll(args);
+	}
+
+	/**
+	 * Get work
+	 * @param {number} id - id of work
+	 * @param {string} slug - slug of work
+	 * @param {string} urn - urn of work
+	 * @returns {Object} work object record
+	 */
+	getWork(id, slug, urn) {
+		const where = {};
+
+		if (!id &amp;&amp; !slug &amp;&amp; !urn) {
+			return null;
+		}
+
+		if (id) {
+			where.id = id;
+		}
+
+		if (slug) {
+			where.slug = slug;
+		}
+
+		if (urn) {
+			where.urn = urn;
+		}
+
+		return Work.findOne({ where });
+	}
+
+	/**
+	 * Count works
+	 * @returns {number} count of works
+	 */
+	count() {
+		return Work.count();
 	}
 }
 </code></pre>
@@ -132,13 +163,13 @@ export default class WorksService extends PermissionsService {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorType">authorType</a></li><li><a href="global.html#corpusType">corpusType</a></li><li><a href="global.html#db">db</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#languageType">languageType</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#RemoveType">RemoveType</a></li><li><a href="global.html#rewriteSubworks">rewriteSubworks</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#textLocationNext">textLocationNext</a></li><li><a href="global.html#textLocationPrev">textLocationPrev</a></li><li><a href="global.html#textNodeCreate">textNodeCreate</a></li><li><a href="global.html#textNodeInputType">textNodeInputType</a></li><li><a href="global.html#textNodeRemove">textNodeRemove</a></li><li><a href="global.html#textNodesGet">textNodesGet</a></li><li><a href="global.html#textNodeType">textNodeType</a></li><li><a href="global.html#workInsert">workInsert</a></li><li><a href="global.html#workRemove">workRemove</a></li><li><a href="global.html#worksGet">worksGet</a></li><li><a href="global.html#workType">workType</a></li><li><a href="global.html#workUpdate">workUpdate</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="-_Collection.html">_Collection</a></li><li><a href="-_Exemplar.html">_Exemplar</a></li><li><a href="-_TextNode.html">_TextNode</a></li><li><a href="-_Version.html">_Version</a></li><li><a href="-_Work.html">_Work</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Author">Author</a></li><li><a href="global.html#AuthorType">AuthorType</a></li><li><a href="global.html#checkXmlOrJSON">checkXmlOrJSON</a></li><li><a href="global.html#cloneRepo">cloneRepo</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionType">CollectionType</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#CtsUrn">CtsUrn</a></li><li><a href="global.html#db">db</a></li><li><a href="global.html#Exemplar">Exemplar</a></li><li><a href="global.html#ExemplarType">ExemplarType</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getAuthor">getAuthor</a></li><li><a href="global.html#getAuthors">getAuthors</a></li><li><a href="global.html#getCollection">getCollection</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getLanguage">getLanguage</a></li><li><a href="global.html#getLanguages">getLanguages</a></li><li><a href="global.html#getTextGroup">getTextGroup</a></li><li><a href="global.html#getTextGroups">getTextGroups</a></li><li><a href="global.html#getTextNodeURN">getTextNodeURN</a></li><li><a href="global.html#getTextNodeWords">getTextNodeWords</a></li><li><a href="global.html#getWordURN">getWordURN</a></li><li><a href="global.html#getWork">getWork</a></li><li><a href="global.html#getWorks">getWorks</a></li><li><a href="global.html#ingestCollection">ingestCollection</a></li><li><a href="global.html#ingestJsonData">ingestJsonData</a></li><li><a href="global.html#ingestXmlData">ingestXmlData</a></li><li><a href="global.html#insert">insert</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#Language">Language</a></li><li><a href="global.html#LanguageType">LanguageType</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RemoveType">RemoveType</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#TextGroup">TextGroup</a></li><li><a href="global.html#TextGroupType">TextGroupType</a></li><li><a href="global.html#textLocationNext">textLocationNext</a></li><li><a href="global.html#textLocationPrev">textLocationPrev</a></li><li><a href="global.html#TextNode">TextNode</a></li><li><a href="global.html#textNodeCreate">textNodeCreate</a></li><li><a href="global.html#TextNodeInputType">TextNodeInputType</a></li><li><a href="global.html#textNodeRemove">textNodeRemove</a></li><li><a href="global.html#textNodesGet">textNodesGet</a></li><li><a href="global.html#TextNodeType">TextNodeType</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#Version">Version</a></li><li><a href="global.html#VersionType">VersionType</a></li><li><a href="global.html#WordType">WordType</a></li><li><a href="global.html#Work">Work</a></li><li><a href="global.html#WorkInputType">WorkInputType</a></li><li><a href="global.html#WorkType">WorkType</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Nov 04 2017 00:11:04 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jan 09 2018 22:18:46 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

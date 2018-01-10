@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: modules/cts/texts/xml/Work.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: modules/cts/texts/xml/Work.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import fs from 'fs';
+import path from 'path';
+import slugify from 'slugify';
+import { DOMParser, XMLSerializer } from 'xmldom';
+import xpath from 'xpath';
+import winston from 'winston';
+import crypto from 'crypto';
+import _ from 'underscore';
+import _s from 'underscore.string';
+
+
+import ctsNamespace from '../../lib/ctsNamespace';
+import Work from '../../../../models/work';
+import Language from '../../../../models/language';
+import Version from './Version';
+import Exemplar from './Exemplar';
+import TextNode from './TextNode';
+
+
+/** Class representing a work in a textgroup */
+class _Work {
+
+	/**
+	 * Create a new work
+	 */
+	constructor({ filename, _workXML }) {
+		this._workXML = _workXML;
+		this.filename = filename;
+		this.english_title;
+		this.original_title;
+		this.urn;
+		this.filemd5hash;
+		this.structure;
+		this.version;
+		this.exemplar;
+		this.refPatterns = [];
+		this.textNodes = [];
+
+		this._parseMetadataFromXml();
+	}
+
+	/**
+	 * Parse metadata about this work from the input xml file
+	 */
+	_parseMetadataFromXml() {
+
+		// urns
+		const workElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'work');
+		if (workElems &amp;&amp; workElems.length) {
+			this.urn = workElems[0].getAttributeNode('urn').value;
+			this.textGroupUrn = workElems[0].getAttributeNode('groupUrn').value;
+		} else {
+			winston.info(`No information found about work ${this.filename}`);
+		}
+
+		// title
+		const titleElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'title');
+		if (titleElems &amp;&amp; titleElems.length) {
+			this.english_title = titleElems[0].firstChild.nodeValue;
+			this.original_title = this.english_title;
+		} else {
+			winston.info(`No title found for work ${this.filename}`);
+		}
+
+		// edition (join for the moment as version)
+		const editionElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'edition');
+		if (editionElems &amp;&amp; editionElems.length) {
+			const urnAttr = editionElems[0].getAttributeNode('urn');
+			if (!urnAttr) {
+				return false;
+			}
+			const urn = urnAttr.value;
+			this.version = new Version({
+				urn,
+				_versionXML: editionElems[0],
+			});
+		}
+
+		// translation
+		// TODO: determine best how to handle translation data in the future
+		const translationElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'translation');
+		if (translationElems &amp;&amp; translationElems.length) {
+			const labelElems = translationElems[0].getElementsByTagNameNS(ctsNamespace, 'label');
+			const descriptionElems = translationElems[0].getElementsByTagNameNS(ctsNamespace, 'description');
+			let label;
+			let description;
+
+			if (labelElems &amp;&amp; labelElems.length) {
+				label = labelElems[0].firstChild.nodeValue;
+			}
+
+			if (descriptionElems &amp;&amp; descriptionElems.length) {
+				description = descriptionElems[0].firstChild.nodeValue;
+			}
+
+			this.translation = {
+				label,
+				description,
+			};
+		}
+	}
+
+	/**
+	 * Generate the inventory of the textNodes in the work
+	 */
+	async generateInventory(textGroup) {
+		winston.info(` -- --  -- generating inventory for work ${this.english_title}`);
+		const _workFile = fs.readFileSync(this.filename, 'utf8');
+
+		// get hash of file
+		this.filemd5hash = crypto.createHash('md5').update(_workFile).digest('hex');
+
+		// parse as xml
+		const _workFileXml = new DOMParser().parseFromString(_workFile);
+		this._parseXMLFile(_workFileXml);
+
+
+		return await this.save(textGroup);
+	}
+
+	/**
+	 * Parse metadata and text nodes from the xml file of the work
+	 */
+	_parseXMLFile(_workFileXml) {
+		this._getRefs(_workFileXml);
+
+		if (!this.refPatterns.length) {
+			winston.warn(`No ref patterns were identified for work ${this.filename}. Skipping`);
+			return false;
+		}
+
+		this._getTextNodes(_workFileXml);
+	}
+
+	/**
+	 * get ref patterns from the xml file
+	 */
+	_getRefs(_workFileXml) {
+		const refsElems = _workFileXml.getElementsByTagName('refsDecl');
+
+		if (!refsElems || !refsElems.length) {
+			winston.warn(`No refs declaration found for work ${this.filename}. Skipping`);
+			return false;
+		}
+
+		const patternElems = refsElems[0].getElementsByTagName('cRefPattern');
+		if (!patternElems) {
+			winston.warn(`Refs declaration found but no ref patterns found for work ${this.filename}. Skipping`);
+			return false;
+		}
+
+		for (let i = 0; i &lt; patternElems.length; i++) {
+			const patternElem = patternElems[`${i}`];
+
+			let label = '';
+			const labelElem = patternElem.getAttributeNode('n');
+			if (labelElem) {
+				label = labelElem.value;
+			}
+
+			let matchPattern = '';
+			const matchPatternElem = patternElem.getAttributeNode('matchPattern');
+			if (matchPatternElem) {
+				matchPattern = matchPatternElem.value;
+			}
+
+			let replacementPattern = '';
+			const replacementPatternElem = patternElem.getAttributeNode('replacementPattern');
+			if (replacementPatternElem) {
+				replacementPattern = replacementPatternElem.value;
+			}
+
+			let description = '';
+			const pElems = patternElem.getElementsByTagName('p');
+			if (pElems &amp;&amp; pElems.length) {
+				description = pElems[0].firstChild.nodeValue;
+			}
+
+			this.refPatterns.push({
+				label,
+				matchPattern,
+				replacementPattern,
+				description,
+			});
+		}
+
+		// order ref patterns by pattern length
+		this.refPatterns = _.sortBy(this.refPatterns, pattern => pattern.replacementPattern.length);
+
+		// make pattern label structure
+		const patternLabels = [];
+		this.refPatterns.forEach((refPattern) => {
+			patternLabels.push(refPattern.label.replace('-', ''));
+		});
+		this.structure = patternLabels.join('-');
+	}
+
+	/**
+	 * get text nodes from the work xml file
+	 */
+	_getTextNodes(_workFileXml) {
+		// query with tei namespace
+		const queryWithNamespaces = xpath.useNamespaces({
+			tei: 'http://www.tei-c.org/ns/1.0',
+		});
+
+		// text graph expressed as nodes and locations
+		const text = [];
+
+		// xml/html serializer
+		const xmlSerializer = new XMLSerializer();
+
+		// convert xml to text graph
+		const xmlToGraph = (node, location) => {
+
+			// localize current replacement pattern
+			let replacementPattern;
+			if (location.length) {
+	 			replacementPattern = this._getReplacementPattern(
+					this.refPatterns[location.length],
+					this.refPatterns[location.length - 1],
+				);
+			} else {
+	 			replacementPattern = this._getReplacementPattern(
+					this.refPatterns[location.length],
+				);
+			}
+
+			// query the current node with the current replacementPattern
+			let nodeList = [];
+			if (replacementPattern) {
+				try {
+					nodeList = queryWithNamespaces(replacementPattern, node);
+				} catch (e) {
+					return false;
+				}
+			}
+
+			nodeList.forEach((_node, i) => {
+				const _location = location.slice();
+				_location.push(i);
+
+					// equivalent of innerHTML
+				let html = '';
+				for (const nodeKey in _node.childNodes) {
+					const nodeValue = xmlSerializer.serializeToString(_node.childNodes[nodeKey]);
+					if (nodeValue &amp;&amp; nodeValue !== '??') {
+						html = `${html}${nodeValue} `;
+					}
+				}
+				html = _s.trim(html);
+
+					// serialize text node to text
+				if (_location.length === this.refPatterns.length) {
+
+						// push node to graph
+					text.push({
+						location: _location,
+						html,
+					});
+				} else {
+
+						// recurse
+					const parsedNode = new DOMParser().parseFromString(html);
+					xmlToGraph(parsedNode, _location);
+				}
+			});
+		};
+
+		// convert text to graph
+		xmlToGraph(_workFileXml, []);
+
+		// make textNodes from graph
+		text.forEach(({ location, html }, index) => {
+			const textNode = new TextNode({ location, html, index });
+			this.textNodes.push(textNode);
+		});
+	}
+
+	/**
+	 * get replacementPattern from pattern
+	 */
+	_getReplacementPattern(pattern, prevPattern) {
+		// remove xpath wrapper
+		let replacementPattern = _s.lstrip(pattern.replacementPattern, '#xpath(');
+		replacementPattern = _s.rstrip(replacementPattern, ')');
+
+		// Don't only get the nodes that have n='number'
+		// TODO: determine best method of handling numbering in the future
+		// this is a workaround to get to a simple solution first
+		const numberAttrQueryRegex = new RegExp(/\[@n='\$\d+'\]/g);
+		replacementPattern = replacementPattern.replace(numberAttrQueryRegex, '');
+
+		// localize more specific pattern by the nodes of the previous pattern
+		if (prevPattern) {
+			const prevReplacementPattern = this._getReplacementPattern(prevPattern);
+			replacementPattern = replacementPattern.replace(prevReplacementPattern, '');
+		}
+
+		return replacementPattern;
+	}
+
+	/**
+	 * Save all work data and textnodes in the work
+	 */
+	async save(textGroup) {
+
+		const english_title = this.english_title;
+		const original_title = this.original_title;
+		if (!english_title || !original_title) {
+			winston.error(`Error ingesting Work ${this.filename}`);
+			return null;
+		}
+
+		const urn = this.urn || '';
+
+		const work = await Work.create({
+			filemd5hash: this.filemd5hash,
+			filename: this.filename,
+			original_title: original_title.slice(0, 250),
+			english_title: english_title.slice(0, 250),
+			structure: this.structure,
+			form: this.form,
+			urn: urn.slice(0, 250),
+		});
+
+		await work.setTextgroup(textGroup);
+		await textGroup.addWork(work);
+
+		await this._createLanguage(work);
+
+		if (this.version) {
+			await this.version.save(work);
+		}
+
+		for (let i = 0; i &lt; this.textNodes.length; i++) {
+			await this.textNodes[i].save(work);
+		}
+
+	}
+
+	async _createLanguage(work) {
+		let title;
+
+		if (!this.filename) {
+			return false;
+		}
+
+		if (~this.filename.indexOf('grc')) {
+			title = 'Greek';
+		} else if (~this.filename.indexOf('grk')) {
+			title = 'Greek';
+		} else if (~this.filename.indexOf('eng')) {
+			title = 'English';
+		} else if (~this.filename.indexOf('lat')) {
+			title = 'Latin';
+		} else if (~this.filename.indexOf('ger')) {
+			title = 'German';
+		} else if (~this.filename.indexOf('mul')) {
+			title = 'Multiple';
+		} else if (~this.filename.indexOf('fre')) {
+			title = 'French';
+		} else if (~this.filename.indexOf('cop')) {
+			title = 'Coptic';
+		} else {
+			winston.error(`Could not identify language for file ${this.filename}`);
+			return null;
+		}
+
+		let language;
+		language = await Language.findOne({
+			where: {
+				title,
+			}
+		});
+
+		if (!language) {
+			language = await Language.create({
+				title,
+			});
+		}
+
+		await work.setLanguage(language);
+		await language.addWork(work);
+	}
+}
+
+
+export default _Work;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="-_Collection.html">_Collection</a></li><li><a href="-_Exemplar.html">_Exemplar</a></li><li><a href="-_TextNode.html">_TextNode</a></li><li><a href="-_Version.html">_Version</a></li><li><a href="-_Work.html">_Work</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Author">Author</a></li><li><a href="global.html#AuthorType">AuthorType</a></li><li><a href="global.html#checkXmlOrJSON">checkXmlOrJSON</a></li><li><a href="global.html#cloneRepo">cloneRepo</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionType">CollectionType</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#CtsUrn">CtsUrn</a></li><li><a href="global.html#db">db</a></li><li><a href="global.html#Exemplar">Exemplar</a></li><li><a href="global.html#ExemplarType">ExemplarType</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getAuthor">getAuthor</a></li><li><a href="global.html#getAuthors">getAuthors</a></li><li><a href="global.html#getCollection">getCollection</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getLanguage">getLanguage</a></li><li><a href="global.html#getLanguages">getLanguages</a></li><li><a href="global.html#getTextGroup">getTextGroup</a></li><li><a href="global.html#getTextGroups">getTextGroups</a></li><li><a href="global.html#getTextNodeURN">getTextNodeURN</a></li><li><a href="global.html#getTextNodeWords">getTextNodeWords</a></li><li><a href="global.html#getWordURN">getWordURN</a></li><li><a href="global.html#getWork">getWork</a></li><li><a href="global.html#getWorks">getWorks</a></li><li><a href="global.html#ingestCollection">ingestCollection</a></li><li><a href="global.html#ingestJsonData">ingestJsonData</a></li><li><a href="global.html#ingestXmlData">ingestXmlData</a></li><li><a href="global.html#insert">insert</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#Language">Language</a></li><li><a href="global.html#LanguageType">LanguageType</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RemoveType">RemoveType</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#TextGroup">TextGroup</a></li><li><a href="global.html#TextGroupType">TextGroupType</a></li><li><a href="global.html#textLocationNext">textLocationNext</a></li><li><a href="global.html#textLocationPrev">textLocationPrev</a></li><li><a href="global.html#TextNode">TextNode</a></li><li><a href="global.html#textNodeCreate">textNodeCreate</a></li><li><a href="global.html#TextNodeInputType">TextNodeInputType</a></li><li><a href="global.html#textNodeRemove">textNodeRemove</a></li><li><a href="global.html#textNodesGet">textNodesGet</a></li><li><a href="global.html#TextNodeType">TextNodeType</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#Version">Version</a></li><li><a href="global.html#VersionType">VersionType</a></li><li><a href="global.html#WordType">WordType</a></li><li><a href="global.html#Work">Work</a></li><li><a href="global.html#WorkInputType">WorkInputType</a></li><li><a href="global.html#WorkType">WorkType</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jan 09 2018 22:18:46 GMT-0500 (EST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

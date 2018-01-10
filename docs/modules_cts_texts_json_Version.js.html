@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 		<meta charset="utf-8">
-		<title>JSDoc: Source: graphql/types/textNode.js</title>
+		<title>JSDoc: Source: modules/cts/texts/json/Version.js</title>
 
 		<script src="scripts/prettify/prettify.js"> </script>
 		<script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-		<h1 class="page-title">Source: graphql/types/textNode.js</h1>
+		<h1 class="page-title">Source: modules/cts/texts/json/Version.js</h1>
 
 		
 
@@ -26,53 +26,28 @@
 		
 		<section>
 				<article>
-						<pre class="prettyprint source linenums"><code>import _ from 'underscore';
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList } from 'graphql';
-import { attributeFields } from 'graphql-sequelize';
+						<pre class="prettyprint source linenums"><code>import Version from '../../../../models/version';
 
-import TextNode from '../../models/textNode';
-import TextNodeService from '../logic/textNodes';
-import WordType from './word';
+/** Class representing a version of a work */
+class _Version {
 
+	/**
+	 * Create a new version
+	 */
+	constructor(props) {
 
+	}
 
-/**
- * Text Nodes model type
- * @type {GraphQLObjectType}
- */
-const TextNodeType = new GraphQLObjectType({
-	name: 'TextNode',
-	description: 'A textNode in a work, similar to data model from Draft.js',
-	fields: {
-		..._.assign(attributeFields(TextNode)),
-		urn: {
-			type: GraphQLString,
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeURN(parent);
-			},
-		},
-		words: {
-			type: new GraphQLList(WordType),
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeWords(parent);
-			},
-		},
-	},
-});
+	/**
+	 * Save version to db
+	 */
+	ingest() {
 
-/**
- * Text Nodes input model type
- * @type {GraphQLInputObjectType}
- */
-const TextNodeInputType = new GraphQLInputObjectType({
-	name: 'TextNodeInput',
-	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
-	fields: _.assign(attributeFields(TextNode)),
-});
+	}
 
-export { TextNodeType, TextNodeInputType };
+}
+
+export default _Version;
 </code></pre>
 				</article>
 		</section>

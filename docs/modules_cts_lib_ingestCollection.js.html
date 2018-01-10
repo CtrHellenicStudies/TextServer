@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: authentication/routes/login.js</title>
+    <title>JSDoc: Source: modules/cts/lib/ingestCollection.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: authentication/routes/login.js</h1>
+    <h1 class="page-title">Source: modules/cts/lib/ingestCollection.js</h1>
 
     
 
@@ -26,81 +26,69 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import winston from 'winston';
-
-import generateJWT from './jwt';
-import providers from './providers';
-
-// models
-// import User from '../../models/user';
-
-// authentication
-import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
+            <pre class="prettyprint source linenums"><code>import checkXmlOrJSON from './checkXmlOrJSON';
+import XMLCollection from '../texts/xml/Collection';
+import JSONCollection from '../texts/json/Collection';
 
 /**
- * Login user with password and username
- * @param	{Object} res			Express response object
- * @param	{String} username Username
- * @param	{String} password Password
+ * Parse data from a collection repo with XML data (possibly TEI-formatted
+ * XML files with some CTS compliant files)
  */
-export const loginPWD = async (res, username, password) => {
-	const user = await User.findByUsername(username);
-	if (user) {
-		user.authenticate(password, (_, isValid, message) => {
-			if (isValid) {
-				return res.json(generateJWT(user));
-			}
-			return res.status(401).send(message);
+const ingestXmlData = async ({ title, repoRemote, repoLocal, collectionDataType }) => {
+	// create collection
+	const collection = new XMLCollection({
+		title,
+		repoRemote,
+		repoLocal,
+		collectionDataType,
+	});
+
+	// generate collection inventory
+	await collection.generateInventory();
+};
+
+/**
+ * Parse data from a collection repo with cltk_json data
+ */
+const ingestJsonData = async ({ title, repoRemote, repoLocal, collectionDataType }) => {
+	// create collection
+	const collection = new JSONCollection({
+		title,
+		repoRemote,
+		repoLocal,
+		collectionDataType,
+	});
+
+	// generate collection inventory
+	await collection.generateInventory();
+};
+
+/**
+ * Ingest a collection representated as git repository that has been cloned
+ */
+const ingestCollection = async ({ title, repoRemote, repoLocal }) => {
+	// determine xml or cltk_json
+	const xmlOrJSON = checkXmlOrJSON(repoLocal);
+	if (xmlOrJSON === 'xml') {
+		await ingestXmlData({
+			title,
+			repoRemote,
+			repoLocal,
+			collectionDataType: 'xml',
 		});
-	} else {
-		return res.status(401).send({error: 'User not found'});
+	} else if (xmlOrJSON === 'json') {
+		await ingestJsonData({
+			title,
+			repoRemote,
+			repoLocal,
+			collectionDataType: 'json',
+		});
 	}
 };
 
-/**
- * Login with OAuth v.2
- * @param	{Object} res				Express response object
- * @param	{String} accessToken oAuth access token
- * @param	{String} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth2 = async (res, accessToken, network) => {
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth2(accessToken, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
-		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
-
-/**
- * Login with OAuth v.1
- * @param	{Object} res				Express response object
- * @param	{string} oauthToken			 oAuth access token
- * @param	{string} oauthTokenSecret oAuth access secret
- * @param	{string} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
-
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth1(network, oauthToken, oauthTokenSecret, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
-		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
+export { ingestXmlData, ingestJsonData };
+export default ingestCollection;
 </code></pre>
         </article>
     </section>

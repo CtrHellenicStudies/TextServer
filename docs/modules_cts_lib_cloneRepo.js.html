@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 		<meta charset="utf-8">
-		<title>JSDoc: Source: graphql/types/textNode.js</title>
+		<title>JSDoc: Source: modules/cts/lib/cloneRepo.js</title>
 
 		<script src="scripts/prettify/prettify.js"> </script>
 		<script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-		<h1 class="page-title">Source: graphql/types/textNode.js</h1>
+		<h1 class="page-title">Source: modules/cts/lib/cloneRepo.js</h1>
 
 		
 
@@ -26,53 +26,26 @@
 		
 		<section>
 				<article>
-						<pre class="prettyprint source linenums"><code>import _ from 'underscore';
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList } from 'graphql';
-import { attributeFields } from 'graphql-sequelize';
-
-import TextNode from '../../models/textNode';
-import TextNodeService from '../logic/textNodes';
-import WordType from './word';
-
+						<pre class="prettyprint source linenums"><code>import fs from 'fs';
+import git from 'simple-git';
+import winston from 'winston';
 
 
 /**
- * Text Nodes model type
- * @type {GraphQLObjectType}
+ * Clone a repository
+ * TODO: determine optimal method of error handling with async/await
  */
-const TextNodeType = new GraphQLObjectType({
-	name: 'TextNode',
-	description: 'A textNode in a work, similar to data model from Draft.js',
-	fields: {
-		..._.assign(attributeFields(TextNode)),
-		urn: {
-			type: GraphQLString,
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeURN(parent);
-			},
-		},
-		words: {
-			type: new GraphQLList(WordType),
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeWords(parent);
-			},
-		},
-	},
-});
+const cloneRepo = async (repository, repoLocal) => {
+	if (!fs.existsSync(repoLocal)) {
+		return await git().clone(repository, repoLocal);
+	} 
+	winston.info(` -- repo already cloned at ${repoLocal}`);
+	return false;
+	
+};
 
-/**
- * Text Nodes input model type
- * @type {GraphQLInputObjectType}
- */
-const TextNodeInputType = new GraphQLInputObjectType({
-	name: 'TextNodeInput',
-	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
-	fields: _.assign(attributeFields(TextNode)),
-});
 
-export { TextNodeType, TextNodeInputType };
+export default cloneRepo;
 </code></pre>
 				</article>
 		</section>

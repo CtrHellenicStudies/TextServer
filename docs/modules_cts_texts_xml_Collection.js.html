@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: authentication/routes/login.js</title>
+    <title>JSDoc: Source: modules/cts/texts/xml/Collection.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: authentication/routes/login.js</h1>
+    <h1 class="page-title">Source: modules/cts/texts/xml/Collection.js</h1>
 
     
 
@@ -26,81 +26,95 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import winston from 'winston';
+            <pre class="prettyprint source linenums"><code>import fs from 'fs';
+import path from 'path';
+import slugify from 'slugify';
+import { DOMParser } from 'xmldom';
+import winston from 'winston';
 
-import generateJWT from './jwt';
-import providers from './providers';
+import Collection from '../../../../models/collection';
+import TextGroup from './TextGroup';
 
-// models
-// import User from '../../models/user';
 
-// authentication
-import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
+class _Collection {
 
-/**
- * Login user with password and username
- * @param	{Object} res			Express response object
- * @param	{String} username Username
- * @param	{String} password Password
- */
-export const loginPWD = async (res, username, password) => {
-	const user = await User.findByUsername(username);
-	if (user) {
-		user.authenticate(password, (_, isValid, message) => {
-			if (isValid) {
-				return res.json(generateJWT(user));
+	/**
+	 * Create a collection
+	 */
+	constructor({ title, repoRemote, repoLocal, collectionDataType }) {
+		this.title = title;
+		this.repoRemote = repoRemote;
+		this.repoLocal = repoLocal;
+		this.collectionDataType = collectionDataType;
+		this.textGroups = [];
+	}
+
+	/**
+	 * Get the inventory of this collection's textGroups
+	 */
+	async generateInventory() {
+		winston.info(` -- generating inventory for collection ${this.title}`);
+		// walk contents of textgroup dir
+		const textGroupContents = fs.readdirSync(path.join(this.repoLocal, '/data/'));
+		textGroupContents.forEach((textGroupContent, i) => {
+
+			// if the content object is a directory
+			if (fs.lstatSync(path.join(this.repoLocal, '/data/', textGroupContent)).isDirectory()) {
+
+				if (!fs.existsSync(path.join(this.repoLocal, '/data/', textGroupContent, '__cts__.xml'))) {
+					return false;
+				}
+
+				// check textgroup for __cts__.xml metadata file
+				const _textGroupMetadataFile = fs.readFileSync(path.join(this.repoLocal, '/data/', textGroupContent, '/__cts__.xml'), 'utf8');
+
+				// handle case of no __cts__.xml file
+				if (!_textGroupMetadataFile) {
+					winston.info(`No metadata file for ${path.join(this.repoLocal, '/data/', textGroupContent)}, skipping.`);
+					return false;
+				}
+
+				// parse xml
+				const _textGroupXML = new DOMParser().parseFromString(_textGroupMetadataFile);
+
+				// create a new textGroup
+				const textGroup = new TextGroup({
+					textGroupDir: path.join(this.repoLocal, '/data/', textGroupContent),
+					_textGroupXML,
+				});
+
+				// add to collection textgroups array
+				this.textGroups.push(textGroup);
 			}
-			return res.status(401).send(message);
 		});
-	} else {
-		return res.status(401).send({error: 'User not found'});
+
+		return await this.save();
 	}
-};
 
-/**
- * Login with OAuth v.2
- * @param	{Object} res				Express response object
- * @param	{String} accessToken oAuth access token
- * @param	{String} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth2 = async (res, accessToken, network) => {
+	/**
+	 * Save all textgroups in collection inventory (will save all hierarchical
+	 * related data in the collection>>textgroup>>work>>textNode tree)
+	 */
+	async save() {
+		const title = this.title;
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth2(accessToken, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+		if (!title) {
+			winston.error(`Error ingesting Collection ${this.repoLocal}`);
+			return null;
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
 
-/**
- * Login with OAuth v.1
- * @param	{Object} res				Express response object
- * @param	{string} oauthToken			 oAuth access token
- * @param	{string} oauthTokenSecret oAuth access secret
- * @param	{string} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
+		const collection = await Collection.create({
+			title: title.slice(0, 250),
+			repository: this.repoRemote,
+		});
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth1(network, oauthToken, oauthTokenSecret, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+		for (let i = 0; i &lt; this.textGroups.length; i++) {
+			await this.textGroups[i].generateInventory(collection);
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
 	}
-};
+}
+
+export default _Collection;
 </code></pre>
         </article>
     </section>

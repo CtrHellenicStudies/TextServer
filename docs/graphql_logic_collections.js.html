@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: authentication/routes/login.js</title>
+    <title>JSDoc: Source: graphql/logic/collections.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: authentication/routes/login.js</h1>
+    <h1 class="page-title">Source: graphql/logic/collections.js</h1>
 
     
 
@@ -26,81 +26,80 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import winston from 'winston';
+            <pre class="prettyprint source linenums"><code>import Sequelize from 'sequelize';
 
-import generateJWT from './jwt';
-import providers from './providers';
-
-// models
-// import User from '../../models/user';
-
-// authentication
-import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
+import PermissionsService from './PermissionsService';
+import Collection from '../../models/collection';
 
 /**
- * Login user with password and username
- * @param	{Object} res			Express response object
- * @param	{String} username Username
- * @param	{String} password Password
+ * Logic-layer service for dealing with collections
  */
-export const loginPWD = async (res, username, password) => {
-	const user = await User.findByUsername(username);
-	if (user) {
-		user.authenticate(password, (_, isValid, message) => {
-			if (isValid) {
-				return res.json(generateJWT(user));
-			}
-			return res.status(401).send(message);
-		});
-	} else {
-		return res.status(401).send({error: 'User not found'});
+
+export default class CollectionService extends PermissionsService {
+	/**
+	 * Count collections
+	 * @returns {number} count of collections
+	 */
+	count() {
+		return Collection.count();
 	}
-};
 
-/**
- * Login with OAuth v.2
- * @param	{Object} res				Express response object
- * @param	{String} accessToken oAuth access token
- * @param	{String} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth2 = async (res, accessToken, network) => {
+	/**
+	 * Get a list of collections
+	 * @param {string} textsearch
+	 * @param {number} offset
+	 * @param {number} limit
+	 * @returns {Object[]} array of collections
+	 */
+	getCollections(textsearch, offset = 0, limit = 100) {
+		const args = {
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			],
+		};
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth2(accessToken, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+		if (textsearch) {
+			args.where = {
+				title: {
+					[Sequelize.Op.like]: `%${textsearch}%`,
+				}
+			};
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
+
+		return Collection.findAll(args);
 	}
-};
 
-/**
- * Login with OAuth v.1
- * @param	{Object} res				Express response object
- * @param	{string} oauthToken			 oAuth access token
- * @param	{string} oauthTokenSecret oAuth access secret
- * @param	{string} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
+	/**
+	 * Get collection
+	 * @param {number} id - id of collection
+	 * @param {string} slug - slug of collection
+	 * @param {string} urn - urn of collection
+	 * @returns {Object} array of collections
+	 */
+	getCollection(id, slug, urn) {
+		const where = {};
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth1(network, oauthToken, oauthTokenSecret, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+		if (!id &amp;&amp; !slug &amp;&amp; !urn) {
+			return null;
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
+
+		if (id) {
+			where.id = id;
+		}
+
+		if (slug) {
+			where.slug = slug;
+		}
+
+		if (urn) {
+			where.urn = urn;
+		}
+
+		return Collection.findOne({ where });
 	}
-};
+}
 </code></pre>
         </article>
     </section>

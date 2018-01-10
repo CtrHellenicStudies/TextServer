@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 		<meta charset="utf-8">
-		<title>JSDoc: Source: graphql/types/textNode.js</title>
+		<title>JSDoc: Source: models/language.js</title>
 
 		<script src="scripts/prettify/prettify.js"> </script>
 		<script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-		<h1 class="page-title">Source: graphql/types/textNode.js</h1>
+		<h1 class="page-title">Source: models/language.js</h1>
 
 		
 
@@ -26,53 +26,43 @@
 		
 		<section>
 				<article>
-						<pre class="prettyprint source linenums"><code>import _ from 'underscore';
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList } from 'graphql';
-import { attributeFields } from 'graphql-sequelize';
-
-import TextNode from '../../models/textNode';
-import TextNodeService from '../logic/textNodes';
-import WordType from './word';
-
-
+						<pre class="prettyprint source linenums"><code>import Sequelize from 'sequelize';
+import SequelizeSlugify from 'sequelize-slugify';
+import db from '../db';
 
 /**
- * Text Nodes model type
- * @type {GraphQLObjectType}
+ * A language of a work
  */
-const TextNodeType = new GraphQLObjectType({
-	name: 'TextNode',
-	description: 'A textNode in a work, similar to data model from Draft.js',
-	fields: {
-		..._.assign(attributeFields(TextNode)),
-		urn: {
-			type: GraphQLString,
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeURN(parent);
-			},
-		},
-		words: {
-			type: new GraphQLList(WordType),
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeWords(parent);
-			},
-		},
+const Language = db.define('languages', {
+	id: {
+		type: Sequelize.INTEGER,
+		autoIncrement: true,
+		primaryKey: true,
 	},
+	title: {
+		type: Sequelize.STRING,
+	},
+	slug: {
+		type: Sequelize.STRING,
+		unique: true,
+	},
+}, {
+	timestamps: false,
 });
 
-/**
- * Text Nodes input model type
- * @type {GraphQLInputObjectType}
- */
-const TextNodeInputType = new GraphQLInputObjectType({
-	name: 'TextNodeInput',
-	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
-	fields: _.assign(attributeFields(TextNode)),
+Language.associate = ({ models }) => {
+	Language.hasMany(models.works);
+};
+
+SequelizeSlugify.slugifyModel(Language, {
+	source: ['title'],
+	slugOptions: { lower: true },
+	overwrite: false,
+	column: 'slug'
 });
 
-export { TextNodeType, TextNodeInputType };
+
+export default Language;
 </code></pre>
 				</article>
 		</section>

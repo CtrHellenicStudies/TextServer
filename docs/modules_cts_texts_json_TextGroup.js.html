@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 		<meta charset="utf-8">
-		<title>JSDoc: Source: graphql/types/textNode.js</title>
+		<title>JSDoc: Source: modules/cts/texts/json/TextGroup.js</title>
 
 		<script src="scripts/prettify/prettify.js"> </script>
 		<script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-		<h1 class="page-title">Source: graphql/types/textNode.js</h1>
+		<h1 class="page-title">Source: modules/cts/texts/json/TextGroup.js</h1>
 
 		
 
@@ -26,53 +26,42 @@
 		
 		<section>
 				<article>
-						<pre class="prettyprint source linenums"><code>import _ from 'underscore';
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList } from 'graphql';
-import { attributeFields } from 'graphql-sequelize';
+						<pre class="prettyprint source linenums"><code>import fs from 'fs';
+import path from 'path';
+import slugify from 'slugify';
+import xmldom from 'xmldom';
+import xpath from 'xpath';
 
-import TextNode from '../../models/textNode';
-import TextNodeService from '../logic/textNodes';
-import WordType from './word';
+import TextGroup from '../../../../models/textGroup';
 
 
+class _TextGroup {
 
-/**
- * Text Nodes model type
- * @type {GraphQLObjectType}
- */
-const TextNodeType = new GraphQLObjectType({
-	name: 'TextNode',
-	description: 'A textNode in a work, similar to data model from Draft.js',
-	fields: {
-		..._.assign(attributeFields(TextNode)),
-		urn: {
-			type: GraphQLString,
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeURN(parent);
-			},
-		},
-		words: {
-			type: new GraphQLList(WordType),
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeWords(parent);
-			},
-		},
-	},
-});
+	constructor({ author, urn }) {
+		this.title = author;
+		this.urn = urn;
+		this._id;
+		this.works = [];
+	}
 
-/**
- * Text Nodes input model type
- * @type {GraphQLInputObjectType}
- */
-const TextNodeInputType = new GraphQLInputObjectType({
-	name: 'TextNodeInput',
-	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
-	fields: _.assign(attributeFields(TextNode)),
-});
+	/**
+	 * Save all textgroup data and work/textNode data in this textgroup
+	 */
+	async save(collection) {
+		const title = this.title || '';
+		const urn = this.urn || '';
 
-export { TextNodeType, TextNodeInputType };
+		const textGroup = await TextGroup.create({
+			title: this.title,
+			urn: this.urn,
+		});
+
+		await textGroup.setCollection(collection);
+		await collection.addTextgroup(textGroup);
+	}
+}
+
+export default _TextGroup;
 </code></pre>
 				</article>
 		</section>

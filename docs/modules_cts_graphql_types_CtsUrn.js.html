@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: authentication/routes/login.js</title>
+    <title>JSDoc: Source: modules/cts/graphql/types/CtsUrn.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: authentication/routes/login.js</h1>
+    <h1 class="page-title">Source: modules/cts/graphql/types/CtsUrn.js</h1>
 
     
 
@@ -26,81 +26,80 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import winston from 'winston';
+            <pre class="prettyprint source linenums"><code>import { GraphQLScalarType } from 'graphql';
+import { Kind } from 'graphql/language';
 
-import generateJWT from './jwt';
-import providers from './providers';
-
-// models
-// import User from '../../models/user';
-
-// authentication
-import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
 
 /**
- * Login user with password and username
- * @param	{Object} res			Express response object
- * @param	{String} username Username
- * @param	{String} password Password
+ * Custom graphql scalar type representing a CTS URN as individual input components
  */
-export const loginPWD = async (res, username, password) => {
-	const user = await User.findByUsername(username);
-	if (user) {
-		user.authenticate(password, (_, isValid, message) => {
-			if (isValid) {
-				return res.json(generateJWT(user));
+const CtsUrn = new GraphQLScalarType({
+	name: 'CtsUrn',
+	description: 'GraphQL custom scalar type to represent a CTS URN',
+
+	parseValue(value) {
+		return `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
+	},
+
+	serialize(value) {
+		const result = `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
+
+		return result;
+	},
+
+	parseLiteral(ast) {
+		let result = null;
+		let value;
+		let ctsUrnParams = [];
+		let textGroupAndWork = [];
+		let textGroup = '';
+		let work = '';
+
+		switch (ast.kind) {
+		case 'StringValue':
+			value = ast.value;
+			ctsUrnParams = value.split(':');
+
+			if (ctsUrnParams.length) {
+				textGroupAndWork = ctsUrnParams[3].split('.');
+				textGroup = textGroupAndWork.shift();
+				work = textGroupAndWork.join('.');
+
+				result = {};
+				result.ctsNamespace = ctsUrnParams[2];
+				result.textGroup = textGroup;
+				result.work = work;
+				result.passage = ctsUrnParams[4].split('-');
 			}
-			return res.status(401).send(message);
-		});
-	} else {
-		return res.status(401).send({error: 'User not found'});
-	}
-};
+			break;
+		case 'ObjectValue':
+			result = ast.value;
+			break;
+		case 'ArrayValue':
+			if (ast.value.length === 3) {
+				result = {};
+				textGroupAndWork = ast.value[3].split('.');
+				textGroup = textGroupAndWork.shift();
+				work = textGroupAndWork.join('.');
 
-/**
- * Login with OAuth v.2
- * @param	{Object} res				Express response object
- * @param	{String} accessToken oAuth access token
- * @param	{String} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth2 = async (res, accessToken, network) => {
-
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth2(accessToken, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+				result.ctsNamespace = ast.value[2];
+				result.textGroup = textGroup;
+				result.work = work;
+				result.passage = ast[4].split('-');
+			}
+			break;
+		default:
+			result = null;
+			break;
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
 
-/**
- * Login with OAuth v.1
- * @param	{Object} res				Express response object
- * @param	{string} oauthToken			 oAuth access token
- * @param	{string} oauthTokenSecret oAuth access secret
- * @param	{string} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
+		return result;
+	},
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth1(network, oauthToken, oauthTokenSecret, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
-		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
+});
+
+
+export default CtsUrn;
 </code></pre>
         </article>
     </section>

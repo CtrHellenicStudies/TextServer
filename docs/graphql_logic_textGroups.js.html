@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: authentication/routes/login.js</title>
+    <title>JSDoc: Source: graphql/logic/textGroups.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: authentication/routes/login.js</h1>
+    <h1 class="page-title">Source: graphql/logic/textGroups.js</h1>
 
     
 
@@ -26,81 +26,89 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import winston from 'winston';
-
-import generateJWT from './jwt';
-import providers from './providers';
-
-// models
-// import User from '../../models/user';
-
-// authentication
-import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
+            <pre class="prettyprint source linenums"><code>import PermissionsService from './PermissionsService';
+import TextGroup from '../../models/textGroup';
 
 /**
- * Login user with password and username
- * @param	{Object} res			Express response object
- * @param	{String} username Username
- * @param	{String} password Password
+ * Logic-layer service for dealing with textGroups
  */
-export const loginPWD = async (res, username, password) => {
-	const user = await User.findByUsername(username);
-	if (user) {
-		user.authenticate(password, (_, isValid, message) => {
-			if (isValid) {
-				return res.json(generateJWT(user));
+export default class TextGroupService extends PermissionsService {
+
+	/**
+	 * Count text groups
+	 * @returns {number} count of text groups
+	 */
+	count() {
+		return TextGroup.count();
+	}
+
+	/**
+	 * Get a list of textGroups
+	 * @param {string} textsearch
+	 * @param {number} offset
+	 * @param {number} limit
+	 * @param {number} collectionId
+	 * @returns {Object[]} array of textGroups
+	 */
+	getTextGroups(textsearch, offset = 0, limit = 100, collectionId = null) {
+		const args = {
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			],
+		};
+
+		if (textsearch) {
+			if (!('where' in args)) {
+				args.where = {};
 			}
-			return res.status(401).send(message);
-		});
-	} else {
-		return res.status(401).send({error: 'User not found'});
-	}
-};
-
-/**
- * Login with OAuth v.2
- * @param	{Object} res				Express response object
- * @param	{String} accessToken oAuth access token
- * @param	{String} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth2 = async (res, accessToken, network) => {
-
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth2(accessToken, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+			args.where.title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
+			};
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
 
-/**
- * Login with OAuth v.1
- * @param	{Object} res				Express response object
- * @param	{string} oauthToken			 oAuth access token
- * @param	{string} oauthTokenSecret oAuth access secret
- * @param	{string} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
+		if (collectionId !== null) {
+			if (!('where' in args)) {
+				args.where = {};
+			}
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth1(network, oauthToken, oauthTokenSecret, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+			args.where.collectionId = collectionId;
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
+
+		return TextGroup.findAll(args);
 	}
-};
+
+	/**
+	 * Get textGroup
+	 * @param {number} id - id of textGroup
+	 * @param {string} slug - slug of textGroup
+	 * @param {string} urn - urn of the textgroup
+	 * @param {string} collectionId - id of collection
+	 * @returns {Object} returned textGroup
+	 */
+	getTextGroup(id, slug, urn, collectionId) {
+		const where = {};
+
+		if (!id &amp;&amp; !slug &amp;&amp; !urn) {
+			return null;
+		}
+
+		if (id) {
+			where.id = id;
+		}
+
+		if (slug) {
+			where.slug = slug;
+		}
+
+		if (urn) {
+			where.urn = urn;
+		}
+
+		return TextGroup.findOne({ where });
+	}
+}
 </code></pre>
         </article>
     </section>

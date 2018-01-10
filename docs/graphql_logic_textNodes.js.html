@@ -26,14 +26,17 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import PermissionsService from './PermissionsService';
-import TextNodes from '../../models/textNode';
+            <pre class="prettyprint source linenums"><code>import _s from 'underscore.string';
+
+import PermissionsService from './PermissionsService';
+import TextNode from '../../models/textNode';
+import Work from '../../models/work';
 
 
 /**
  * Logic-layer service for dealing with text nodes
  */
-export default class TextNodesService extends PermissionsService {
+export default class TextNodeService extends PermissionsService {
 
 	/**
 	 * Create a text node
@@ -71,64 +74,63 @@ export default class TextNodesService extends PermissionsService {
 	 * @param {number} subworkN - number of subwork
 	 * @param {string} editionSlug - slug of edition
 	 * @param {number} lineFrom - number of line that textnodes should be greater
-	 *   than or equal to
+	 *	 than or equal to
 	 * @param {number} lineTo - number of line that textnodes should be less than
-	 *   or equal to
+	 *	 or equal to
 	 * @returns {Object[]} array of text nodes
 	 */
-	textNodesGet(id, tenantId, limit, skip, workSlug, subworkN, editionSlug, lineFrom, lineTo) {
-		if (this.userIsAdmin) {
-			const args = {};
-			const options = {
-				sort: {
-					'work.slug': 1,
-					'text.n': 1,
+	textNodesGet(workId, location, offset, index, startsAtLocation, startsAtIndex) {
+		const query = {
+			include: [{
+				model: Work,
+				where: {
+					id: parseInt(workId),
 				},
-			};
+			}],
+			order: ['index'],
+			limit: 30,
+			where: {},
+		};
 
-			if (_id) {
-				args._id = new Mongo.ObjectID(_id);
-			}
-			if (editionSlug) {
-				args['text.edition.slug'] = { $regex: slugify(editionSlug), $options: 'i'};
-			}
-			if (lineFrom) {
-				args['text.n'] = { $gte: lineFrom };
-			}
-			if (lineTo) {
-				args['text.n'] = { $lte: lineTo };
-			}
-
-			// TODO: reinstate search for line letter and text
-			// if (lineLetter) {
-			// 	args['text.letter'] = lineLetter;
-			// }
-			// if (text) {
-			// 	args['text.text'] = { $regex: text, $options: 'i'};
-			// }
-
-			if (workSlug) {
-				args['work.slug'] = slugify(workSlug);
-			}
-			if (subworkN) {
-				args['subwork.n'] = parseInt(subworkN, 10);
-			}
-
-			if (limit) {
-				options.limit = limit;
-			} else {
-				options.limit = 100;
-			}
-
-			if (skip) {
-				options.skip = skip;
-			} else {
-				options.skip = 0;
-			}
-
-			return TextNodes.find(args, options).fetch();
+		if (location) {
+			query.where.location = location;
 		}
-		return new Error('Not authorized');
+
+		if (index) {
+			query.where.index = index;
+		}
+
+		if (startsAtIndex) {
+			query.where.index = {
+				$gte: startsAtIndex,
+			};
+		}
+
+		if (offset) {
+			query.offset = offset;
+		}
+
+		if (startsAtLocation) {
+			query.where.location = startsAtLocation;
+			return TextNode.findOne(query).then((node) => {
+
+				if (!node) {
+					// TODO: Handle error
+
+					return null;
+				}
+
+				delete query.where.location;
+
+				query.where.index = {
+					$gte: node.index,
+				};
+
+				return TextNode.findAll(query);
+			});
+		}
+
+		return TextNode.findAll(query);
 	}
 
 	/**
@@ -144,7 +146,7 @@ export default class TextNodesService extends PermissionsService {
 				workid,
 			},
 			order: ['index'],
-		}
+		};
 
 		if (location) {
 			query.where.location = location;
@@ -182,7 +184,7 @@ export default class TextNodesService extends PermissionsService {
 				workid,
 			},
 			order: ['index'],
-		}
+		};
 
 		if (location) {
 			query.where.location = location;
@@ -206,6 +208,76 @@ export default class TextNodesService extends PermissionsService {
 			});
 		});
 	}
+
+	/**
+	 * Get text node urn
+	 */
+	getTextNodeURN(parent) {
+		let urn = '';
+		const passageUrn = '';
+		let workUrn = '';
+
+		if (parent.dataValues) {
+			const location = parent.dataValues.location;
+
+			const work = parent.work.dataValues;
+			if (work) {
+				workUrn = work.urn;
+				urn = `${workUrn}:`;
+			}
+
+			urn = `${urn}${location.join('.')}`;
+		}
+
+		return urn;
+	}
+
+	/**
+	 * Get text node words
+	 */
+	getTextNodeWords(parent) {
+		const words = [];
+
+		if (parent.dataValues) {
+			const sanitizedText = _s(parent.dataValues.text).stripTags().trim();
+			const _words = sanitizedText.split(' ');
+
+
+
+			_words.forEach((word) => {
+				words.push({
+					word,
+					parent,
+				});
+			});
+		}
+
+
+		return words;
+	}
+
+	/**
+	 * Get word urn
+	 */
+	getWordURN(parent) {
+		let urn = '';
+		const passageUrn = '';
+		let workUrn = '';
+
+		if (parent.word &amp;&amp; parent.parent) {
+			const location = parent.parent.dataValues.location;
+
+			const work = parent.parent.work.dataValues;
+			if (work) {
+				workUrn = work.urn;
+				urn = `${workUrn}:`;
+			}
+
+			urn = `${urn}${location.join('.')}@${parent.word}`;
+		}
+
+		return urn;
+	}
 }
 </code></pre>
         </article>
@@ -217,13 +289,13 @@ export default class TextNodesService extends PermissionsService {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authorType">authorType</a></li><li><a href="global.html#corpusType">corpusType</a></li><li><a href="global.html#db">db</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#languageType">languageType</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#RemoveType">RemoveType</a></li><li><a href="global.html#rewriteSubworks">rewriteSubworks</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#textLocationNext">textLocationNext</a></li><li><a href="global.html#textLocationPrev">textLocationPrev</a></li><li><a href="global.html#textNodeCreate">textNodeCreate</a></li><li><a href="global.html#textNodeInputType">textNodeInputType</a></li><li><a href="global.html#textNodeRemove">textNodeRemove</a></li><li><a href="global.html#textNodesGet">textNodesGet</a></li><li><a href="global.html#textNodeType">textNodeType</a></li><li><a href="global.html#workInsert">workInsert</a></li><li><a href="global.html#workRemove">workRemove</a></li><li><a href="global.html#worksGet">worksGet</a></li><li><a href="global.html#workType">workType</a></li><li><a href="global.html#workUpdate">workUpdate</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="-_Collection.html">_Collection</a></li><li><a href="-_Exemplar.html">_Exemplar</a></li><li><a href="-_TextNode.html">_TextNode</a></li><li><a href="-_Version.html">_Version</a></li><li><a href="-_Work.html">_Work</a></li><li><a href="module.html#.exports">exports</a></li></ul><h3>Global</h3><ul><li><a href="global.html#Author">Author</a></li><li><a href="global.html#AuthorType">AuthorType</a></li><li><a href="global.html#checkXmlOrJSON">checkXmlOrJSON</a></li><li><a href="global.html#cloneRepo">cloneRepo</a></li><li><a href="global.html#Collection">Collection</a></li><li><a href="global.html#CollectionType">CollectionType</a></li><li><a href="global.html#count">count</a></li><li><a href="global.html#CtsUrn">CtsUrn</a></li><li><a href="global.html#db">db</a></li><li><a href="global.html#Exemplar">Exemplar</a></li><li><a href="global.html#ExemplarType">ExemplarType</a></li><li><a href="global.html#generateJWT">generateJWT</a></li><li><a href="global.html#getAuthor">getAuthor</a></li><li><a href="global.html#getAuthors">getAuthors</a></li><li><a href="global.html#getCollection">getCollection</a></li><li><a href="global.html#getCollections">getCollections</a></li><li><a href="global.html#getLanguage">getLanguage</a></li><li><a href="global.html#getLanguages">getLanguages</a></li><li><a href="global.html#getTextGroup">getTextGroup</a></li><li><a href="global.html#getTextGroups">getTextGroups</a></li><li><a href="global.html#getTextNodeURN">getTextNodeURN</a></li><li><a href="global.html#getTextNodeWords">getTextNodeWords</a></li><li><a href="global.html#getWordURN">getWordURN</a></li><li><a href="global.html#getWork">getWork</a></li><li><a href="global.html#getWorks">getWorks</a></li><li><a href="global.html#ingestCollection">ingestCollection</a></li><li><a href="global.html#ingestJsonData">ingestJsonData</a></li><li><a href="global.html#ingestXmlData">ingestXmlData</a></li><li><a href="global.html#insert">insert</a></li><li><a href="global.html#jwtAuthenticate">jwtAuthenticate</a></li><li><a href="global.html#Language">Language</a></li><li><a href="global.html#LanguageType">LanguageType</a></li><li><a href="global.html#loginOAuth1">loginOAuth1</a></li><li><a href="global.html#loginOAuth2">loginOAuth2</a></li><li><a href="global.html#loginPWD">loginPWD</a></li><li><a href="global.html#remove">remove</a></li><li><a href="global.html#RemoveType">RemoveType</a></li><li><a href="global.html#RootMutations">RootMutations</a></li><li><a href="global.html#RootQuery">RootQuery</a></li><li><a href="global.html#RootSchema">RootSchema</a></li><li><a href="global.html#TextGroup">TextGroup</a></li><li><a href="global.html#TextGroupType">TextGroupType</a></li><li><a href="global.html#textLocationNext">textLocationNext</a></li><li><a href="global.html#textLocationPrev">textLocationPrev</a></li><li><a href="global.html#TextNode">TextNode</a></li><li><a href="global.html#textNodeCreate">textNodeCreate</a></li><li><a href="global.html#TextNodeInputType">TextNodeInputType</a></li><li><a href="global.html#textNodeRemove">textNodeRemove</a></li><li><a href="global.html#textNodesGet">textNodesGet</a></li><li><a href="global.html#TextNodeType">TextNodeType</a></li><li><a href="global.html#update">update</a></li><li><a href="global.html#Version">Version</a></li><li><a href="global.html#VersionType">VersionType</a></li><li><a href="global.html#WordType">WordType</a></li><li><a href="global.html#Work">Work</a></li><li><a href="global.html#WorkInputType">WorkInputType</a></li><li><a href="global.html#WorkType">WorkType</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Nov 04 2017 00:11:04 GMT-0400 (EDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Jan 09 2018 22:18:46 GMT-0500 (EST)
 </footer>
 
 <script> prettyPrint(); </script>

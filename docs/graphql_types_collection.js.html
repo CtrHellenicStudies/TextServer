@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: authentication/routes/login.js</title>
+    <title>JSDoc: Source: graphql/types/collection.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: authentication/routes/login.js</h1>
+    <h1 class="page-title">Source: graphql/types/collection.js</h1>
 
     
 
@@ -26,81 +26,66 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import winston from 'winston';
+            <pre class="prettyprint source linenums"><code>import _ from 'underscore';
+import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLSchema, GraphQLInt, GraphQLString } from 'graphql';
+import { attributeFields } from 'graphql-sequelize';
 
-import generateJWT from './jwt';
-import providers from './providers';
+import Collection from '../../models/collection';
+import TextGroupType from '../types/textGroup';
+import TextGroupService from '../logic/textGroups';
 
-// models
-// import User from '../../models/user';
-
-// authentication
-import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
 
 /**
- * Login user with password and username
- * @param	{Object} res			Express response object
- * @param	{String} username Username
- * @param	{String} password Password
+ * Collection model type
+ * @type {GraphQLObjectType}
  */
-export const loginPWD = async (res, username, password) => {
-	const user = await User.findByUsername(username);
-	if (user) {
-		user.authenticate(password, (_, isValid, message) => {
-			if (isValid) {
-				return res.json(generateJWT(user));
-			}
-			return res.status(401).send(message);
-		});
-	} else {
-		return res.status(401).send({error: 'User not found'});
-	}
-};
+const CollectionType = new GraphQLObjectType({
+	name: 'Collection',
+	description: 'A collection of texts (usually described as a git repository)',
+	fields: {
+		..._.assign(attributeFields(Collection)),
+		textGroups: {
+			type: new GraphQLList(TextGroupType),
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			async resolve(parent, { textsearch, limit, offset }, { token }) {
+				const collectionId = parent.id;
+				const textGroupService = new TextGroupService(token);
+				return await textGroupService.getTextGroups(textsearch, offset, limit, collectionId);
+			},
+		},
+		textGroup: {
+			type: TextGroupType,
+			args: {
+				id: {
+					type: GraphQLInt,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+				urn: {
+					type: GraphQLString,
+				},
+			},
+			async resolve(parent, { id, slug, urn }, { token }) {
+				const collectionId = parent.id;
+				const textGroupService = new TextGroupService(token);
+				return await textGroupService.getTextGroup(id, slug, urn, collectionId);
+			},
+		},
+	},
+});
 
-/**
- * Login with OAuth v.2
- * @param	{Object} res				Express response object
- * @param	{String} accessToken oAuth access token
- * @param	{String} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth2 = async (res, accessToken, network) => {
-
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth2(accessToken, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
-		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
-
-/**
- * Login with OAuth v.1
- * @param	{Object} res				Express response object
- * @param	{string} oauthToken			 oAuth access token
- * @param	{string} oauthTokenSecret oAuth access secret
- * @param	{string} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
-
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth1(network, oauthToken, oauthTokenSecret, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
-		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
+export default CollectionType;
 </code></pre>
         </article>
     </section>

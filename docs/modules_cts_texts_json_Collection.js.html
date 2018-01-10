@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: authentication/routes/login.js</title>
+    <title>JSDoc: Source: modules/cts/texts/json/Collection.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: authentication/routes/login.js</h1>
+    <h1 class="page-title">Source: modules/cts/texts/json/Collection.js</h1>
 
     
 
@@ -26,81 +26,109 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import winston from 'winston';
+            <pre class="prettyprint source linenums"><code>import fs from 'fs';
+import path from 'path';
+import winston from 'winston';
+import slugify from 'slugify';
 
-import generateJWT from './jwt';
-import providers from './providers';
+import {
+	getCltkCollectionUrn, getCltkTextgroupUrn, getCltkWorkUrn
+} from '../../lib/getCltkUrns';
 
-// models
-// import User from '../../models/user';
+import Collection from '../../../../models/collection';
+import TextGroup from './TextGroup';
+import Work from './Work';
 
-// authentication
-import { validateTokenOAuth1, validateTokenOAuth2 } from '../../authentication';
 
-/**
- * Login user with password and username
- * @param	{Object} res			Express response object
- * @param	{String} username Username
- * @param	{String} password Password
- */
-export const loginPWD = async (res, username, password) => {
-	const user = await User.findByUsername(username);
-	if (user) {
-		user.authenticate(password, (_, isValid, message) => {
-			if (isValid) {
-				return res.json(generateJWT(user));
+class _Collection {
+
+	/**
+	 * Create a collection
+	 */
+	constructor({ title, repoRemote, repoLocal, collectionDataType }) {
+		this.title = title;
+		this.repoRemote = repoRemote;
+		this.repoLocal = repoLocal;
+		this.collectionDataType = collectionDataType;
+		this.source;
+		this.sourceLink;
+		this.urn;
+		this.textGroups = [];
+		this.works = [];
+		this.urn = getCltkCollectionUrn(repoRemote);
+	}
+
+	/**
+	 * Get the inventory of this collection's textGroups
+	 */
+	async generateInventory() {
+
+		const collectionFiles = fs.readdirSync(`${this.repoLocal}/cltk_json/`);
+
+		collectionFiles.forEach((filename) => {
+			const jsonTextFile = fs.readFileSync(`${this.repoLocal}/cltk_json/${filename}`);
+			const text = JSON.parse(jsonTextFile);
+
+			// all cltk_json formatted texts should have source and sourceLink
+			if ('source' in text &amp;&amp; !this.source) {
+				this.source = text.source;
 			}
-			return res.status(401).send(message);
+			if ('sourceLink' in text &amp;&amp; !this.sourceLink) {
+				this.sourceLink = text.sourceLink;
+			}
+
+			// create a new textGroup
+			if (!this.textGroups.some(textGroup => textGroup.title === text.author)) {
+				const textGroup = new TextGroup({
+					author: text.author,
+					urn: getCltkTextgroupUrn(this.urn, text.author),
+				});
+				this.textGroups.push(textGroup);
+			}
+
+			// create a new work
+			const work = new Work({
+				urn: getCltkWorkUrn(this.urn, text.author, text.englishTitle),
+				text,
+				filename: `${this.repoLocal}/cltk_json/${filename}`,
+			});
+			this.works.push(work);
 		});
-	} else {
-		return res.status(401).send({error: 'User not found'});
+
+		return await this.save();
 	}
-};
 
-/**
- * Login with OAuth v.2
- * @param	{Object} res				Express response object
- * @param	{String} accessToken oAuth access token
- * @param	{String} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth2 = async (res, accessToken, network) => {
-
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth2(accessToken, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+	/**
+	 * Save all textgroups in collection inventory (will save all hierarchical
+	 * related data in the collection>>textgroup>>work>>textNode tree)
+	 */
+	async save() {
+		const title = this.title;
+		if (!this.title) {
+			winston.error(`Error ingesting Collection ${this.repoLocal}`);
+			return false;
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
-	}
-};
 
-/**
- * Login with OAuth v.1
- * @param	{Object} res				Express response object
- * @param	{string} oauthToken			 oAuth access token
- * @param	{string} oauthTokenSecret oAuth access secret
- * @param	{string} network		 Name of network (e.g. facebook)
- */
-export const loginOAuth1 = async (res, oauthToken, oauthTokenSecret, network) => {
+		const collection = await Collection.create({
+			title: title.slice(0, 250),
+			repository: this.repoRemote,
+			urn: this.urn,
+		});
 
-	try {
-		const { url, userIdField } = providers[network];
-		const profile = await validateTokenOAuth1(network, oauthToken, oauthTokenSecret, url);
-		const user = await User.findByOAuth(profile[userIdField], network);
-		if (user) {
-			return res.json(generateJWT(user));
+		// ingest all textGroups
+		for (let i = 0; i &lt; this.textGroups.length; i++) {
+			await this.textGroups[i].save(collection);
 		}
-		return res.status(401).send({error: 'User not found'});
-	} catch (err) {
-		winston.error(err);
-		res.status(500).send();
+
+		// ingest all works and textnodes
+		for (let i = 0; i &lt; this.works.length; i++) {
+			await this.works[i].generateInventory(collection);
+		}
 	}
-};
+}
+
+
+export default _Collection;
 </code></pre>
         </article>
     </section>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 		<meta charset="utf-8">
-		<title>JSDoc: Source: graphql/types/textNode.js</title>
+		<title>JSDoc: Source: graphql/types/word.js</title>
 
 		<script src="scripts/prettify/prettify.js"> </script>
 		<script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-		<h1 class="page-title">Source: graphql/types/textNode.js</h1>
+		<h1 class="page-title">Source: graphql/types/word.js</h1>
 
 		
 
@@ -27,52 +27,38 @@
 		<section>
 				<article>
 						<pre class="prettyprint source linenums"><code>import _ from 'underscore';
-import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList } from 'graphql';
+import {
+	GraphQLObjectType, GraphQLInputObjectType, GraphQLNonNull, GraphQLList,
+	GraphQLSchema, GraphQLInt, GraphQLString, GraphQLID
+} from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
-import TextNode from '../../models/textNode';
 import TextNodeService from '../logic/textNodes';
-import WordType from './word';
-
-
+import CtsUrn from '../../modules/cts/graphql/types/CtsUrn';
 
 /**
- * Text Nodes model type
+ * Word model type
  * @type {GraphQLObjectType}
  */
-const TextNodeType = new GraphQLObjectType({
-	name: 'TextNode',
-	description: 'A textNode in a work, similar to data model from Draft.js',
+const WordType = new GraphQLObjectType({
+	name: 'Word',
+	description: 'A word in a textnode',
 	fields: {
-		..._.assign(attributeFields(TextNode)),
+		word: {
+			type: GraphQLString,
+		},
 		urn: {
 			type: GraphQLString,
 			resolve(parent, {}, { token }) {
 				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeURN(parent);
-			},
-		},
-		words: {
-			type: new GraphQLList(WordType),
-			resolve(parent, {}, { token }) {
-				const textNodeService = new TextNodeService({ token });
-				return textNodeService.getTextNodeWords(parent);
+				return textNodeService.getWordURN(parent);
 			},
 		},
 	},
 });
 
-/**
- * Text Nodes input model type
- * @type {GraphQLInputObjectType}
- */
-const TextNodeInputType = new GraphQLInputObjectType({
-	name: 'TextNodeInput',
-	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
-	fields: _.assign(attributeFields(TextNode)),
-});
 
-export { TextNodeType, TextNodeInputType };
+export default WordType;
 </code></pre>
 				</article>
 		</section>
