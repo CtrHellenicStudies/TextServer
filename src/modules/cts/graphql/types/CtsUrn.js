@@ -8,35 +8,57 @@ import { Kind } from 'graphql/language';
 const CtsUrn = new GraphQLScalarType({
 	name: 'CtsUrn',
 	description: 'GraphQL custom scalar type to represent a CTS URN',
+
 	parseValue(value) {
-	 let result = {
-		 ctsNamespace: null,
-		 work: null,
-		 passage: null,
-	 };
-
-	 let ctsUrnParams = value.split(':');
-
-	 if (ctsUrnParms.length) {
-		 result.ctsNamespace = ctsUrnParms[2];
-		 result.work = ctsUrnParams[3].split('.');
-		 result.passage = ctsUrnParams[4].split('-');
-	 }
-
-	 return result;
+		return `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
 	},
+
 	serialize(value) {
-	 let result = `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
+		const result = `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
 
-	 return result;
+		return result;
 	},
+
 	parseLiteral(ast) {
-		let result = ''
+		let result = null;
+		let value;
+		let ctsUrnParams = [];
+		let textGroupAndWork = [];
+		let textGroup = '';
+		let work = '';
 
 		switch (ast.kind) {
-		case Kind.STRING:
-			let value = ast.value;
-			result = `urn:cts:${value.ctsNamespace}:${value.work.join('.')}:${value.passage.join('-')}`;
+		case 'StringValue':
+			value = ast.value;
+			ctsUrnParams = value.split(':');
+
+			if (ctsUrnParams.length) {
+				textGroupAndWork = ctsUrnParams[3].split('.');
+				textGroup = textGroupAndWork.shift();
+				work = textGroupAndWork.join('.');
+
+				result = {};
+				result.ctsNamespace = ctsUrnParams[2];
+				result.textGroup = textGroup;
+				result.work = work;
+				result.passage = ctsUrnParams[4].split('-');
+			}
+			break;
+		case 'ObjectValue':
+			result = ast.value;
+			break;
+		case 'ArrayValue':
+			if (ast.value.length === 3) {
+				result = {};
+				textGroupAndWork = ast.value[3].split('.');
+				textGroup = textGroupAndWork.shift();
+				work = textGroupAndWork.join('.');
+
+				result.ctsNamespace = ast.value[2];
+				result.textGroup = textGroup;
+				result.work = work;
+				result.passage = ast[4].split('-');
+			}
 			break;
 		default:
 			result = null;
@@ -45,6 +67,7 @@ const CtsUrn = new GraphQLScalarType({
 
 		return result;
 	},
+
 });
 
 
