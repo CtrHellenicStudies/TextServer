@@ -103,6 +103,8 @@
     "db:clear": "babel-node ./scripts/db-clear",
     "db:ingest": "babel-node --max_old_space_size=10000 ./scripts/db-ingest",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:staged": "lint-staged",
     "start": "NODE_ENV=development nodemon src --exec babel-node",
     "test": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
     "test-ci": "yarn && jest --ci",
@@ -111,9 +113,31 @@
     "execute": "yarn pm2 start build/index.js --name express",
     "build-and-execute": "yarn execute && yarn build"
   },
+  "pre-commit": "lint:staged",
+  "lint-staged": {
+    "*.{md,sh,txt,xml,html,json}": [
+      "editorconfig-tools fix",
+      "git add"
+    ],
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "git add"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git@gitlab.archimedes.digital:archimedes/graphql-textserver.git"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!<rootDir>/node_modules/",
+      "!<rootDir>/docs/",
+      "!<rootDir>/public/",
+      "!<rootDir>/build/",
+      "!<rootDir>/coverage/",
+      "!<rootDir>/k8s/"
+    ]
   },
   "author": "Archimedes Digital",
   "license": "MIT"

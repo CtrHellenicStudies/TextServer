@@ -27,10 +27,10 @@ Language.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Language, {
-  source: ['title'],
-  slugOptions: { lower: true },
-  overwrite: false,
-  column: 'slug'
+	source: ['title'],
+	slugOptions: { lower: true },
+	overwrite: false,
+	column: 'slug'
 });
 
 

@@ -13,7 +13,7 @@ const cloneRepos = async () => {
 
 	const repositoriesFile = fs.readFileSync(path.join('.', 'repositories.json'));
 	const repositoriesJSON = JSON.parse(repositoriesFile);
-	repositoriesJSON.repositories.forEach(repository => {
+	repositoriesJSON.repositories.forEach((repository) => {
 
 		// set local repo path
 		let repositoryLocal = repository.url.substring(repository.url.lastIndexOf('/'));
@@ -40,7 +40,7 @@ const ingestCollections = async () => {
 
 	// setup tmp dir
 	const dir = './tmp';
-	if (!fs.existsSync(dir)){
+	if (!fs.existsSync(dir)) {
 		fs.mkdirSync(dir);
 	}
 
@@ -56,6 +56,6 @@ const ingestCollections = async () => {
 		// ingest data from texts in repo
 		await ingestCollection(_clonedRepos[i]);
 	}
-}
+};
 
 export { ingestCollections };

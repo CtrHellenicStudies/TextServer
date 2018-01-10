@@ -4,7 +4,7 @@ import path from 'path';
 /**
  * Check if is xml or json data in the collection repo
  */
-const checkXmlOrJSON = collectionDir => {
+const checkXmlOrJSON = (collectionDir) => {
 	const collectionFiles = fs.readdirSync(collectionDir);
 	if (
 			~collectionFiles.indexOf('data')

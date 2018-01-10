@@ -33,9 +33,9 @@ Collection.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Collection, {
-  source: ['title'],
-  slugOptions: { lower: true },
-  column: 'slug'
+	source: ['title'],
+	slugOptions: { lower: true },
+	column: 'slug'
 });
 
 

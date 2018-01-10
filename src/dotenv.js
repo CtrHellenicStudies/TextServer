@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 const dotenvSetup = () => {
 	if (process.env.NODE_ENV === 'production') {
@@ -10,6 +10,6 @@ const dotenvSetup = () => {
 	}
 	dotenv.config({ path: '.env.local' });
 	dotenv.config({ path: '.env' });
-}
+};
 
 export default dotenvSetup;

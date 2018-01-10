@@ -37,7 +37,7 @@ class _Collection {
 
 		const collectionFiles = fs.readdirSync(`${this.repoLocal}/cltk_json/`);
 
-		collectionFiles.forEach(filename => {
+		collectionFiles.forEach((filename) => {
 			const jsonTextFile = fs.readFileSync(`${this.repoLocal}/cltk_json/${filename}`);
 			const text = JSON.parse(jsonTextFile);
 
@@ -50,9 +50,7 @@ class _Collection {
 			}
 
 			// create a new textGroup
-			if (!this.textGroups.some(textGroup => {
-				return textGroup.title === text.author;
-			})) {
+			if (!this.textGroups.some(textGroup => textGroup.title === text.author)) {
 				const textGroup = new TextGroup({
 					author: text.author,
 					urn: getCltkTextgroupUrn(this.urn, text.author),
@@ -77,7 +75,7 @@ class _Collection {
 	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
 	async save() {
-		let title = this.title;
+		const title = this.title;
 		if (!this.title) {
 			winston.error(`Error ingesting Collection ${this.repoLocal}`);
 			return false;

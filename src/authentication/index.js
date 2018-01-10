@@ -17,7 +17,7 @@ export default function authSetup(app, redisClient) {
 
 	// PASSPORT setup
 	// passport.serializeUser(User.serializeUser());
-	//passport.deserializeUser(User.deserializeUser());
+	// passport.deserializeUser(User.deserializeUser());
 	// app.use(passport.initialize());
 }
 

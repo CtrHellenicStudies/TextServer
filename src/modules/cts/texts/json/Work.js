@@ -40,7 +40,7 @@ class _Work {
 		winston.info(` -- --  -- generating inventory for work ${this.english_title}`);
 
 		const jsonToTextNodes = (node, location = []) => {
-			for (let key in node) {
+			for (const key in node) {
 				const _location = location.slice();
 				_location.push(parseInt(key, 10));
 				if (typeof node[key] === 'string') {
@@ -50,7 +50,7 @@ class _Work {
 						filename: this.filename,
 					}));
 				} else {
-					jsonToTextNodes(node[key], _location)
+					jsonToTextNodes(node[key], _location);
 				}
 			}
 		};
@@ -77,14 +77,14 @@ class _Work {
 			});
 		}
 
-		let english_title = this.english_title;
-		let original_title = this.original_title;
+		const english_title = this.english_title;
+		const original_title = this.original_title;
 		if (!english_title || !original_title) {
 			winston.error(`Error ingesting Work ${this.filename}`);
 			return null;
 		}
 
-		let urn = this.urn || '';
+		const urn = this.urn || '';
 
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
@@ -116,11 +116,11 @@ class _Work {
 			}
 		});
 
-		let _language = _s.humanize(this.language).trim();
+		const _language = _s.humanize(this.language).trim();
 		if (!language && _language.length) {
 			language = await Language.create({
 				title: _language,
-			})
+			});
 
 			await work.setLanguage(language);
 			await language.addWork(work);

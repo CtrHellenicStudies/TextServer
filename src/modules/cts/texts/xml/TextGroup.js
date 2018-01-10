@@ -38,11 +38,11 @@ class _TextGroup {
 		winston.info(` -- -- generating inventory for textgroup ${this.groupname}`);
 		const workDirs = fs.readdirSync(this.textGroupDir);
 
-		workDirs.forEach(workDir => {
+		workDirs.forEach((workDir) => {
 			// if the content object is a directory
 			if (fs.lstatSync(path.join(this.textGroupDir, workDir)).isDirectory()) {
 
-				if (!fs.existsSync(path.join(this.textGroupDir, workDir, '__cts__.xml'))){
+				if (!fs.existsSync(path.join(this.textGroupDir, workDir, '__cts__.xml'))) {
 					return false;
 				}
 
@@ -50,7 +50,7 @@ class _TextGroup {
 				const _workXML = new DOMParser().parseFromString(_workMetadataFile);
 				const workContents = fs.readdirSync(path.join(this.textGroupDir, workDir));
 
-				workContents.forEach(workContent => {
+				workContents.forEach((workContent) => {
 					if (!~workContent.indexOf('__cts__.xml')) {
 						// set filename and open file
 						const filename = path.join(this.textGroupDir, workDir, workContent);
@@ -74,8 +74,8 @@ class _TextGroup {
 	 * Save all textgroup data and work/textNode data in this textgroup
 	 */
 	async save(collection) {
-		let title = this.groupname || '';
-		let urn = this.urn || '';
+		const title = this.groupname || '';
+		const urn = this.urn || '';
 
 		// Save textGroup
 		const textGroup = await TextGroup.create({

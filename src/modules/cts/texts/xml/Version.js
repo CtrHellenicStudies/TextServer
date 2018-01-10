@@ -41,7 +41,7 @@ class _Version {
 			title: _s.prune(this.title, 250),
 			description: this.description,
 			urn: this.urn,
-		})
+		});
 
 		await version.setWork(work);
 		await work.addVersion(version);

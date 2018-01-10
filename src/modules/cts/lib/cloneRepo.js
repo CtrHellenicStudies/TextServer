@@ -10,11 +10,11 @@ import winston from 'winston';
 const cloneRepo = async (repository, repoLocal) => {
 	if (!fs.existsSync(repoLocal)) {
 		return await git().clone(repository, repoLocal);
-	} else {
-		winston.info(` -- repo already cloned at ${repoLocal}`);
-		return false;
-	}
-}
+	} 
+	winston.info(` -- repo already cloned at ${repoLocal}`);
+	return false;
+	
+};
 
 
 export default cloneRepo;

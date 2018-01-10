@@ -33,7 +33,7 @@ class _Collection {
 			// if the content object is a directory
 			if (fs.lstatSync(path.join(this.repoLocal, '/data/', textGroupContent)).isDirectory()) {
 
-				if (!fs.existsSync(path.join(this.repoLocal, '/data/', textGroupContent, '__cts__.xml'))){
+				if (!fs.existsSync(path.join(this.repoLocal, '/data/', textGroupContent, '__cts__.xml'))) {
 					return false;
 				}
 
@@ -68,7 +68,7 @@ class _Collection {
 	 * related data in the collection>>textgroup>>work>>textNode tree)
 	 */
 	async save() {
-		let title = this.title;
+		const title = this.title;
 
 		if (!title) {
 			winston.error(`Error ingesting Collection ${this.repoLocal}`);

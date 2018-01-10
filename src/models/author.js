@@ -31,10 +31,10 @@ Author.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Author, {
-  source: ['english_name'],
-  slugOptions: { lower: true },
-  overwrite: false,
-  column: 'slug'
+	source: ['english_name'],
+	slugOptions: { lower: true },
+	overwrite: false,
+	column: 'slug'
 });
 
 

@@ -51,7 +51,7 @@ export default class TextNodeService extends PermissionsService {
 	 *	 or equal to
 	 * @returns {Object[]} array of text nodes
 	 */
-	textNodesGet( workId, location, offset, index, startsAtLocation, startsAtIndex ) {
+	textNodesGet(workId, location, offset, index, startsAtLocation, startsAtIndex) {
 		const query = {
 			include: [{
 				model: Work,
@@ -118,7 +118,7 @@ export default class TextNodeService extends PermissionsService {
 				workid,
 			},
 			order: ['index'],
-		}
+		};
 
 		if (location) {
 			query.where.location = location;
@@ -156,7 +156,7 @@ export default class TextNodeService extends PermissionsService {
 				workid,
 			},
 			order: ['index'],
-		}
+		};
 
 		if (location) {
 			query.where.location = location;
@@ -186,7 +186,7 @@ export default class TextNodeService extends PermissionsService {
 	 */
 	getTextNodeURN(parent) {
 		let urn = '';
-		let passageUrn = '';
+		const passageUrn = '';
 		let workUrn = '';
 
 		if (parent.dataValues) {
@@ -208,7 +208,7 @@ export default class TextNodeService extends PermissionsService {
 	 * Get text node words
 	 */
 	getTextNodeWords(parent) {
-		let words = [];
+		const words = [];
 
 		if (parent.dataValues) {
 			const sanitizedText = _s(parent.dataValues.text).stripTags().trim();
@@ -216,7 +216,7 @@ export default class TextNodeService extends PermissionsService {
 
 
 
-			_words.forEach(word => {
+			_words.forEach((word) => {
 				words.push({
 					word,
 					parent,
@@ -233,7 +233,7 @@ export default class TextNodeService extends PermissionsService {
 	 */
 	getWordURN(parent) {
 		let urn = '';
-		let passageUrn = '';
+		const passageUrn = '';
 		let workUrn = '';
 
 		if (parent.word && parent.parent) {

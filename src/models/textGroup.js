@@ -31,9 +31,9 @@ TextGroup.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(TextGroup, {
-  source: ['title'],
-  slugOptions: { lower: true },
-  column: 'slug'
+	source: ['title'],
+	slugOptions: { lower: true },
+	column: 'slug'
 });
 
 

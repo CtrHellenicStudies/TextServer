@@ -150,7 +150,7 @@ class _Work {
 		}
 
 		for (let i = 0; i < patternElems.length; i++) {
-			let patternElem = patternElems[`${i}`];
+			const patternElem = patternElems[`${i}`];
 
 			let label = '';
 			const labelElem = patternElem.getAttributeNode('n');
@@ -185,11 +185,11 @@ class _Work {
 		}
 
 		// order ref patterns by pattern length
-		this.refPatterns = _.sortBy(this.refPatterns, (pattern) => { return pattern.replacementPattern.length });
+		this.refPatterns = _.sortBy(this.refPatterns, pattern => pattern.replacementPattern.length);
 
 		// make pattern label structure
 		const patternLabels = [];
-		this.refPatterns.forEach(refPattern => {
+		this.refPatterns.forEach((refPattern) => {
 			patternLabels.push(refPattern.label.replace('-', ''));
 		});
 		this.structure = patternLabels.join('-');
@@ -201,7 +201,7 @@ class _Work {
 	_getTextNodes(_workFileXml) {
 		// query with tei namespace
 		const queryWithNamespaces = xpath.useNamespaces({
-			"tei": "http://www.tei-c.org/ns/1.0",
+			tei: 'http://www.tei-c.org/ns/1.0',
 		});
 
 		// text graph expressed as nodes and locations
@@ -230,42 +230,42 @@ class _Work {
 			let nodeList = [];
 			if (replacementPattern) {
 				try {
-					nodeList = queryWithNamespaces(replacementPattern, node)
+					nodeList = queryWithNamespaces(replacementPattern, node);
 				} catch (e) {
 					return false;
 				}
 			}
 
 			nodeList.forEach((_node, i) => {
-					const _location = location.slice();
-					_location.push(i);
+				const _location = location.slice();
+				_location.push(i);
 
 					// equivalent of innerHTML
-					let html = '';
-					for (let nodeKey in _node.childNodes) {
-						let nodeValue = xmlSerializer.serializeToString(_node.childNodes[nodeKey])
-						if (nodeValue && nodeValue !== '??') {
-							html = `${html}${nodeValue} `;
-						}
+				let html = '';
+				for (const nodeKey in _node.childNodes) {
+					const nodeValue = xmlSerializer.serializeToString(_node.childNodes[nodeKey]);
+					if (nodeValue && nodeValue !== '??') {
+						html = `${html}${nodeValue} `;
 					}
-					html = _s.trim(html);
+				}
+				html = _s.trim(html);
 
 					// serialize text node to text
-					if (_location.length === this.refPatterns.length) {
+				if (_location.length === this.refPatterns.length) {
 
 						// push node to graph
-						text.push({
-							location: _location,
-							html,
-						});
-					} else {
+					text.push({
+						location: _location,
+						html,
+					});
+				} else {
 
 						// recurse
-						let parsedNode = new DOMParser().parseFromString(html);
-						xmlToGraph(parsedNode, _location);
-					}
-				});
-		}
+					const parsedNode = new DOMParser().parseFromString(html);
+					xmlToGraph(parsedNode, _location);
+				}
+			});
+		};
 
 		// convert text to graph
 		xmlToGraph(_workFileXml, []);
@@ -305,14 +305,14 @@ class _Work {
 	 */
 	async save(textGroup) {
 
-		let english_title = this.english_title;
-		let original_title = this.original_title;
+		const english_title = this.english_title;
+		const original_title = this.original_title;
 		if (!english_title || !original_title) {
 			winston.error(`Error ingesting Work ${this.filename}`);
 			return null;
 		}
 
-		let urn = this.urn || '';
+		const urn = this.urn || '';
 
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
@@ -322,7 +322,7 @@ class _Work {
 			structure: this.structure,
 			form: this.form,
 			urn: urn.slice(0, 250),
-		})
+		});
 
 		await work.setTextgroup(textGroup);
 		await textGroup.addWork(work);

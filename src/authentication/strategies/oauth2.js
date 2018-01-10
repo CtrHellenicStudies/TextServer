@@ -8,7 +8,7 @@ const validateTokenOAuth2 = (accessToken, url) => new Promise((resolve, reject) 
 			statusCode
 		} = res;
 
-		winston.info('statusCode', statusCode)
+		winston.info('statusCode', statusCode);
 
 		let error;
 		if (statusCode !== 200) {

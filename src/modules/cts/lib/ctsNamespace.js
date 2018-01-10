@@ -1,1 +1,1 @@
-export default "http://chs.harvard.edu/xmlns/cts";
+export default 'http://chs.harvard.edu/xmlns/cts';

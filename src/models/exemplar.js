@@ -33,10 +33,10 @@ Exemplar.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Exemplar, {
-  source: ['title'],
-  slugOptions: { lower: true },
-  overwrite: false,
-  column: 'slug'
+	source: ['title'],
+	slugOptions: { lower: true },
+	overwrite: false,
+	column: 'slug'
 });
 
 

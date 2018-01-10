@@ -19,6 +19,8 @@
   		"error",
   		"tab"
     ],
+		"class-methods-use-this": "off",
+		"no-return-await": "off",
   	"consistent-return": "off",
   	"object-shorthand": "off",
   	"no-absolute-path": "off",
@@ -58,7 +60,10 @@
   	"react/prefer-es6-class": "off",
   	"no-unused-vars": "off",
   	"no-prototype-builtins": "off",
-  	"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+		"import/prefer-default-export": "off",
+  	"react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+		"array-callback-return": "off",
+		"func-names": "off"
   },
   "settings": {
     "import/resolver": {

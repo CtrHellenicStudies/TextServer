@@ -40,7 +40,7 @@ class _TextNode {
 			index: this.index,
 			location: this.location,
 			text: this.html,
-		})
+		});
 
 		await textNode.setWork(work);
 		await work.addTextnode(textNode);

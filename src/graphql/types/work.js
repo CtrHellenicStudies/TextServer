@@ -58,7 +58,7 @@ const WorkType = new GraphQLObjectType({
 			type: new GraphQLList(TextNodeType),
 			args: {
 				index: { type: GraphQLInt },
-				slug : { type: GraphQLString },
+				slug: { type: GraphQLString },
 				location: { type: new GraphQLList(GraphQLInt) },
 				startsAtLocation: { type: new GraphQLList(GraphQLInt) },
 				startsAtIndex: { type: GraphQLInt },

@@ -50,9 +50,9 @@ Work.associate = ({ models }) => {
 };
 
 SequelizeSlugify.slugifyModel(Work, {
-  source: ['english_title'],
-  slugOptions: { lower: true },
-  column: 'slug'
+	source: ['english_title'],
+	slugOptions: { lower: true },
+	column: 'slug'
 });
 
 

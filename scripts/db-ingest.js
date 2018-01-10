@@ -19,7 +19,7 @@ const ingest = async () => {
 		winston.error(e);
 		return 'Error with ingest. Aborting.';
 	}
-}
+};
 
 db.authenticate()
 	.then(async () => {

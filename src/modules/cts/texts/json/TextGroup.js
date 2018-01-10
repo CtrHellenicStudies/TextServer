@@ -20,8 +20,8 @@ class _TextGroup {
 	 * Save all textgroup data and work/textNode data in this textgroup
 	 */
 	async save(collection) {
-		let title = this.title || '';
-		let urn = this.urn || '';
+		const title = this.title || '';
+		const urn = this.urn || '';
 
 		const textGroup = await TextGroup.create({
 			title: this.title,
