@@ -8,7 +8,7 @@ import Work from '../../models/work';
 
 const parseUrnPassageToLocationQuery = (passage) => {
 	const locationQuery = [];
-	passage.split('-').forEach((location) => {
+	passage.forEach((location) => {
 		locationQuery.push(location.split('.'));
 	});
 
@@ -139,7 +139,6 @@ export default class TextNodeService extends PermissionsService {
 				location: locationQuery,
 			},
 		};
-
 
 		return TextNode.findAll(query);
 	}
