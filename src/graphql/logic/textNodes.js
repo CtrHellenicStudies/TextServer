@@ -62,7 +62,7 @@ export default class TextNodeService extends PermissionsService {
 	 *	 or equal to
 	 * @returns {Object[]} array of text nodes
 	 */
-	textNodesGet(workId, location, offset, index, startsAtLocation, startsAtIndex) {
+	textNodesGet(workId, location, offset, index, startsAtLocation, endsAtLocation, startsAtIndex) {
 		const query = {
 			include: [{
 				model: Work,
@@ -86,6 +86,12 @@ export default class TextNodeService extends PermissionsService {
 		if (startsAtIndex) {
 			query.where.index = {
 				$gte: startsAtIndex,
+			};
+		}
+		if (startsAtIndex && endsAtIndex) {
+			query.where.index = {
+				$gte: startsAtIndex,
+				$lt: endsAtIndex
 			};
 		}
 

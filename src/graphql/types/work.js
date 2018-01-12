@@ -61,12 +61,13 @@ const WorkType = new GraphQLObjectType({
 				slug: { type: GraphQLString },
 				location: { type: new GraphQLList(GraphQLInt) },
 				startsAtLocation: { type: new GraphQLList(GraphQLInt) },
+				endsAtLocation: { type: new GraphQLList(GraphQLInt) },
 				startsAtIndex: { type: GraphQLInt },
 				offset: { type: GraphQLInt },
 			},
-			resolve(work, { location, offset, index, startsAtLocation, startsAtIndex }, { token }) {
+			resolve(work, { location, offset, index, startsAtLocation, endsAtLocation, startsAtIndex }, { token }) {
 				const textNodeService = new TextNodeService({ token });
-				return textNodeService.textNodesGet(work.id, location, offset, index, startsAtLocation, startsAtIndex);
+				return textNodeService.textNodesGet(work.id, location, offset, index, startsAtLocation, endsAtLocation, startsAtIndex);
 			},
 		},
 		textLocationNext: {
