@@ -121,10 +121,10 @@ class _Work {
 			language = await Language.create({
 				title: _language,
 			});
-
-			await work.setLanguage(language);
-			await language.addWork(work);
 		}
+
+		await work.setLanguage(language);
+		await language.addWork(work);
 	}
 }
 
