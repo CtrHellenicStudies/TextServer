@@ -6,6 +6,7 @@ import winston from 'winston';
 
 import Collection from '../../../../models/collection';
 import TextGroup from './TextGroup';
+import getCollectionUrnByTitle from '../../lib/getCollectionUrnByTitle';
 
 
 class _Collection {
@@ -15,6 +16,7 @@ class _Collection {
 	 */
 	constructor({ title, repoRemote, repoLocal, collectionDataType }) {
 		this.title = title;
+		this.urn = getCollectionUrnByTitle(title);
 		this.repoRemote = repoRemote;
 		this.repoLocal = repoLocal;
 		this.collectionDataType = collectionDataType;
@@ -75,8 +77,11 @@ class _Collection {
 			return null;
 		}
 
+		console.log(this.urn);
+
 		const collection = await Collection.create({
 			title: title.slice(0, 250),
+			urn: this.urn,
 			repository: this.repoRemote,
 		});
 
