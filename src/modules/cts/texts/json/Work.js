@@ -20,7 +20,7 @@ class _Work {
 	constructor({ text, urn, filename }) {
 		this.text = text;
 		this.urn = urn;
-		this.original_title = text.originalTitle;
+		this.original_title = text.originalTitle || text.englishTitle;
 		this.english_title = text.englishTitle;
 		this.filename = filename;
 		this.filemd5hash = crypto.createHash('md5').update(fs.readFileSync(filename, 'utf8')).digest('hex');

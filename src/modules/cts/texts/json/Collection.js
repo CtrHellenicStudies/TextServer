@@ -49,18 +49,41 @@ class _Collection {
 				this.sourceLink = text.sourceLink;
 			}
 
+			// some may have workUrn set, if so, infer specific urns (with data such
+			// as tlg numbers) from that urn
+			let textGroupUrn = '';
+			let workUrn = '';
+			if ('workUrn' in text) {
+				// set work urn from context
+				workUrn = text.workUrn;
+
+				// set text urn from work
+				let splitUrn = workUrn.split('.');
+				splitUrn.pop();
+				textGroupUrn = splitUrn.join('');
+
+				// set collection urn from work
+				splitUrn = workUrn.split(':');
+				splitUrn.pop();
+				this.urn = splitUrn.join(':');
+
+			} else {
+				textGroupUrn = getCltkTextgroupUrn(this.urn, text.author);
+				workUrn = getCltkWorkUrn(this.urn, text.author, text.englishTitle);
+			}
+
 			// create a new textGroup
 			if (!this.textGroups.some(textGroup => textGroup.title === text.author)) {
 				const textGroup = new TextGroup({
 					author: text.author,
-					urn: getCltkTextgroupUrn(this.urn, text.author),
+					urn: textGroupUrn,
 				});
 				this.textGroups.push(textGroup);
 			}
 
 			// create a new work
 			const work = new Work({
-				urn: getCltkWorkUrn(this.urn, text.author, text.englishTitle),
+				urn: workUrn,
 				text,
 				filename: `${this.repoLocal}/cltk_json/${filename}`,
 			});
