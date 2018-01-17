@@ -1,5 +1,8 @@
 {
 	"repositories": [{
+		"title": "The Center for Hellenic Studies Greek Texts",
+		"url": "http://gitlab.archimedes.digital/archimedes/greek_text_chs"
+	}, {
 		"title": "The First Thousand Years of Greek",
 		"url": "https://github.com/OpenGreekAndLatin/First1KGreek.git"
 	}, {
