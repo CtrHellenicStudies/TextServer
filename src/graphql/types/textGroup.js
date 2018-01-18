@@ -38,10 +38,15 @@ const TextGroupType = new GraphQLObjectType({
 					type: GraphQLInt,
 				},
 			},
-			async resolve(parent, { textsearch, urn, language, edition, limit, offset }, { token }) {
+			async resolve(parent, {
+				textsearch, urn, language, edition, limit, offset,
+			}, { token }) {
 				const textGroupId = parent.id;
 				const workService = new WorkService(token);
-				return await workService.getWorks(textsearch, urn, offset, limit, language, edition, textGroupId);
+				const works = await workService.getWorks(
+					textsearch, urn, language, offset, limit, textGroupId,
+				);
+				return works;
 			},
 		},
 		work: {

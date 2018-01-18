@@ -14,6 +14,9 @@ const textNodeFields = {
 			urn: {
 				type: CtsUrnType,
 			},
+			language: {
+				type: GraphQLString,
+			},
 			location: {
 				type: new GraphQLList(GraphQLInt),
 			},
@@ -31,13 +34,13 @@ const textNodeFields = {
 			},
 		},
 		async resolve(_, {
-			index, urn, location, startsAtLocation, endsAtLocation, startsAtIndex,
-			offset,
+			index, urn, language, location, startsAtLocation, endsAtLocation,
+			startsAtIndex, offset,
 		}, { token }) {
 			const textNodeService = new TextNodeService({ token });
 			return textNodeService.textNodesGet(
-				index, urn, location, startsAtLocation, endsAtLocation, startsAtIndex,
-				offset,
+				index, urn, language, location, startsAtLocation, endsAtLocation,
+				startsAtIndex, offset,
 			);
 		},
 	},

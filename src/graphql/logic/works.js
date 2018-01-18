@@ -2,6 +2,8 @@ import Sequelize from 'sequelize';
 
 import PermissionsService from './PermissionsService';
 import Work from '../../models/work';
+import Language from '../../models/language';
+import TextGroup from '../../models/textGroup';
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 /**
@@ -56,11 +58,12 @@ export default class WorkService extends PermissionsService {
 	 * Get works
 	 * @param {string} textsearch
 	 * @param {string} urn
+	 * @param {string} language
 	 * @param {number} offset
 	 * @param {number} limit
 	 * @returns {Object[]} array of works
 	 */
-	getWorks(textsearch, urn, offset = 0, limit = 100, textGroupId = null) {
+	async getWorks(textsearch, urn, language, offset = 0, limit = 100, textGroupId = null) {
 		const args = {
 			where: {},
 			limit,
@@ -68,6 +71,7 @@ export default class WorkService extends PermissionsService {
 			order: [
 				['slug', 'ASC']
 			],
+			include: [],
 		};
 
 		if (textsearch) {
@@ -80,11 +84,31 @@ export default class WorkService extends PermissionsService {
 			args.where.urn = serializeUrn(urn);
 		}
 
-		if (textGroupId !== null) {
-			args.where.textgroupId = textGroupId;
+		if (language) {
+			const languageRecord = await Language.findOne({
+				where: {
+					slug: language,
+				},
+			});
+			args.include.push({
+				model: Language,
+				where: {
+					id: languageRecord.id,
+				},
+			});
 		}
 
-		return Work.findAll(args);
+		if (textGroupId !== null) {
+			args.include.push({
+				model: TextGroup,
+				where: {
+					id: textGroupId,
+				},
+			});
+		}
+
+		const works = await Work.findAll(args);
+		return works;
 	}
 
 	/**

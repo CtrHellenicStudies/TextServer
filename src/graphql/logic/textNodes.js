@@ -3,9 +3,10 @@ import _s from 'underscore.string';
 import PermissionsService from './PermissionsService';
 import TextNode from '../../models/textNode';
 import Work from '../../models/work';
+import Language from '../../models/language';
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
-const parseUrnToQuery = async (urn, workId) => {
+const parseUrnToQuery = async (urn, language, workId) => {
 	let textNode = null;
 	let works = [];
 	const workIds = [];
@@ -31,12 +32,23 @@ const parseUrnToQuery = async (urn, workId) => {
 			// exemplar: urn.exemplar // TODO: handle exemplar
 		});
 
-		// find a work via urn
-		works = await Work.findAll({
+		const workQuery = {
 			where: {
 				urn: workUrn,
 			},
-		});
+		};
+
+		if (language) {
+			workQuery.include = [{
+				model: Language,
+				where: {
+					slug: language,
+				},
+			}];
+		}
+
+		// find a work via urn
+		works = await Work.findAll(workQuery);
 		works.forEach((work) => {
 			workIds.push(work.id);
 		});
@@ -106,35 +118,34 @@ export default class TextNodeService extends PermissionsService {
 
 	/**
 	 * Get text nodes
-	 * @param {string} id - id of text node
-	 * @param {string} tenantId - id of current tenant
-	 * @param {number} limit - limit for mongo
-	 * @param {number} skip - skip for mongo
-	 * @param {string} workSlug - slug of work
-	 * @param {number} subworkN - number of subwork
-	 * @param {string} editionSlug - slug of edition
-	 * @param {number} lineFrom - number of line that textnodes should be greater
-	 *	 than or equal to
-	 * @param {number} lineTo - number of line that textnodes should be less than
-	 *	 or equal to
+	 * @param {string} index
+	 * @param {Object} urn
+	 * @param {[number]} location
+	 * @param {[number]} startsAtLocation
+	 * @param {[number]} endsAtLocation
+	 * @param {number} startsAtIndex
+	 * @param {number} endsAtIndex
+	 * @param {number} offset
+	 * @param {number} workid
 	 * @returns {Object[]} array of text nodes
 	 */
-	async textNodesGet(index, urn, location, startsAtLocation, endsAtLocation,
-		startsAtIndex, offset, workId) {
+	async textNodesGet(index, urn, language, location, startsAtLocation,
+		endsAtLocation, startsAtIndex, offset, workId) {
 		let textNode = null;
 		let query = {
 			order: ['index'],
 			limit: 30,
 			where: {},
+			include: [],
 		};
 
 		if (workId) {
-			query.include = [{
+			query.include.push({
 				model: Work,
 				where: {
 					id: parseInt(workId, 10),
 				},
-			}];
+			});
 		}
 
 		if (location) {
@@ -174,11 +185,10 @@ export default class TextNodeService extends PermissionsService {
 		}
 
 		if (urn) {
-			query = await parseUrnToQuery(urn, workId);
+			query = await parseUrnToQuery(urn, language, workId);
 		}
 
 		const textNodes = await TextNode.findAll(query);
-
 		return textNodes;
 	}
 

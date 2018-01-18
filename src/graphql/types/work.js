@@ -21,7 +21,7 @@ const WorkType = new GraphQLObjectType({
 	description: 'A work in a collection, associated with authors or possibly textgroups',
 	fields: {
 		id: {
-			type: GraphQLID,
+			type: GraphQLInt,
 		},
 		filemd5hash: {
 			type: GraphQLString,
