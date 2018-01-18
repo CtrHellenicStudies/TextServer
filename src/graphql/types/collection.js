@@ -5,6 +5,7 @@ import { attributeFields } from 'graphql-sequelize';
 import Collection from '../../models/collection';
 import TextGroupType from '../types/textGroup';
 import TextGroupService from '../logic/textGroups';
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 
 
 /**
@@ -22,6 +23,9 @@ const CollectionType = new GraphQLObjectType({
 				textsearch: {
 					type: GraphQLString,
 				},
+				urn: {
+					type: CtsUrnType,
+				},
 				limit: {
 					type: GraphQLInt,
 				},
@@ -29,10 +33,10 @@ const CollectionType = new GraphQLObjectType({
 					type: GraphQLInt,
 				},
 			},
-			async resolve(parent, { textsearch, limit, offset }, { token }) {
+			async resolve(parent, { textsearch, urn, limit, offset }, { token }) {
 				const collectionId = parent.id;
 				const textGroupService = new TextGroupService(token);
-				return await textGroupService.getTextGroups(textsearch, offset, limit, collectionId);
+				return await textGroupService.getTextGroups(textsearch, urn, offset, limit, collectionId);
 			},
 		},
 		textGroup: {
@@ -44,14 +48,11 @@ const CollectionType = new GraphQLObjectType({
 				slug: {
 					type: GraphQLString,
 				},
-				urn: {
-					type: GraphQLString,
-				},
 			},
-			async resolve(parent, { id, slug, urn }, { token }) {
+			async resolve(parent, { id, slug }, { token }) {
 				const collectionId = parent.id;
 				const textGroupService = new TextGroupService(token);
-				return await textGroupService.getTextGroup(id, slug, urn, collectionId);
+				return await textGroupService.getTextGroup(id, slug, collectionId);
 			},
 		},
 	},

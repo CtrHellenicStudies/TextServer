@@ -2,6 +2,8 @@ import Sequelize from 'sequelize';
 
 import PermissionsService from './PermissionsService';
 import Collection from '../../models/collection';
+import serializeUrn from '../../modules/cts/lib/serializeUrn';
+
 
 /**
  * Logic-layer service for dealing with collections
@@ -23,8 +25,9 @@ export default class CollectionService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of collections
 	 */
-	getCollections(textsearch, offset = 0, limit = 100) {
+	getCollections(textsearch, urn, offset = 0, limit = 100) {
 		const args = {
+			where: {},
 			limit,
 			offset,
 			order: [
@@ -32,12 +35,15 @@ export default class CollectionService extends PermissionsService {
 			],
 		};
 
+
 		if (textsearch) {
-			args.where = {
-				title: {
-					[Sequelize.Op.like]: `%${textsearch}%`,
-				}
+			args.where.title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
 			};
+		}
+
+		if (urn) {
+			args.where.urn = serializeUrn(urn);
 		}
 
 		return Collection.findAll(args);

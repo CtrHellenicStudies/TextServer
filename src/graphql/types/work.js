@@ -10,7 +10,7 @@ import TextNodeService from '../logic/textNodes';
 import LanguageService from '../logic/languages';
 import { TextNodeType } from './textNode';
 import LanguageType from './language';
-import CtsUrn from '../../modules/cts/graphql/types/CtsUrn';
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 
 /**
  * Works model type
@@ -45,7 +45,7 @@ const WorkType = new GraphQLObjectType({
 			type: GraphQLString,
 		},
 		urn: {
-			type: GraphQLString,
+			type: CtsUrnType,
 		},
 		language: {
 			type: LanguageType,
@@ -57,17 +57,38 @@ const WorkType = new GraphQLObjectType({
 		textNodes: {
 			type: new GraphQLList(TextNodeType),
 			args: {
-				index: { type: GraphQLInt },
-				slug: { type: GraphQLString },
-				location: { type: new GraphQLList(GraphQLInt) },
-				startsAtLocation: { type: new GraphQLList(GraphQLInt) },
-				endsAtLocation: { type: new GraphQLList(GraphQLInt) },
-				startsAtIndex: { type: GraphQLInt },
-				offset: { type: GraphQLInt },
+				index: {
+					type: GraphQLInt,
+				},
+				urn: {
+					type: CtsUrnType,
+				},
+				location: {
+					type: new GraphQLList(GraphQLInt),
+				},
+				startsAtLocation: {
+					type: new GraphQLList(GraphQLInt),
+				},
+				endsAtLocation: {
+					type: new GraphQLList(GraphQLInt),
+				},
+				startsAtIndex: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
 			},
-			resolve(work, { location, offset, index, startsAtLocation, endsAtLocation, startsAtIndex }, { token }) {
+			async resolve(work, {
+				index, urn, location, startsAtLocation, endsAtLocation, startsAtIndex,
+				offset,
+			}, { token }) {
 				const textNodeService = new TextNodeService({ token });
-				return textNodeService.textNodesGet(work.id, location, offset, index, startsAtLocation, endsAtLocation, startsAtIndex);
+				const textNodes = await textNodeService.textNodesGet(
+					index, urn, location, startsAtLocation, endsAtLocation, startsAtIndex,
+					offset, work.id
+				);
+				return textNodes;
 			},
 		},
 		textLocationNext: {

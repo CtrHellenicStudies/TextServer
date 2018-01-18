@@ -1,6 +1,7 @@
 import { GraphQLString, GraphQLList, GraphQLInt } from 'graphql';
 
 import CollectionType from '../types/collection';
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 import CollectionService from '../logic/collections';
 
 const collectionFields = {
@@ -10,6 +11,9 @@ const collectionFields = {
 			textsearch: {
 				type: GraphQLString,
 			},
+			urn: {
+				type: CtsUrnType,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -17,9 +21,9 @@ const collectionFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { textsearch, limit, offset, }, { token }) {
+		async resolve(_, { textsearch, urn, limit, offset, }, { token }) {
 			const collectionService = new CollectionService(token);
-			const collections = await collectionService.getCollections(textsearch, offset, limit);
+			const collections = await collectionService.getCollections(textsearch, urn, offset, limit);
 			return collections;
 		},
 	},
@@ -32,13 +36,10 @@ const collectionFields = {
 			slug: {
 				type: GraphQLString,
 			},
-			urn: {
-				type: GraphQLString,
-			},
 		},
-		async resolve(_, { id, slug, urn }, { token }) {
+		async resolve(_, { id, slug }, { token }) {
 			const collectionService = new CollectionService(token);
-			const collection = await collectionService.getCollection(id, slug, urn);
+			const collection = await collectionService.getCollection(id, slug);
 			return collection;
 		},
 	},

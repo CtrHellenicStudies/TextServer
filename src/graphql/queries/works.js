@@ -1,6 +1,7 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
 import WorkType from '../types/work'; // eslint-disable-line
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 import WorkService from '../logic/works';
 
 const workFields = {
@@ -10,6 +11,9 @@ const workFields = {
 			textsearch: {
 				type: GraphQLString,
 			},
+			urn: {
+				type: CtsUrnType,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -17,9 +21,9 @@ const workFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { textsearch, limit, offset }, { token }) {
+		async resolve(_, { textsearch, urn, limit, offset }, { token }) {
 			const workService = new WorkService(token);
-			const works = await workService.getWorks(textsearch, offset, limit);
+			const works = await workService.getWorks(textsearch, urn, offset, limit);
 			return works;
 		},
 	},
@@ -32,13 +36,10 @@ const workFields = {
 			slug: {
 				type: GraphQLString,
 			},
-			urn: {
-				type: GraphQLString,
-			},
 		},
-		async resolve(_, { id, slug, urn }, { token }) {
+		async resolve(_, { id, slug }, { token }) {
 			const workService = new WorkService(token);
-			return await workService.getWork(id, slug, urn);
+			return await workService.getWork(id, slug);
 		},
 	},
 };

@@ -5,6 +5,7 @@ import { attributeFields } from 'graphql-sequelize';
 import TextGroup from '../../models/textGroup';
 import WorkType from './work'; // eslint-disable-line
 import WorkService from '../logic/works';
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 
 /**
  * TextGroup model type
@@ -21,6 +22,15 @@ const TextGroupType = new GraphQLObjectType({
 				textsearch: {
 					type: GraphQLString,
 				},
+				urn: {
+					type: CtsUrnType,
+				},
+				language: {
+					type: GraphQLString,
+				},
+				edition: {
+					type: GraphQLString,
+				},
 				limit: {
 					type: GraphQLInt,
 				},
@@ -28,10 +38,10 @@ const TextGroupType = new GraphQLObjectType({
 					type: GraphQLInt,
 				},
 			},
-			async resolve(parent, { textsearch, offset, limit }, { token }) {
+			async resolve(parent, { textsearch, urn, language, edition, limit, offset }, { token }) {
 				const textGroupId = parent.id;
 				const workService = new WorkService(token);
-				return await workService.getWorks(textsearch, offset, limit, textGroupId);
+				return await workService.getWorks(textsearch, urn, offset, limit, language, edition, textGroupId);
 			},
 		},
 		work: {
@@ -43,14 +53,11 @@ const TextGroupType = new GraphQLObjectType({
 				slug: {
 					type: GraphQLString,
 				},
-				urn: {
-					type: GraphQLString,
-				},
 			},
-			async resolve(parent, { id, slug, urn }, { token }) {
+			async resolve(parent, { id, slug }, { token }) {
 				const textGroupId = parent.id;
 				const workService = new WorkService(token);
-				return await workService.getWork(id, slug, urn, textGroupId);
+				return await workService.getWork(id, slug, textGroupId);
 			},
 		},
 	},

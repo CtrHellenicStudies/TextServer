@@ -8,19 +8,37 @@ const textNodeFields = {
 	textNodes: {
 		type: new GraphQLList(TextNodeType),
 		args: {
+			index: {
+				type: GraphQLInt,
+			},
 			urn: {
 				type: CtsUrnType,
 			},
-			limit: {
+			location: {
+				type: new GraphQLList(GraphQLInt),
+			},
+			startsAtLocation: {
+				type: new GraphQLList(GraphQLInt),
+			},
+			endsAtLocation: {
+				type: new GraphQLList(GraphQLInt),
+			},
+			startsAtIndex: {
 				type: GraphQLInt,
 			},
 			offset: {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(__, { urn, limit, offset }, { token }) {
-			const textNodeService = new TextNodeService(token);
-			return await textNodeService.textNodesGetByUrn(urn, offset, limit);
+		async resolve(_, {
+			index, urn, location, startsAtLocation, endsAtLocation, startsAtIndex,
+			offset,
+		}, { token }) {
+			const textNodeService = new TextNodeService({ token });
+			return textNodeService.textNodesGet(
+				index, urn, location, startsAtLocation, endsAtLocation, startsAtIndex,
+				offset,
+			);
 		},
 	},
 };

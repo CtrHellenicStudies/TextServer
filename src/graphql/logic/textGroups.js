@@ -1,5 +1,8 @@
+
 import PermissionsService from './PermissionsService';
 import TextGroup from '../../models/textGroup';
+import serializeUrn from '../../modules/cts/lib/serializeUrn';
+
 
 /**
  * Logic-layer service for dealing with textGroups
@@ -17,13 +20,15 @@ export default class TextGroupService extends PermissionsService {
 	/**
 	 * Get a list of textGroups
 	 * @param {string} textsearch
+	 * @param {string} urn
 	 * @param {number} offset
 	 * @param {number} limit
 	 * @param {number} collectionId
 	 * @returns {Object[]} array of textGroups
 	 */
-	getTextGroups(textsearch, offset = 0, limit = 100, collectionId = null) {
+	getTextGroups(textsearch, urn, offset = 0, limit = 100, collectionId = null) {
 		const args = {
+			where: {},
 			limit,
 			offset,
 			order: [
@@ -32,19 +37,16 @@ export default class TextGroupService extends PermissionsService {
 		};
 
 		if (textsearch) {
-			if (!('where' in args)) {
-				args.where = {};
-			}
 			args.where.title = {
 				[Sequelize.Op.like]: `%${textsearch}%`,
 			};
 		}
 
-		if (collectionId !== null) {
-			if (!('where' in args)) {
-				args.where = {};
-			}
+		if (urn) {
+			args.where.urn = serializeUrn(urn);
+		}
 
+		if (collectionId !== null) {
 			args.where.collectionId = collectionId;
 		}
 
@@ -55,14 +57,13 @@ export default class TextGroupService extends PermissionsService {
 	 * Get textGroup
 	 * @param {number} id - id of textGroup
 	 * @param {string} slug - slug of textGroup
-	 * @param {string} urn - urn of the textgroup
 	 * @param {string} collectionId - id of collection
 	 * @returns {Object} returned textGroup
 	 */
-	getTextGroup(id, slug, urn, collectionId) {
+	getTextGroup(id, slug, collectionId) {
 		const where = {};
 
-		if (!id && !slug && !urn) {
+		if (!id && !slug) {
 			return null;
 		}
 
@@ -72,10 +73,6 @@ export default class TextGroupService extends PermissionsService {
 
 		if (slug) {
 			where.slug = slug;
-		}
-
-		if (urn) {
-			where.urn = urn;
 		}
 
 		return TextGroup.findOne({ where });

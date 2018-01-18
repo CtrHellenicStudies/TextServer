@@ -2,6 +2,7 @@ import Sequelize from 'sequelize';
 
 import PermissionsService from './PermissionsService';
 import Work from '../../models/work';
+import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 /**
  * Logic-layer service for dealing with works
@@ -54,12 +55,14 @@ export default class WorkService extends PermissionsService {
 	/**
 	 * Get works
 	 * @param {string} textsearch
+	 * @param {string} urn
 	 * @param {number} offset
 	 * @param {number} limit
 	 * @returns {Object[]} array of works
 	 */
-	getWorks(textsearch, offset = 0, limit = 100, textGroupId = null) {
+	getWorks(textsearch, urn, offset = 0, limit = 100, textGroupId = null) {
 		const args = {
+			where: {},
 			limit,
 			offset,
 			order: [
@@ -68,20 +71,16 @@ export default class WorkService extends PermissionsService {
 		};
 
 		if (textsearch) {
-			if (!('where' in args)) {
-				args.where = {};
-			}
-
 			args.where.english_title = {
 				[Sequelize.Op.like]: `%${textsearch}%`,
 			};
 		}
 
-		if (textGroupId !== null) {
-			if (!('where' in args)) {
-				args.where = {};
-			}
+		if (urn) {
+			args.where.urn = serializeUrn(urn);
+		}
 
+		if (textGroupId !== null) {
 			args.where.textgroupId = textGroupId;
 		}
 
@@ -92,13 +91,12 @@ export default class WorkService extends PermissionsService {
 	 * Get work
 	 * @param {number} id - id of work
 	 * @param {string} slug - slug of work
-	 * @param {string} urn - urn of work
 	 * @returns {Object} work object record
 	 */
-	getWork(id, slug, urn) {
+	getWork(id, slug) {
 		const where = {};
 
-		if (!id && !slug && !urn) {
+		if (!id && !slug) {
 			return null;
 		}
 
@@ -108,10 +106,6 @@ export default class WorkService extends PermissionsService {
 
 		if (slug) {
 			where.slug = slug;
-		}
-
-		if (urn) {
-			where.urn = urn;
 		}
 
 		return Work.findOne({ where });

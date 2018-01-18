@@ -1,6 +1,7 @@
 import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
 
 import TextGroupType from '../types/textGroup';
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 import TextGroupService from '../logic/textGroups';
 
 const textGroupFields = {
@@ -10,6 +11,9 @@ const textGroupFields = {
 			textsearch: {
 				type: GraphQLString,
 			},
+			urn: {
+				type: CtsUrnType,
+			},
 			limit: {
 				type: GraphQLInt,
 			},
@@ -17,9 +21,9 @@ const textGroupFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { textsearch, limit, offset }, { token }) {
+		async resolve(_, { textsearch, urn, limit, offset }, { token }) {
 			const textGroupService = new TextGroupService(token);
-			return await textGroupService.getTextGroups(textsearch, offset, limit);
+			return await textGroupService.getTextGroups(textsearch, urn, offset, limit);
 		},
 	},
 	textGroup: {
@@ -31,13 +35,10 @@ const textGroupFields = {
 			slug: {
 				type: GraphQLString,
 			},
-			urn: {
-				type: GraphQLString,
-			},
 		},
-		async resolve(_, { id, slug, urn }, { token }) {
+		async resolve(_, { id, slug }, { token }) {
 			const textGroupService = new TextGroupService(token);
-			return await textGroupService.getTextGroup(id, slug, urn);
+			return await textGroupService.getTextGroup(id, slug);
 		},
 	},
 };

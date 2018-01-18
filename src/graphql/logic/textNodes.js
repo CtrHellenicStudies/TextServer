@@ -3,16 +3,73 @@ import _s from 'underscore.string';
 import PermissionsService from './PermissionsService';
 import TextNode from '../../models/textNode';
 import Work from '../../models/work';
+import serializeUrn from '../../modules/cts/lib/serializeUrn';
+
+const parseUrnToQuery = async (urn, workId) => {
+	let textNode = null;
+	let works = [];
+	const workIds = [];
+
+	const query = {
+		order: ['index'],
+		limit: 30,
+		where: {},
+	};
+
+	if (workId) {
+		query.include = [{
+			model: Work,
+			where: {
+				id: workId,
+			},
+		}];
+	} else {
+		const workUrn = serializeUrn({
+			ctsNamespace: urn.ctsNamespace,
+			textGroup: urn.textGroup,
+			work: urn.work,
+			// exemplar: urn.exemplar // TODO: handle exemplar
+		});
+
+		// find a work via urn
+		works = await Work.findAll({
+			where: {
+				urn: workUrn,
+			},
+		});
+		works.forEach((work) => {
+			workIds.push(work.id);
+		});
+		query.include = [{
+			model: Work,
+			where: {
+				id: workIds,
+			},
+		}];
+	}
 
 
+	if (urn.passage && urn.passage.length) {
 
-const parseUrnPassageToLocationQuery = (passage) => {
-	const locationQuery = [];
-	passage.forEach((location) => {
-		locationQuery.push(location.split('.'));
-	});
+		query.where.location = urn.passage[0];
+		textNode = await TextNode.findOne(query);
 
-	return locationQuery;
+		query.where.index = {
+			$gte: textNode.index,
+		};
+
+		if (urn.passage.length > 1) {
+			query.where.location = urn.passage[1];
+			textNode = await TextNode.findOne(query);
+			query.where.index.$lt = textNode.index;
+		} else {
+			query.where.index.$lte = textNode.index;
+		}
+
+		delete query.where.location;
+	}
+
+	return query;
 };
 
 
@@ -62,18 +119,23 @@ export default class TextNodeService extends PermissionsService {
 	 *	 or equal to
 	 * @returns {Object[]} array of text nodes
 	 */
-	textNodesGet(workId, location, offset, index, startsAtLocation, endsAtLocation, startsAtIndex) {
-		const query = {
-			include: [{
-				model: Work,
-				where: {
-					id: parseInt(workId, 10),
-				},
-			}],
+	async textNodesGet(index, urn, location, startsAtLocation, endsAtLocation,
+		startsAtIndex, offset, workId) {
+		let textNode = null;
+		let query = {
 			order: ['index'],
 			limit: 30,
 			where: {},
 		};
+
+		if (workId) {
+			query.include = [{
+				model: Work,
+				where: {
+					id: parseInt(workId, 10),
+				},
+			}];
+		}
 
 		if (location) {
 			query.where.location = location;
@@ -88,6 +150,7 @@ export default class TextNodeService extends PermissionsService {
 				$gte: startsAtIndex,
 			};
 		}
+
 		if (startsAtIndex && endsAtIndex) {
 			query.where.index = {
 				$gte: startsAtIndex,
@@ -101,52 +164,22 @@ export default class TextNodeService extends PermissionsService {
 
 		if (startsAtLocation) {
 			query.where.location = startsAtLocation;
-			return TextNode.findOne(query).then((node) => {
+			textNode = await TextNode.findOne(query);
 
-				if (!node) {
-					// TODO: Handle error
+			delete query.where.location;
 
-					return null;
-				}
-
-				delete query.where.location;
-
-				query.where.index = {
-					$gte: node.index,
-				};
-
-				return TextNode.findAll(query);
-			});
+			query.where.index = {
+				$gte: textNode.index,
+			};
 		}
 
-		return TextNode.findAll(query);
-	}
+		if (urn) {
+			query = await parseUrnToQuery(urn, workId);
+		}
 
-	/**
-	 * Get text nodes by urn
-	 * @param {string} urn - input cts urn
-	 * @param {number} limit - limit for orm
-	 * @param {number} skip - skip for orm
-	 * @returns {Object[]} array of text nodes
-	 */
-	textNodesGetByUrn(urn, limit, skip) {
-		const locationQuery = parseUrnPassageToLocationQuery(urn.passage);
+		const textNodes = await TextNode.findAll(query);
 
-		const query = {
-			include: [{
-				model: Work,
-				where: {
-					urn: `${urn.ctsNamespace}:${urn.textGroup}.${urn.work}`,
-				},
-			}],
-			order: ['index'],
-			limit: 30,
-			where: {
-				location: locationQuery,
-			},
-		};
-
-		return TextNode.findAll(query);
+		return textNodes;
 	}
 
 

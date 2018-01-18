@@ -5,6 +5,7 @@ import { attributeFields } from 'graphql-sequelize';
 import TextNode from '../../models/textNode';
 import TextNodeService from '../logic/textNodes';
 import WordType from './word';
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 
 
 
@@ -18,7 +19,7 @@ const TextNodeType = new GraphQLObjectType({
 	fields: {
 		..._.assign(attributeFields(TextNode)),
 		urn: {
-			type: GraphQLString,
+			type: CtsUrnType,
 			resolve(parent, __, { token }) {
 				const textNodeService = new TextNodeService({ token });
 				return textNodeService.getTextNodeURN(parent);
