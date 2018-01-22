@@ -1,4 +1,9 @@
 const serializeUrn = (value) => {
+
+	if (!value) {
+		return '';
+	}
+
 	let result = 'urn:cts';
 
 	if ('ctsNamespace' in value && value.ctsNamespace && value.ctsNamespace.length) {
@@ -20,7 +25,13 @@ const serializeUrn = (value) => {
 	}
 
 	if ('passage' in value && value.passage && value.passage.length) {
-		result = `${result}:${value.passage.join('-')}`;
+		result = `${result}:`;
+		value.passage.forEach((passage, i) => {
+			if (i !== 0) {
+				result = `${result}-`;
+			}
+			result = `${result}${passage.join('.')}`;
+		});
 	}
 
 	return result;

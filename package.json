@@ -6,6 +6,7 @@
 	"dependencies": {
 		"apollo-errors": "^1.4.0",
 		"aws-sdk": "^2.86.0",
+		"axios": "^0.17.1",
 		"babel-runtime": "^6.26.0",
 		"base64url": "^2.0.0",
 		"body-parser": "^1.17.2",
@@ -44,6 +45,7 @@
 		"pq": "^0.0.3",
 		"pre-commit": "^1.2.2",
 		"prop-types": "^15.6.0",
+		"query-string": "^5.0.1",
 		"react": "^15.6.1",
 		"react-autocomplete": "^1.5.10",
 		"react-bootstrap": "^0.31.3",
@@ -67,6 +69,8 @@
 		"underscore": "^1.8.3",
 		"underscore.string": "^3.3.4",
 		"winston": "^2.4.0",
+		"xml-js": "^1.6.2",
+		"xml2js": "^0.4.19",
 		"xmldom": "^0.1.27",
 		"xpath": "^0.0.24",
 		"zxcvbn": "^4.4.2"

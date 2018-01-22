@@ -22,7 +22,7 @@ import dotenvSetup from './dotenv';
 
 // Health Check
 
-import healthCheck from './health-check';
+import healthCheck from './healthCheck';
 
 // cors
 import corsSetup from './cors';
