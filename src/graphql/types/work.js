@@ -16,7 +16,7 @@ import TranslationService from '../logic/translations';
 import VersionService from '../logic/versions';
 
 // types
-import { TextNodeType } from './textNode';
+import TextNodeType from './textNode'; // eslint-disable-line
 import LanguageType from './language';
 import EditionType from './edition';
 import VersionType from '../types/version';
