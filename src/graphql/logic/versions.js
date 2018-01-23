@@ -19,10 +19,12 @@ export default class VersionService extends PermissionsService {
 	 * @param {string} textsearch
 	 * @param {number} offset
 	 * @param {number} limit
+	 * @param {number} workId
 	 * @returns {Object[]} array of versions
 	 */
-	getVersions(textsearch, offset = 0, limit = 100) {
+	getVersions(textsearch, offset = 0, limit = 100, workId = null) {
 		const args = {
+			where: {},
 			limit,
 			offset,
 			order: [
@@ -31,11 +33,13 @@ export default class VersionService extends PermissionsService {
 		};
 
 		if (textsearch) {
-			args.where = {
-				english_name: {
-					[Sequelize.Op.like]: `%${textsearch}%`,
-				}
+			args.where.title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
 			};
+		}
+
+		if (workId) {
+			args.where.workId = workId;
 		}
 
 		return Version.findAll(args);
@@ -44,10 +48,11 @@ export default class VersionService extends PermissionsService {
 	/**
 	 * Get version
 	 * @param {number} id - id of version
-	 * @param {string} slug - id of version
+	 * @param {string} slug - slug of version
+	 * @param {string} workId - id of work for version
 	 * @returns {Object} array of versions
 	 */
-	getVersion(id, slug) {
+	getVersion(id, slug, workId) {
 		const where = {};
 
 		if (!id && !slug) {
@@ -60,6 +65,10 @@ export default class VersionService extends PermissionsService {
 
 		if (slug) {
 			where.slug = slug;
+		}
+
+		if (workId) {
+			where.workId = workId;
 		}
 
 		return Version.findOne({ where });

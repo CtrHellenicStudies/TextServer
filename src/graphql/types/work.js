@@ -71,23 +71,101 @@ const WorkType = new GraphQLObjectType({
 		},
 		version: {
 			type: VersionType,
-			resolve(parent, __, { token }) {
+			args: {
+				id: {
+					type: GraphQLInt,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { id, slug }, { token }) {
 				const versionService = new VersionService({ token });
-				return versionService.getVersion(parent.dataValues.versionId);
+				return versionService.getVersion(id, slug, parent.dataValues.id);
+			},
+		},
+		versions: {
+			type: new GraphQLList(VersionType),
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const versionService = new VersionService({ token });
+				return versionService.getVersions(textsearch, limit, offset, parent.dataValues.id);
 			},
 		},
 		exemplar: {
 			type: ExemplarType,
-			resolve(parent, __, { token }) {
+			args: {
+				id: {
+					type: GraphQLInt,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { id, slug }, { token }) {
 				const exemplarService = new ExemplarService({ token });
-				return exemplarService.getExemplar(parent.dataValues.exemplarId);
+				return exemplarService.getExemplar(id, slug, parent.dataValues.id);
+			},
+		},
+		exemplars: {
+			type: new GraphQLList(ExemplarType),
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const exemplarService = new ExemplarService({ token });
+				return exemplarService.getExemplars(textsearch, limit, offset, parent.dataValues.id);
 			},
 		},
 		translation: {
 			type: TranslationType,
-			resolve(parent, __, { token }) {
+			args: {
+				id: {
+					type: GraphQLInt,
+				},
+				slug: {
+					type: GraphQLString,
+				},
+			},
+			resolve(parent, { id, slug }, { token }) {
 				const translationService = new TranslationService({ token });
-				return translationService.getTranslation(parent.dataValues.translationId);
+				return translationService.getTranslation(id, slug, parent.dataValues.id);
+			},
+		},
+		translations: {
+			type: new GraphQLList(TranslationType),
+			args: {
+				textsearch: {
+					type: GraphQLString,
+				},
+				limit: {
+					type: GraphQLInt,
+				},
+				offset: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { textsearch, limit, offset }, { token }) {
+				const translationService = new TranslationService({ token });
+				return translationService.getTranslations(textsearch, limit, offset, parent.dataValues.id);
 			},
 		},
 		textNodes: {
