@@ -46,6 +46,7 @@ Work.associate = ({ models }) => {
 	Work.belongsTo(models.languages);
 	Work.hasMany(models.versions);
 	Work.hasMany(models.exemplars);
+	Work.hasMany(models.translations);
 	Work.hasMany(models.textnodes);
 };
 

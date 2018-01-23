@@ -5,11 +5,23 @@ import {
 } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
+// models
 import Work from '../../models/work';
+
+// logic
 import TextNodeService from '../logic/textNodes';
 import LanguageService from '../logic/languages';
+import ExemplarService from '../logic/exemplars';
+import TranslationService from '../logic/translations';
+import VersionService from '../logic/versions';
+
+// types
 import { TextNodeType } from './textNode';
 import LanguageType from './language';
+import EditionType from './edition';
+import VersionType from '../types/version';
+import ExemplarType from '../types/exemplar';
+import TranslationType from '../types/translation';
 import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 
 /**
@@ -52,6 +64,30 @@ const WorkType = new GraphQLObjectType({
 			resolve(parent, __, { token }) {
 				const languageService = new LanguageService({ token });
 				return languageService.getLanguage(parent.dataValues.languageId);
+			},
+		},
+		edition: {
+			type: EditionType,
+		},
+		version: {
+			type: VersionType,
+			resolve(parent, __, { token }) {
+				const versionService = new VersionService({ token });
+				return versionService.getVersion(parent.dataValues.versionId);
+			},
+		},
+		exemplar: {
+			type: ExemplarType,
+			resolve(parent, __, { token }) {
+				const exemplarService = new ExemplarService({ token });
+				return exemplarService.getExemplar(parent.dataValues.exemplarId);
+			},
+		},
+		translation: {
+			type: TranslationType,
+			resolve(parent, __, { token }) {
+				const translationService = new TranslationService({ token });
+				return translationService.getTranslation(parent.dataValues.translationId);
 			},
 		},
 		textNodes: {

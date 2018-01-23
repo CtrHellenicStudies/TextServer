@@ -6,15 +6,24 @@ class _Version {
 	/**
 	 * Create a new version
 	 */
-	constructor(props) { // eslint-disable-line
-
+	constructor({ title, urn }) {
+		this.title = title;
+		this.urn = urn;
+		this._id = null;
+		this.work = null;
 	}
 
 	/**
 	 * Save version to db
 	 */
-	ingest() {
+	async save(work) {
+		const version = await Version.create({
+			title: this.title,
+			urn: this.urn,
+		});
 
+		await version.setWork(work);
+		await work.addVersion(version);
 	}
 
 }

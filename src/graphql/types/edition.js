@@ -11,7 +11,7 @@ import VersionType from '../types/version';
 import ExemplarType from '../types/exemplar';
 import TranslationType from '../types/translation';
 import TextNodeType from '../types/textNode'; // eslint-disable-line
-
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 
 /**
  * Edition type
@@ -19,7 +19,7 @@ import TextNodeType from '../types/textNode'; // eslint-disable-line
  */
 const EditionType = new GraphQLObjectType({
 	name: 'Edition',
-	description: 'An edition comprising version, exemplar, and translation',
+	description: 'An edition comprising optional version, exemplar, and translation',
 	fields: {
 		version: {
 			type: VersionType,
@@ -29,6 +29,8 @@ const EditionType = new GraphQLObjectType({
 				},
 			},
 			resolve(parent, __, { token }) {
+				console.log(parent.dataValues);
+				console.log('#####');
 				const versionService = new VersionService({ token });
 				return versionService.getVersion(parent);
 			},
@@ -45,7 +47,7 @@ const EditionType = new GraphQLObjectType({
 				return exemplarService.getExemplar(parent);
 			},
 		},
-		tranlsation: {
+		translation: {
 			type: TranslationType,
 			args: {
 				urn: {

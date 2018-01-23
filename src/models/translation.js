@@ -1,5 +1,6 @@
 import Sequelize from 'sequelize';
 import SequelizeSlugify from 'sequelize-slugify';
+
 import db from '../db';
 
 /**
@@ -37,7 +38,5 @@ SequelizeSlugify.slugifyModel(Translation, {
 	slugOptions: { lower: true },
 	column: 'slug'
 });
-
-
 
 export default Translation;

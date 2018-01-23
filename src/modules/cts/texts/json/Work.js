@@ -8,6 +8,7 @@ import Language from '../../../../models/language';
 import TextGroup from '../../../../models/textGroup';
 import Work from '../../../../models/work';
 import TextNode from './TextNode';
+import Version from './Version';
 
 
 
@@ -24,12 +25,16 @@ class _Work {
 		this.english_title = text.englishTitle;
 		this.filename = filename;
 		this.filemd5hash = crypto.createHash('md5').update(fs.readFileSync(filename, 'utf8')).digest('hex');
-		this.language = text.language;
 
+		// metadata about work
+		this.language = text.language;
 		this.structure = null;
 		this.form = null;
-		this.exemplar = null;
+		// edition information about work
 		this.version = null;
+		this.exemplar = null;
+		this.translation = null;
+		// textnodes for work
 		this.textNodes = [];
 	}
 
@@ -55,7 +60,23 @@ class _Work {
 			}
 		};
 
+		// convert json document body to textnodes
 		jsonToTextNodes(this.text.text);
+
+		// set edition version if edition in json
+		if ('edition' in this.text) {
+			let editionUrn = `${this.urn}`;
+
+			// set edition urn from text metadata
+			if (this.text.source === 'The Center for Hellenic Studies') {
+				editionUrn = `${editionUrn}.chs`;
+			}
+
+			this.version = new Version({
+				title: this.text.edition,
+				urn: editionUrn,
+			});
+		}
 
 		return await this.save(collection);
 	}
@@ -100,6 +121,7 @@ class _Work {
 		await textGroup.addWork(work);
 
 		await this._createLanguage(work);
+		await this.version.save(work);
 
 		// ingest all textnodes
 		for (let i = 0; i < this.textNodes.length; i += 1) {
