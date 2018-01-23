@@ -21,8 +21,9 @@ export default class TranslationService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of translations
 	 */
-	getTranslations(textsearch, offset = 0, limit = 100) {
+	getTranslations(textsearch, offset = 0, limit = 100, workId = null) {
 		const args = {
+			where: {},
 			limit,
 			offset,
 			order: [
@@ -31,11 +32,13 @@ export default class TranslationService extends PermissionsService {
 		};
 
 		if (textsearch) {
-			args.where = {
-				english_name: {
-					[Sequelize.Op.like]: `%${textsearch}%`,
-				}
+			args.where.title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
 			};
+		}
+
+		if (workId) {
+			args.where.workId = workId;
 		}
 
 		return Translation.findAll(args);
@@ -60,6 +63,10 @@ export default class TranslationService extends PermissionsService {
 
 		if (slug) {
 			where.slug = slug;
+		}
+
+		if (workId) {
+			where.workId = workId;
 		}
 
 		return Translation.findOne({ where });

@@ -21,8 +21,9 @@ export default class ExemplarService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of exemplars
 	 */
-	getExemplars(textsearch, offset = 0, limit = 100) {
+	getExemplars(textsearch, offset = 0, limit = 100, workId = null) {
 		const args = {
+			where: {},
 			limit,
 			offset,
 			order: [
@@ -31,11 +32,13 @@ export default class ExemplarService extends PermissionsService {
 		};
 
 		if (textsearch) {
-			args.where = {
-				english_name: {
-					[Sequelize.Op.like]: `%${textsearch}%`,
-				}
+			args.where.title = {
+				[Sequelize.Op.like]: `%${textsearch}%`,
 			};
+		}
+
+		if (workId) {
+			args.where.workId = workId;
 		}
 
 		return Exemplar.findAll(args);
@@ -47,7 +50,7 @@ export default class ExemplarService extends PermissionsService {
 	 * @param {string} slug - id of exemplar
 	 * @returns {Object} array of exemplars
 	 */
-	getExemplar(id, slug) {
+	getExemplar(id, slug, workId) {
 		const where = {};
 
 		if (!id && !slug) {
@@ -60,6 +63,10 @@ export default class ExemplarService extends PermissionsService {
 
 		if (slug) {
 			where.slug = slug;
+		}
+
+		if (workId) {
+			where.workId = workId;
 		}
 
 		return Exemplar.findOne({ where });
