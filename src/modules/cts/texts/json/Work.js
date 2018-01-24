@@ -9,6 +9,7 @@ import TextGroup from '../../../../models/textGroup';
 import Work from '../../../../models/work';
 import TextNode from './TextNode';
 import Version from './Version';
+import Translation from './Translation';
 
 
 
@@ -147,6 +148,22 @@ class _Work {
 
 		await work.setLanguage(language);
 		await language.addWork(work);
+
+		if (~['german', 'french', 'english', 'italian'].indexOf(this.language)) {
+			let translationUrn = this.urn;
+
+			// set translation urn from text metadata
+			if (this.text.source === 'The Center for Hellenic Studies') {
+				translationUrn = `${translationUrn}.chs-translation-${_s.slugify(this.language)}`;
+			}
+
+			this.translation = new Translation({
+				title: `${this.english_title} Translation`,
+				urn: translationUrn,
+			});
+
+			await this.translation.save(work);
+		}
 	}
 }
 

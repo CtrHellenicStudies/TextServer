@@ -18,7 +18,6 @@ import VersionService from '../logic/versions';
 // types
 import TextNodeType from './textNode'; // eslint-disable-line
 import LanguageType from './language';
-import EditionType from './edition';
 import VersionType from '../types/version';
 import ExemplarType from '../types/exemplar';
 import TranslationType from '../types/translation';
@@ -65,9 +64,6 @@ const WorkType = new GraphQLObjectType({
 				const languageService = new LanguageService({ token });
 				return languageService.getLanguage(parent.dataValues.languageId);
 			},
-		},
-		edition: {
-			type: EditionType,
 		},
 		version: {
 			type: VersionType,

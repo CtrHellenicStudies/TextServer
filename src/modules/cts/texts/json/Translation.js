@@ -1,20 +1,29 @@
 import Translation from '../../../../models/translation';
 
-/** Class representing an translation metadata information classifying a work */
+/** Class representing a translation of a work */
 class _Translation {
 
 	/**
 	 * Create a new translation
 	 */
-	constructor(props) { // eslint-disable-line
-
+	constructor({ title, urn }) {
+		this.title = title;
+		this.urn = urn;
+		this._id = null;
+		this.work = null;
 	}
 
 	/**
-	 * Save information about translation to db
+	 * Save translation to db
 	 */
-	ingest() {
+	async save(work) {
+		const translation = await Translation.create({
+			title: this.title,
+			urn: this.urn,
+		});
 
+		await translation.setWork(work);
+		await work.addTranslation(translation);
 	}
 
 }
