@@ -55,9 +55,12 @@ export default class VersionService extends PermissionsService {
 	getVersion(id, slug, workId) {
 		const where = {};
 
+		/**
+		 * Intentionally return first default result
 		if (!id && !slug) {
 			return null;
 		}
+		*/
 
 		if (id) {
 			where.id = id;

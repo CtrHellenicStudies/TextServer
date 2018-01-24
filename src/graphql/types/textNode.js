@@ -2,8 +2,13 @@ import _ from 'underscore';
 import { GraphQLObjectType, GraphQLInputObjectType, GraphQLString, GraphQLList } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
+// models
 import TextNode from '../../models/textNode';
+
+// logic
 import TextNodeService from '../logic/textNodes';
+
+// types
 import WordType from './word';
 import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 

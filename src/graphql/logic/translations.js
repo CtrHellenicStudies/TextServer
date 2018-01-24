@@ -50,12 +50,15 @@ export default class TranslationService extends PermissionsService {
 	 * @param {string} slug - id of translation
 	 * @returns {Object} array of translations
 	 */
-	getTranslation(id, slug) {
+	getTranslation(id, slug, workId) {
 		const where = {};
 
+		/**
+		 * Intentionally return first default result
 		if (!id && !slug) {
 			return null;
 		}
+		*/
 
 		if (id) {
 			where.id = id;

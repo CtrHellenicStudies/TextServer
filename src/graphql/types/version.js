@@ -10,6 +10,8 @@ import TextNodeService from '../logic/textNodes';
 
 // types
 import TextNodeType from './textNode'; // eslint-disable-line
+import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
+
 /**
  * Version model type
  * @type {GraphQLObjectType}

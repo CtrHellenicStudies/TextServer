@@ -7,6 +7,7 @@ import textGroupFields from './textGroups';
 import textNodeFields from './textNodes';
 import workFields from './works';
 import countFields from './counts';
+import editionFields from './editions';
 import perseusCtsFields from '../../modules/perseus/graphql/queries/perseusCts';
 
 /**
@@ -23,6 +24,7 @@ const RootQuery = new GraphQLObjectType({
 		...languageFields,
 		...workFields,
 		...countFields,
+		...editionFields,
 		...perseusCtsFields,
 	}
 });

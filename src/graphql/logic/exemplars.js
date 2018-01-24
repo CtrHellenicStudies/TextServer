@@ -53,9 +53,12 @@ export default class ExemplarService extends PermissionsService {
 	getExemplar(id, slug, workId) {
 		const where = {};
 
+		/**
+		 * Intentionally return first default result
 		if (!id && !slug) {
 			return null;
 		}
+		*/
 
 		if (id) {
 			where.id = id;
