@@ -26,7 +26,6 @@ const workFields = {
 		},
 		async resolve(_, { textsearch, urn, language, limit, offset }, { token }) {
 			const workService = new WorkService(token);
-			console.log(textsearch, urn, language, limit, offset);
 			const works = await workService.getWorks(textsearch, urn, language, offset, limit);
 			return works;
 		},

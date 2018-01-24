@@ -77,8 +77,6 @@ class _Collection {
 			return null;
 		}
 
-		console.log(this.urn);
-
 		const collection = await Collection.create({
 			title: title.slice(0, 250),
 			urn: this.urn,
