@@ -27,7 +27,6 @@ const CtsUrn = new GraphQLScalarType({
 	},
 
 	parseLiteral(ast) {
-		console.log(ast);
 		return parseLiteralUrn(ast);
 	},
 

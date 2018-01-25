@@ -96,7 +96,6 @@ const parseValueUrn = (value) => {
 		return parseLiteralUrn(param);
 	}
 
-	console.log(value);
 	if (ctsUrnParams.length) {
 		result = {};
 
