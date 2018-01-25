@@ -82,8 +82,21 @@ const parseLiteralUrn = (ast) => {
 };
 
 const parseValueUrn = (value) => {
-	ctsUrnParams = value.split(':');
+	let result = null;
+	const ctsUrnParams = [];
+	let textGroupAndWork = [];
+	let textGroup = '';
+	let work = '';
 
+	if (typeof value === 'string') {
+		const param = { 
+			kind: 'StringValue',
+			value: value
+		};
+		return parseLiteralUrn(param);
+	}
+
+	console.log(value);
 	if (ctsUrnParams.length) {
 		result = {};
 

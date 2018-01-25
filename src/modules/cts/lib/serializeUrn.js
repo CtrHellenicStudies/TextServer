@@ -3,6 +3,9 @@ const serializeUrn = (value) => {
 	if (!value) {
 		return '';
 	}
+	if (typeof value === 'string') {
+		return value;
+	}
 
 	let result = 'urn:cts';
 

@@ -39,7 +39,7 @@ dotenvSetup();
 
 const app = express();
 
-app.set('port', (process.env.PORT || 3000));
+app.set('port', (process.env.PORT || 3003));
 
 app.use(logger('dev'));
 app.use(cookieParser());

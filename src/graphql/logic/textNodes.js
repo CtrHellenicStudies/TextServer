@@ -7,6 +7,7 @@ import Language from '../../models/language';
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 const parseUrnToQuery = async (urn, language, workId) => {
+	console.log(urn);
 	let textNode = null;
 	let works = [];
 	const workIds = [];
@@ -80,7 +81,6 @@ const parseUrnToQuery = async (urn, language, workId) => {
 
 		delete query.where.location;
 	}
-
 	return query;
 };
 
@@ -187,7 +187,6 @@ export default class TextNodeService extends PermissionsService {
 		if (urn) {
 			query = await parseUrnToQuery(urn, language, workId);
 		}
-
 		const textNodes = await TextNode.findAll(query);
 		return textNodes;
 	}
@@ -277,7 +276,7 @@ export default class TextNodeService extends PermissionsService {
 		const passageUrn = '';
 		let workUrn = '';
 
-		if (parent.dataValues) {
+		if (parent.dataValues && parent.work && parent.work.dataValues) {
 			const location = parent.dataValues.location;
 
 			const work = parent.work.dataValues;
