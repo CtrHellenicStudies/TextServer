@@ -8,8 +8,7 @@ import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 const parseUrnToQuery = async (urn, language, workId) => {
 	let textNode = null;
-	let works = [];
-	const workIds = [];
+	let work = [];
 
 	const query = {
 		order: ['index'],
@@ -29,7 +28,7 @@ const parseUrnToQuery = async (urn, language, workId) => {
 			ctsNamespace: urn.ctsNamespace,
 			textGroup: urn.textGroup,
 			work: urn.work,
-			// exemplar: urn.exemplar // TODO: handle exemplar
+			// version: urn.version // TODO: handle version
 		});
 
 		const workQuery = {
@@ -48,37 +47,40 @@ const parseUrnToQuery = async (urn, language, workId) => {
 		}
 
 		// find a work via urn
-		works = await Work.findAll(workQuery);
-		works.forEach((work) => {
-			workIds.push(work.id);
-		});
+		work = await Work.findOne(workQuery);
+
 		query.include = [{
 			model: Work,
 			where: {
-				id: workIds,
+				id: work.id,
 			},
 		}];
 	}
 
 
 	if (urn.passage && urn.passage.length) {
-
 		query.where.location = urn.passage[0];
 		textNode = await TextNode.findOne(query);
 
-		query.where.index = {
-			$gte: textNode.index,
-		};
+		if (textNode) {
+			query.where.index = {
+				$gte: textNode.index,
+			};
 
-		if (urn.passage.length > 1) {
-			query.where.location = urn.passage[1];
-			textNode = await TextNode.findOne(query);
-			query.where.index.$lt = textNode.index;
+			if (urn.passage.length > 1) {
+				query.where.location = urn.passage[1];
+				textNode = await TextNode.findOne(query);
+				query.where.index.$lt = textNode.index;
+			} else {
+				query.where.index.$lte = textNode.index;
+			}
+
+			delete query.where.location;
 		} else {
-			query.where.index.$lte = textNode.index;
-		}
 
-		delete query.where.location;
+			// when no textnode is found for location, return nothing for query
+			return null;
+		}
 	}
 	return query;
 };
@@ -185,7 +187,14 @@ export default class TextNodeService extends PermissionsService {
 
 		if (urn) {
 			query = await parseUrnToQuery(urn, language, workId);
+
+			// TODO: better error handling for parsing errors
+			// If error parsing URN to query, just return empty array
+			if (!query) {
+				return [];
+			}
 		}
+
 		const textNodes = await TextNode.findAll(query);
 		return textNodes;
 	}
