@@ -70,7 +70,11 @@ class _Work {
 
 			// set edition urn from text metadata
 			if (this.text.source === 'The Center for Hellenic Studies') {
-				editionUrn = `${editionUrn}.chs`;
+				if (this.text.language === 'english') {
+					editionUrn = `${editionUrn}.chs-translation`;
+				} else {
+					editionUrn = `${editionUrn}.chs`;
+				}
 			}
 
 			this.version = new Version({
