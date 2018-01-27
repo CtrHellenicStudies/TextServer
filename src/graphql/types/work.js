@@ -80,7 +80,7 @@ const WorkType = new GraphQLObjectType({
 				return versionService.getVersion(id, slug, parent.dataValues.id);
 			},
 		},
-		versions: {
+		/* versions: {
 			type: new GraphQLList(VersionType),
 			args: {
 				textsearch: {
@@ -98,6 +98,7 @@ const WorkType = new GraphQLObjectType({
 				return versionService.getVersions(textsearch, limit, offset, parent.dataValues.id);
 			},
 		},
+		*/
 		exemplar: {
 			type: ExemplarType,
 			args: {
