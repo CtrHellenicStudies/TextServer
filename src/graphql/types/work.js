@@ -195,7 +195,7 @@ const WorkType = new GraphQLObjectType({
 			}, { token }) {
 				const textNodeService = new TextNodeService({ token });
 				const textNodes = await textNodeService.textNodesGet(
-					index, urn, location, startsAtLocation, endsAtLocation, startsAtIndex,
+					index, urn, null, location, startsAtLocation, endsAtLocation, startsAtIndex,
 					offset, work.id
 				);
 				return textNodes;
