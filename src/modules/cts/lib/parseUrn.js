@@ -25,8 +25,6 @@ const parseLiteralUrn = (ast) => {
 	let value;
 	let ctsUrnParams = [];
 	let textGroupAndWork = [];
-	let textGroup = '';
-	let work = '';
 
 	switch (ast.kind) {
 	case 'StringValue':
@@ -42,10 +40,11 @@ const parseLiteralUrn = (ast) => {
 
 			if (ctsUrnParams.length > 3) {
 				textGroupAndWork = ctsUrnParams[3].split('.');
-				textGroup = textGroupAndWork.shift();
-				work = textGroupAndWork.join('.');
-				result.textGroup = textGroup;
-				result.work = work;
+				result.textGroup = textGroupAndWork.shift();
+				result.work = textGroupAndWork.shift();
+				result.version = textGroupAndWork.shift();
+				result.exemplar = textGroupAndWork.shift();
+				result.translation = textGroupAndWork.shift();
 			}
 
 			if (ctsUrnParams.length > 2) {
@@ -62,13 +61,14 @@ const parseLiteralUrn = (ast) => {
 	case 'ArrayValue':
 		if (ast.value.length === 3) {
 			result = {};
-			textGroupAndWork = ast.value[3].split('.');
-			textGroup = textGroupAndWork.shift();
-			work = textGroupAndWork.join('.');
-
 			result.ctsNamespace = ast.value[2];
-			result.textGroup = textGroup;
-			result.work = work;
+			textGroupAndWork = ast.value[3].split('.');
+
+			result.textGroup = textGroupAndWork.shift();
+			result.work = textGroupAndWork.shift();
+			result.version = textGroupAndWork.shift();
+			result.exemplar = textGroupAndWork.shift();
+			result.translation = textGroupAndWork.shift();
 			result.passage = parsePassage(ast[4]);
 		}
 		break;
@@ -89,7 +89,7 @@ const parseValueUrn = (value) => {
 	let work = '';
 
 	if (typeof value === 'string') {
-		const param = { 
+		const param = {
 			kind: 'StringValue',
 			value: value
 		};

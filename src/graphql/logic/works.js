@@ -81,6 +81,11 @@ export default class WorkService extends PermissionsService {
 		}
 
 		if (urn) {
+			console.log('####');
+			console.log('####');
+			console.log(urn);
+			console.log('####');
+			console.log('####');
 			args.where.urn = serializeUrn(urn);
 		}
 
