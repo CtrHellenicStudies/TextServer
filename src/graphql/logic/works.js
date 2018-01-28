@@ -1,9 +1,15 @@
 import Sequelize from 'sequelize';
 
+// logic
 import PermissionsService from './PermissionsService';
+
+// models
 import Work from '../../models/work';
 import Language from '../../models/language';
 import TextGroup from '../../models/textGroup';
+import Version from '../../models/version';
+
+// lib
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 /**
@@ -80,19 +86,6 @@ export default class WorkService extends PermissionsService {
 			};
 		}
 
-		if (urn) {
-			const version = urn.version;
-			delete urn.version;
-
-			const exemplar = urn.exemplar;
-			delete urn.exemplar;
-
-			const translation = urn.translation;
-			delete urn.translation;
-
-			args.where.urn = serializeUrn(urn);
-		}
-
 		if (language) {
 			const languageRecord = await Language.findOne({
 				where: {
@@ -114,6 +107,63 @@ export default class WorkService extends PermissionsService {
 					id: textGroupId,
 				},
 			});
+		}
+
+		if (urn) {
+			const version = urn.version;
+			delete urn.version;
+
+			const exemplar = urn.exemplar;
+			delete urn.exemplar;
+
+			const translation = urn.translation;
+			delete urn.translation;
+
+			/**
+			 * Interesting use case with CTS URNs and perhaps something to address in the future
+			 * querying by verison, exemplar, and translation, but only in that order
+			 */
+			args.where.urn = serializeUrn(urn);
+			if (version) {
+
+				const versionRecord = await Version.findOne({
+					where: {
+						urn: `${serializeUrn(urn)}.${version}`,
+					}
+				});
+
+				if (versionRecord) {
+					args.where = {
+						id: versionRecord.workId,
+					};
+				}
+
+				if (exemplar) {
+					const exemplarRecord = await Exemplar.findOne({
+						where: {
+							urn: `${serializeUrn(urn)}.${version}.${exemplar}`,
+						}
+					});
+					if (exemplarRecord) {
+						args.where = {
+							id: exemplarRecord.workId,
+						};
+					}
+
+					if (translation) {
+						const translationRecord = await Translation.findOne({
+							where: {
+								urn: `${serializeUrn(urn)}.${version}.${exemplar}.${translation}`,
+							}
+						});
+						if (translationRecord) {
+							args.where = {
+								id: translationRecord.workId,
+							};
+						}
+					}
+				}
+			}
 		}
 
 		const works = await Work.findAll(args);
