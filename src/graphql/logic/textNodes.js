@@ -1,14 +1,22 @@
 import _s from 'underscore.string';
 
+// logic
 import PermissionsService from './PermissionsService';
+
+// models
 import TextNode from '../../models/textNode';
 import Work from '../../models/work';
 import Language from '../../models/language';
+import Version from '../../models/version';
+import Exemplar from '../../models/exemplar';
+import Translation from '../../models/translation';
+
+// lib
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 const parseUrnToQuery = async (urn, language, workId) => {
 	let textNode = null;
-	let work = [];
+	let works = [];
 
 	const query = {
 		order: ['index'],
@@ -28,7 +36,6 @@ const parseUrnToQuery = async (urn, language, workId) => {
 			ctsNamespace: urn.ctsNamespace,
 			textGroup: urn.textGroup,
 			work: urn.work,
-			// version: urn.version // TODO: handle version
 		});
 
 		const workQuery = {
@@ -46,13 +53,69 @@ const parseUrnToQuery = async (urn, language, workId) => {
 			}];
 		}
 
+		const version = urn.version;
+		delete urn.version;
+
+		const exemplar = urn.exemplar;
+		delete urn.exemplar;
+
+		const translation = urn.translation;
+		delete urn.translation;
+
+		/**
+		 * Interesting use case with CTS URNs and perhaps something to address in the future
+		 * querying by verison, exemplar, and translation, but only in that order
+		 */
+		if (version) {
+			const versionRecord = await Version.findOne({
+				where: {
+					urn: `${serializeUrn(urn)}.${version}`,
+				}
+			});
+			if (versionRecord) {
+				workQuery.where = {
+					id: versionRecord.workId,
+				};
+			}
+
+			if (exemplar) {
+				const exemplarRecord = await Exemplar.findOne({
+					where: {
+						urn: `${serializeUrn(urn)}.${version}.${exemplar}`,
+					}
+				});
+				if (exemplarRecord) {
+					workQuery.where = {
+						id: exemplarRecord.workId,
+					};
+				}
+
+				if (translation) {
+					const translationRecord = await Translation.findOne({
+						where: {
+							urn: `${serializeUrn(urn)}.${version}.${exemplar}.${translation}`,
+						}
+					});
+					if (translationRecord) {
+						workQuery.where = {
+							id: translationRecord.workId,
+						};
+					}
+				}
+			}
+		}
+
 		// find a work via urn
-		work = await Work.findOne(workQuery);
-		if (work) {
+		works = await Work.findAll(workQuery);
+		const workIds = [];
+		works.forEach((_work) => {
+			workIds.push(_work.id);
+		});
+		if (works && works.length) {
 			query.include = [{
 				model: Work,
 				where: {
-					id: work.id,
+					id: workIds,
 				},
 			}];
 		}
