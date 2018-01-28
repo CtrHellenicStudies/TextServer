@@ -48,13 +48,14 @@ const parseUrnToQuery = async (urn, language, workId) => {
 
 		// find a work via urn
 		work = await Work.findOne(workQuery);
-
-		query.include = [{
-			model: Work,
-			where: {
-				id: work.id,
-			},
-		}];
+		if (work) {
+			query.include = [{
+				model: Work,
+				where: {
+					id: work.id,
+				},
+			}];
+		}
 	}
 
 

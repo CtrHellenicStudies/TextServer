@@ -73,7 +73,7 @@ class _Work {
 				if (this.text.language === 'english') {
 					editionUrn = `${editionUrn}.chs-translation`;
 				} else {
-					editionUrn = `${editionUrn}.chs`;
+					editionUrn = `${editionUrn}.chs-${_s.camelize(_s.slugify(this.text.edition))}`;
 				}
 			}
 
