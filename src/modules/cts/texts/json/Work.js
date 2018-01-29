@@ -126,7 +126,10 @@ class _Work {
 		await textGroup.addWork(work);
 
 		await this._createLanguage(work);
-		await this.version.save(work);
+		
+		if (this.version) {
+			await this.version.save(work);
+		}
 
 		// ingest all textnodes
 		for (let i = 0; i < this.textNodes.length; i += 1) {
