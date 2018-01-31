@@ -98,6 +98,7 @@ class _Work {
 				description,
 			};
 		}
+
 	}
 
 	/**
@@ -314,6 +315,7 @@ class _Work {
 
 		const urn = this.urn || '';
 
+		// TODO: Add parsing of refs decl information from XML so that Work can self describe its document structure
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
 			filename: this.filename,
@@ -322,6 +324,7 @@ class _Work {
 			structure: this.structure,
 			form: this.form,
 			urn: urn.slice(0, 250),
+			// refs_decl: [],
 		});
 
 		await work.setTextgroup(textGroup);
