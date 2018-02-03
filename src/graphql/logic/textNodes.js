@@ -15,6 +15,12 @@ import Translation from '../../models/translation';
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 const parseUrnToQuery = async (urn, language, workId) => {
+	console.log('##########');
+	console.log('##########');
+	console.log(urn);
+	console.log('##########');
+	console.log('##########');
+
 	let textNode = null;
 	let works = [];
 

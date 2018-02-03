@@ -48,7 +48,7 @@ class _Work {
 		const jsonToTextNodes = (node, location = []) => {
 			for (const key in node) { // eslint-disable-line
 				const _location = location.slice();
-				_location.push(parseInt(key, 10));
+				_location.push(parseInt(key, 10) + 1);
 				if (typeof node[key] === 'string') {
 					this.textNodes.push(new TextNode({
 						location: _location,
@@ -126,7 +126,7 @@ class _Work {
 		await textGroup.addWork(work);
 
 		await this._createLanguage(work);
-		
+
 		if (this.version) {
 			await this.version.save(work);
 		}

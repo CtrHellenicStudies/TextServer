@@ -239,7 +239,7 @@ class _Work {
 
 			nodeList.forEach((_node, i) => {
 				const _location = location.slice();
-				_location.push(i);
+				_location.push(i + 1);
 
 				// equivalent of innerHTML
 				let html = '';
