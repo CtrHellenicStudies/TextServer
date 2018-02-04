@@ -80,7 +80,10 @@ const WorkType = new GraphQLObjectType({
 				return versionService.getVersion(id, slug, parent.dataValues.id);
 			},
 		},
-		/* versions: {
+		/*
+		// TODO: in the future, support 1-many work >> versions relationships
+		// right now work >> versions is 1-1
+		versions: {
 			type: new GraphQLList(VersionType),
 			args: {
 				textsearch: {
@@ -114,6 +117,9 @@ const WorkType = new GraphQLObjectType({
 				return exemplarService.getExemplar(id, slug, parent.dataValues.id);
 			},
 		},
+		/*
+		// TODO: in the future, support 1-many work >> exemplar relationships
+		// right now work >> exemplar is 1-1
 		exemplars: {
 			type: new GraphQLList(ExemplarType),
 			args: {
@@ -132,6 +138,7 @@ const WorkType = new GraphQLObjectType({
 				return exemplarService.getExemplars(textsearch, limit, offset, parent.dataValues.id);
 			},
 		},
+		*/
 		translation: {
 			type: TranslationType,
 			args: {
@@ -147,6 +154,9 @@ const WorkType = new GraphQLObjectType({
 				return translationService.getTranslation(id, slug, parent.dataValues.id);
 			},
 		},
+		/*
+		// TODO: in the future, support 1-many work >> translations relationships
+		// right now work >> translation is 1-1
 		translations: {
 			type: new GraphQLList(TranslationType),
 			args: {
@@ -165,6 +175,7 @@ const WorkType = new GraphQLObjectType({
 				return translationService.getTranslations(textsearch, limit, offset, parent.dataValues.id);
 			},
 		},
+		*/
 		textNodes: {
 			type: new GraphQLList(TextNodeType),
 			args: {

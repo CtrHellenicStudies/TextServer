@@ -1,4 +1,4 @@
-import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
+import { GraphQLInt, GraphQLString, GraphQLList, GraphQLNonNull } from 'graphql';
 
 import TextNodeType from '../types/textNode'; // eslint-disable-line
 import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
@@ -12,7 +12,7 @@ const textNodeFields = {
 				type: GraphQLInt,
 			},
 			urn: {
-				type: CtsUrnType,
+				type: new GraphQLNonNull(CtsUrnType),
 			},
 			language: {
 				type: GraphQLString,
