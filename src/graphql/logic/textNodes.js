@@ -15,12 +15,6 @@ import Translation from '../../models/translation';
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 const parseUrnToQuery = async (urn, language, workId) => {
-	console.log('##########');
-	console.log('##########');
-	console.log(urn);
-	console.log('##########');
-	console.log('##########');
-
 	let textNode = null;
 	let works = [];
 
@@ -139,8 +133,10 @@ const parseUrnToQuery = async (urn, language, workId) => {
 
 			if (urn.passage.length > 1) {
 				query.where.location = urn.passage[1];
-				textNode = await TextNode.findOne(query);
-				query.where.index.$lt = textNode.index;
+				const textNodeLast = await TextNode.findOne(query);
+				if (textNodeLast) {
+					query.where.index.$lt = textNode.index;
+				}
 			} else {
 				query.where.index.$lte = textNode.index;
 			}
