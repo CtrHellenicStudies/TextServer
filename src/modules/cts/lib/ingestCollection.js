@@ -1,4 +1,4 @@
-import checkXmlOrJSON from './checkXmlOrJson';
+import checkXmlOrJSON from './checkXmlOrJSON';
 import XMLCollection from '../texts/xml/Collection';
 import JSONCollection from '../texts/json/Collection';
 
