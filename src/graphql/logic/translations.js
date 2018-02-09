@@ -21,7 +21,7 @@ export default class TranslationService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of translations
 	 */
-	getTranslations(textsearch, offset = 0, limit = 100, workId = null) {
+	getTranslations(textsearch, offset = 0, limit = 100, translationId = null) {
 		const args = {
 			where: {},
 			limit,
@@ -37,8 +37,8 @@ export default class TranslationService extends PermissionsService {
 			};
 		}
 
-		if (workId) {
-			args.where.workId = workId;
+		if (translationId) {
+			args.where.translationId = translationId;
 		}
 
 		return Translation.findAll(args);
@@ -50,7 +50,7 @@ export default class TranslationService extends PermissionsService {
 	 * @param {string} slug - id of translation
 	 * @returns {Object} array of translations
 	 */
-	getTranslation(id, slug, workId) {
+	getTranslation(id, slug, translationId) {
 		const where = {};
 
 		/**
@@ -68,10 +68,46 @@ export default class TranslationService extends PermissionsService {
 			where.slug = slug;
 		}
 
-		if (workId) {
-			where.workId = workId;
+		if (translationId) {
+			where.translationId = translationId;
 		}
 
 		return Translation.findOne({ where });
 	}
+
+	/**
+	 * Create a translation
+	 * @param {Object} translation - candidate translation to create
+	 * @returns {Object} newly created translation
+	 */
+	insert(translation) {
+		if (this.userIsAdmin) {
+			const translationId = Work.insert({ ...translation });
+			return Translation.findOne(translationId);
+		}
+		return new Error('Not authorized');
+	}
+
+	update(_id, translation) {
+		if (this.userIsAdmin) {
+			return Translation.update(_id, { $set: translation });
+		}
+		return new Error('Not authorized');
+	}
+
+	/**
+	 * Remove a translation
+	 * @param {string} _id - id of translation
+	 * @returns {boolean} result from mongo orm remove
+	 */
+	remove(_id) {
+		if (this.userIsAdmin) {
+			return Translation.remove({ _id });
+		}
+		return new Error('Not authorized');
+	}
+
+
+
+
 }
