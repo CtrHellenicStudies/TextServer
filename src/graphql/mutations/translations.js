@@ -2,7 +2,7 @@
  * Mutations for translations
  */
 
-import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
+import { GraphQLString, GraphQLNonNull, GraphQLID, GraphQLInt } from 'graphql';
 
 // types
 import { TranslationType, TranslationInputType } from '../types/translation';
@@ -29,29 +29,29 @@ const translationsMutationFields = {
 		type: TranslationType,
 		description: 'Update a translation',
 		args: {
-			_id: {
-				type: GraphQLString
+			id: {
+				type: GraphQLInt,
 			},
 			translation: {
 				type: TranslationInputType
 			}
 		},
-		async resolve(parent, { _id, translation }, { token }) {
+		async resolve(parent, { id, translation }, { token }) {
 			const translationsService = new TranslationsService({ token });
-			return await translationsService.translationUpdate(_id, translation);
+			return await translationsService.translationUpdate(id, translation);
 		}
 	},
 	translationRemove: {
 		type: RemoveType,
 		description: 'Remove a single translation',
 		args: {
-			translationId: {
-				type: new GraphQLNonNull(GraphQLString)
+			id: {
+				type: GraphQLInt,
 			}
 		},
-		async resolve(parent, { translationId }, { token }) {
+		async resolve(parent, { id }, { token }) {
 			const translationsService = new TranslationsService({ token });
-			return await translationsService.translationRemove(translationId);
+			return await translationsService.translationRemove(id);
 		}
 	}
 };

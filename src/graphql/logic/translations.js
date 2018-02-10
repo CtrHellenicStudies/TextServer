@@ -38,7 +38,7 @@ export default class TranslationService extends PermissionsService {
 		}
 
 		if (translationId) {
-			args.where.translationId = translationId;
+			args.where.id = translationId;
 		}
 
 		return Translation.findAll(args);
@@ -47,10 +47,10 @@ export default class TranslationService extends PermissionsService {
 	/**
 	 * Get translation
 	 * @param {number} id - id of translation
-	 * @param {string} slug - id of translation
+	 * @param {string} slug - slug of translation
 	 * @returns {Object} array of translations
 	 */
-	getTranslation(id, slug, translationId) {
+	getTranslation(id, slug) {
 		const where = {};
 
 		/**
@@ -66,10 +66,6 @@ export default class TranslationService extends PermissionsService {
 
 		if (slug) {
 			where.slug = slug;
-		}
-
-		if (translationId) {
-			where.translationId = translationId;
 		}
 
 		return Translation.findOne({ where });
