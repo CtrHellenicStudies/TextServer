@@ -82,7 +82,7 @@ export default class TranslationService extends PermissionsService {
 	 */
 	insert(translation) {
 		if (this.userIsAdmin) {
-			const translationId = Work.insert({ ...translation });
+			const translationId = Translation.insert({ ...translation });
 			return Translation.findOne(translationId);
 		}
 		return new Error('Not authorized');
@@ -106,8 +106,5 @@ export default class TranslationService extends PermissionsService {
 		}
 		return new Error('Not authorized');
 	}
-
-
-
 
 }
