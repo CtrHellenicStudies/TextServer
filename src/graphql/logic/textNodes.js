@@ -122,6 +122,7 @@ const parseUrnToQuery = async (urn, language, workId) => {
 	}
 
 
+	// parse passage to range query
 	if (urn.passage && urn.passage.length) {
 		query.where.location = urn.passage[0];
 		textNode = await TextNode.findOne(query);
@@ -134,20 +135,24 @@ const parseUrnToQuery = async (urn, language, workId) => {
 			if (urn.passage.length > 1) {
 				query.where.location = urn.passage[1];
 				const textNodeLast = await TextNode.findOne(query);
+
 				if (textNodeLast) {
-					query.where.index.$lt = textNode.index;
+					query.where.index.$lt = textNodeLast.index;
 				}
+
 			} else {
 				query.where.index.$lte = textNode.index;
 			}
 
 			delete query.where.location;
+
 		} else {
 
 			// when no textnode is found for location, return nothing for query
 			return null;
 		}
 	}
+
 	return query;
 };
 
