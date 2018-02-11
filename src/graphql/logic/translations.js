@@ -53,12 +53,9 @@ export default class TranslationService extends PermissionsService {
 	getTranslation(id, slug) {
 		const where = {};
 
-		/**
-		 * Intentionally return first default result
 		if (!id && !slug) {
 			return null;
 		}
-		*/
 
 		if (id) {
 			where.id = id;
