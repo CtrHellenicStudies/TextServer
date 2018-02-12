@@ -81,9 +81,9 @@ export default class TranslationService extends PermissionsService {
 		return new Error('Not authorized');
 	}
 
-	update(_id, translation) {
+	update(id, translation) {
 		if (this.userIsAdmin) {
-			return Translation.update(_id, { $set: translation });
+			return Translation.update(id, { $set: translation });
 		}
 		return new Error('Not authorized');
 	}
@@ -93,9 +93,9 @@ export default class TranslationService extends PermissionsService {
 	 * @param {string} _id - id of translation
 	 * @returns {boolean} result from mongo orm remove
 	 */
-	remove(_id) {
+	remove(id) {
 		if (this.userIsAdmin) {
-			return Translation.remove({ _id });
+			return Translation.remove({ id });
 		}
 		return new Error('Not authorized');
 	}
