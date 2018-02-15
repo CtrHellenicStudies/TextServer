@@ -22,7 +22,7 @@ const TranslationType = new GraphQLObjectType({
 const TranslationInputType = new GraphQLInputObjectType({
 	name: 'TranslationInput',
 	description: 'Input type for a translation',
-	fields: _.assign(attributeFields(Translation)),
+	fields: _.assign(attributeFields(Translation, { exclude: ['id'] })),
 });
 
 export { TranslationType, TranslationInputType };

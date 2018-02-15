@@ -73,7 +73,7 @@ export default class TranslationService extends PermissionsService {
 	 * @param {Object} translation - candidate translation to create
 	 * @returns {Object} newly created translation
 	 */
-	insert(translation) {
+	translationInsert(translation) {
 		if (this.userIsAdmin) {
 			const translationId = Translation.insert({ ...translation });
 			return Translation.findOne(translationId);
@@ -81,7 +81,7 @@ export default class TranslationService extends PermissionsService {
 		return new Error('Not authorized');
 	}
 
-	update(id, translation) {
+	translationUpdate(id, translation) {
 		if (this.userIsAdmin) {
 			return Translation.update(id, { $set: translation });
 		}
@@ -93,7 +93,7 @@ export default class TranslationService extends PermissionsService {
 	 * @param {string} _id - id of translation
 	 * @returns {boolean} result from mongo orm remove
 	 */
-	remove(id) {
+	translationRemove(id) {
 		if (this.userIsAdmin) {
 			return Translation.remove({ id });
 		}
