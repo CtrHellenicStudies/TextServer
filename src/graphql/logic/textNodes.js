@@ -278,16 +278,24 @@ export default class TextNodeService extends PermissionsService {
 	 * @param {number} offset - the offset to iterate
 	 * @returns {number[]} location array
 	 */
-	textLocationNext(work, location, offset) {
+	textLocationNext(workId, location, offset) {
 		const query = {
-			where: {
-				workid,
-			},
+			where: {},
+			include: [],
 			order: ['index'],
 		};
 
 		if (location) {
 			query.where.location = location;
+		}
+
+		if (workId) {
+			query.include.push({
+				model: Work,
+				where: {
+					id: parseInt(workId, 10),
+				},
+			});
 		}
 
 		return TextNode.findOne(query).then((node) => {
@@ -311,21 +319,29 @@ export default class TextNodeService extends PermissionsService {
 
 	/**
 	 * Get paginated text node location following specified location based on offset
-	 * @param {number} work - id of textnode work
+	 * @param {number} workId - id of textnode work
 	 * @param {number[]} location - location array to offset from
 	 * @param {number} offset - the offset to iterate
 	 * @returns {number[]} location array
 	 */
-	textLocationPrev(work, location, offset) {
+	textLocationPrev(workId, location, offset) {
 		const query = {
-			where: {
-				workid,
-			},
+			where: {},
+			include: [],
 			order: ['index'],
 		};
 
 		if (location) {
 			query.where.location = location;
+		}
+
+		if (workId) {
+			query.include.push({
+				model: Work,
+				where: {
+					id: parseInt(workId, 10),
+				},
+			});
 		}
 
 		return TextNode.findOne(query).then((node) => {
