@@ -6,7 +6,6 @@ import winston from 'winston';
 
 // middleware
 import bodyParser from 'body-parser';
-import session from 'express-session';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 
