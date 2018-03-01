@@ -8,6 +8,7 @@ import textNodeFields from './textNodes';
 import workFields from './works';
 import countFields from './counts';
 import perseusCtsFields from '../../modules/perseus/graphql/queries/perseusCts';
+import lightWeightCtsFields from '../../modules/lightWeightCts/graphql/queries/lightWeightCts';
 
 /**
  * Root Query
@@ -24,6 +25,7 @@ const RootQuery = new GraphQLObjectType({
 		...workFields,
 		...countFields,
 		...perseusCtsFields,
+		...lightWeightCtsFields
 	}
 });
 

@@ -5,7 +5,7 @@ import winston from 'winston';
 import xmlJs from 'xml-js';
 
 import PermissionsService from '../../../../graphql/logic/PermissionsService';
-import serializeUrn from '../../../cts/lib/serializeUrn';
+import serializeLwCTSUrn from '../../../lightWeightCts/lib/serializeLwCTSUrn';
 
 
 /**
@@ -15,22 +15,13 @@ import serializeUrn from '../../../cts/lib/serializeUrn';
 export default class LightWeightCtsService extends PermissionsService {
 	/**
 	 * Get collection
-	 * @param {string} request - request action for cts endpoint
 	 * @param {Object} urn - urn
-	 * @param {number} level - level requested for urn
 	 * @returns {Object} LightWeight CTS endpoint response
 	 */
-	async getApiResponse({ request, urn, level }) {
-		const params = {request};
-
-		if (level) {
-			params.level = level;
-		}
-
-		const stringifiedParams = queryString.stringify(params);
-		const requestUrl = `${process.env.CTS_ENDPOINT}?${stringifiedParams}&urn=${serializeUrn(urn)}`;
+	async getApiResponse({ urn }) {
+		// TODO lwcts urn doesn't use ctsNamespace, if we need it, we will need to make lwcts support it
+		const requestUrl = `${process.env.LWCTS_ENDPOINT}${serializeLwCTSUrn(urn)}`;
 		const res = await axios.get(requestUrl);
-		const data = JSON.parse(xmlJs.xml2json(res.data, {compact: true, spaces: 4}));
-		return data;
+		return res.data;
 	}
 }

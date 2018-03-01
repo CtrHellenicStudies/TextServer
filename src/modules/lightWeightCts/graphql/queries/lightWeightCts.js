@@ -8,19 +8,13 @@ const textNodeFields = {
 	lightWeightCts: {
 		type: LightWeightCtsResponseType,
 		args: {
-			request: {
-				type: GraphQLString,
-			},
 			urn: {
 				type: CtsUrnType,
 			},
-			level: {
-				type: GraphQLInt,
-			},
 		},
-		async resolve(_, { request = 'GetCapabilities', urn, level }, { token }) {
+		async resolve(_, { urn, }, { token }) {
 			const lightWeightCtsService = new LightWeightCtsService({ token });
-			const response = await lightWeightCtsService.getApiResponse({ request, urn });
+			const response = await lightWeightCtsService.getApiResponse({ urn });
 			return response;
 		},
 	},
