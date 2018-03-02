@@ -1,4 +1,6 @@
-import { GraphQLInt, GraphQLString, GraphQLList } from 'graphql';
+import {
+	GraphQLInt, GraphQLString, GraphQLList, GraphQLObjectType
+} from 'graphql';
 
 import WorkType from '../types/work'; // eslint-disable-line
 import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
@@ -28,6 +30,39 @@ const workFields = {
 			const workService = new WorkService(token);
 			const works = await workService.getWorks(textsearch, urn, language, offset, limit);
 			return works;
+		},
+	},
+	workSearch: {
+		type: new GraphQLObjectType({
+			name: 'WorkSearchResults',
+			description: 'Work search results with pagination',
+			fields: {
+				works: {
+					type: new GraphQLList(WorkType),
+				},
+				total: {
+					type: GraphQLInt,
+				},
+			},
+		}),
+		args: {
+			textsearch: {
+				type: GraphQLString,
+			},
+			language: {
+				type: GraphQLString,
+			},
+			limit: {
+				type: GraphQLInt,
+			},
+			offset: {
+				type: GraphQLInt,
+			},
+		},
+		async resolve(_, { textsearch, language, limit, offset }, { token }) {
+			const workService = new WorkService(token);
+			const workSearchResults = await workService.getWorkSearch(textsearch, language, offset, limit);
+			return workSearchResults;
 		},
 	},
 	work: {

@@ -171,6 +171,62 @@ export default class WorkService extends PermissionsService {
 	}
 
 	/**
+	 * Get work search results
+	 * @param {string} textsearch
+	 * @param {string} language
+	 * @param {number} offset
+	 * @param {number} limit
+	 * @returns {Object} work search results
+	 */
+	async getWorkSearch(textsearch, language, offset = 0, limit = 30) {
+		const args = {
+			where: {},
+			limit,
+			offset,
+			order: [
+				['slug', 'ASC']
+			],
+			include: [],
+		};
+
+		if (textsearch) {
+			args.where[Sequelize.Op.or] = {
+				english_title: {
+					[Sequelize.Op.like]: `%${textsearch}%`,
+				},
+				slug: {
+					[Sequelize.Op.like]: `%${textsearch}%`,
+				},
+				original_title: {
+					[Sequelize.Op.like]: `%${textsearch}%`,
+				}
+			};
+		}
+
+		if (language) {
+			const languageRecord = await Language.findOne({
+				where: {
+					slug: language,
+				},
+			});
+			args.include.push({
+				model: Language,
+				where: {
+					id: languageRecord.id,
+				},
+			});
+		}
+
+		const works = await Work.findAll(args);
+		const total = await Work.count(args);
+
+		return {
+			works,
+			total,
+		};
+	}
+
+	/**
 	 * Get work
 	 * @param {number} id - id of work
 	 * @param {string} slug - slug of work
