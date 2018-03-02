@@ -5,19 +5,17 @@
  */
 export function create(app) {
 	return {
-		creator: function(port) {
-			return new Promise((resolve, reject) => {
-				const server = app.listen(port, () => {
-					resolve({
-						server: {
-							shutdown: () => {
-								server.close();
-							}
-						},
-						url: `http://localhost:${port}`
-					});
+		creator: port => new Promise((resolve, reject) => {
+			const server = app.listen(port, () => {
+				resolve({
+					server: {
+						shutdown: () => {
+							server.close();
+						}
+					},
+					url: `http://localhost:${port}`
 				});
 			});
-		}
+		})
 	};
 }
