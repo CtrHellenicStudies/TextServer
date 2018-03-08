@@ -48,14 +48,17 @@ export default class TranslationService extends PermissionsService {
 	 * Get translation
 	 * @param {number} id - id of translation
 	 * @param {string} slug - slug of translation
+	 * @param {string} workId - id of work for translation
 	 * @returns {Object} array of translations
 	 */
-	getTranslation(id, slug) {
+	getTranslation(id, slug, workId) {
 		const where = {};
 
+		/*
 		if (!id && !slug) {
 			return null;
 		}
+		*/
 
 		if (id) {
 			where.id = id;
@@ -63,6 +66,10 @@ export default class TranslationService extends PermissionsService {
 
 		if (slug) {
 			where.slug = slug;
+		}
+
+		if (workId) {
+			where.workId = workId;
 		}
 
 		return Translation.findOne({ where });

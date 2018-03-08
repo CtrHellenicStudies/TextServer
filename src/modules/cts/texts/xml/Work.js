@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import slugify from 'slugify';
 import { DOMParser, XMLSerializer } from 'xmldom';
+import xmlJs from 'xml-js';
 import xpath from 'xpath';
 import winston from 'winston';
 import crypto from 'crypto';
@@ -10,9 +11,11 @@ import _s from 'underscore.string';
 
 
 import ctsNamespace from '../../lib/ctsNamespace';
+import {WORKTYPE_EDITION, WORKTYPE_TRANSLATION} from '../../lib/ctsConfig';
 import Work from '../../../../models/work';
 import Language from '../../../../models/language';
 import Version from './Version';
+import Translation from './Translation';
 import Exemplar from './Exemplar';
 import TextNode from './TextNode';
 
@@ -25,6 +28,8 @@ class _Work {
 	 */
 	constructor({ filename, _workXML }) {
 		this._workXML = _workXML;
+		this._workType = null;
+		this._workTypeURN = null;
 		this.filename = filename;
 		this.english_title = null;
 		this.original_title = null;
@@ -62,43 +67,26 @@ class _Work {
 			winston.info(`No title found for work ${this.filename}`);
 		}
 
-		// edition (join for the moment as version)
-		const editionElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'edition');
-		if (editionElems && editionElems.length) {
-			const urnAttr = editionElems[0].getAttributeNode('urn');
-			if (!urnAttr) {
-				return false;
-			}
-			const urn = urnAttr.value;
-			this.version = new Version({
-				urn,
-				_versionXML: editionElems[0],
-			});
+		// parse type of this work from TEI.text.body.div.type and the urn variation according to its type
+		try {
+			this._parseWorkTypeProperties();
+		} catch (err) {
+			winston.info(`Unable to parse work type info for ${this.filename}`);
 		}
 
-		// translation
-		// TODO: determine best how to handle translation data in the future
-		const translationElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'translation');
-		if (translationElems && translationElems.length) {
-			const labelElems = translationElems[0].getElementsByTagNameNS(ctsNamespace, 'label');
-			const descriptionElems = translationElems[0].getElementsByTagNameNS(ctsNamespace, 'description');
-			let label;
-			let description;
-
-			if (labelElems && labelElems.length) {
-				label = labelElems[0].firstChild.nodeValue;
-			}
-
-			if (descriptionElems && descriptionElems.length) {
-				description = descriptionElems[0].firstChild.nodeValue;
-			}
-
-			this.translation = {
-				label,
-				description,
-			};
+		// create either edition or translation of the current work item according to its workType
+		switch (this._workType) {
+		case WORKTYPE_TRANSLATION:
+			// translation, create and save this work's translation info
+			this._createTranslation();
+			break;
+		case WORKTYPE_EDITION:
+			// create and save this work's edition info (join for the moment as version)
+			this._createEdition();
+			break;
+		default:
+			break;
 		}
-
 	}
 
 	/**
@@ -302,6 +290,109 @@ class _Work {
 	}
 
 	/**
+	 * retrieve work type and work type urn from TEI.text.body.div
+	 */
+	_parseWorkTypeProperties() {
+		const _workFileContent = fs.readFileSync(this.filename, 'utf8');
+		const _workJson = JSON.parse(xmlJs.xml2json(_workFileContent, {compact: true, spaces: 4}));
+		const divNode = _workJson.TEI.text.body.div;
+		let divAttr;
+
+		// for cases of multiple divs
+		if (Array.isArray(divNode)) {
+			for (let i = 0; i < divNode.length; i += 1) {
+				const div = divNode[`${i}`];
+				if (div._attributes.n) {
+					divAttr = div._attributes;
+				}
+			}
+		} else {
+			divAttr = divNode._attributes;
+		}
+		
+		if (divAttr.type) {
+			this._workType = divAttr.type;
+		}
+		if (divAttr.n) {
+			this._workTypeURN = divAttr.n;
+		}
+	}
+
+	/** 
+	 * go through each edition elements in __cts__.xml and find the one that is the current work
+	 * and create a Version for it, associating with the current Work model
+	 */
+	_createEdition() {
+		const editionElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'edition');
+		if (editionElems && editionElems.length) {
+
+			for (let i = 0; i < editionElems.length; i += 1) {
+				const editionElem = editionElems[`${i}`];
+
+				const urnAttr = editionElem.getAttributeNode('urn');
+				if (!urnAttr) {
+					return false;
+				}
+				const urn = urnAttr.value;
+
+				if (urn === this._workTypeURN) {
+					this.version = new Version({
+						urn,
+						_versionXML: editionElem,
+					});
+				}
+			}
+		}
+	}
+
+	/**
+	 * go through each translation elements in __cts__.xml, find the one that is the current work item
+	 * and create a Translation model for it, associating with the current Work model
+	 */
+	_createTranslation() {
+		// TODO: determine best how to handle translation data in the future
+		const translationElems = this._workXML.getElementsByTagNameNS(ctsNamespace, 'translation');
+		if (translationElems && translationElems.length) {
+
+			// find the current work item
+			for (let i = 0; i < translationElems.length; i += 1) {
+				const translationElem = translationElems[`${i}`];
+
+				// parse urn from urn, this is the urn with translation language code such as `-eng3`
+				const urnAttr = translationElem.getAttributeNode('urn');
+				if (!urnAttr) {
+					return false;
+				}
+				const urn = urnAttr.value;
+
+				if (urn === this._workTypeURN) {
+
+					// parse label from label, later used as title for translation
+					const labelElems = translationElem.getElementsByTagNameNS(ctsNamespace, 'label');
+					let label;
+					if (labelElems && labelElems.length) {
+						label = labelElems[0].firstChild.nodeValue;
+					}
+
+					// parse description from description
+					const descriptionElems = translationElem.getElementsByTagNameNS(ctsNamespace, 'description');
+					let description;
+					if (descriptionElems && descriptionElems.length) {
+						description = descriptionElems[0].firstChild.nodeValue;
+					}
+
+					// construct Translation obj
+					this.translation = new Translation({
+						title: label, // using label as the title if nothing else fits better
+						description: description,
+						urn: urn,
+					});
+				}
+			}
+		}
+	}
+
+	/**
 	 * Save all work data and textnodes in the work
 	 */
 	async save(textGroup) {
@@ -334,6 +425,10 @@ class _Work {
 
 		if (this.version) {
 			await this.version.save(work);
+		}
+
+		if (this.translation) {
+			await this.translation.save(work);
 		}
 
 		for (let i = 0; i < this.textNodes.length; i += 1) {
