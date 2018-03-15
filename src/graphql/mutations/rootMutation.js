@@ -4,6 +4,8 @@ import textNodeMutationFields from './textNodes';
 import workMutationFields from './works';
 import translationMutationFields from './translations';
 import refsDeclsMutationFields from './refsDecls';
+import versionsMutationFields from './versions';
+
 
 /**
  * Root mutations
@@ -17,6 +19,7 @@ const RootMutations = new GraphQLObjectType({
 		...workMutationFields,
 		...translationMutationFields,
 		...refsDeclsMutationFields,
+		...versionsMutationFields,
 	},
 });
 

@@ -18,7 +18,7 @@ import WorkService from '../logic/works';
 // types
 import WordType from './word';
 import LanguageType from './language';
-import VersionType from '../types/version';
+import {VersionType} from '../types/version';
 import ExemplarType from '../types/exemplar';
 import TranslationType from '../types/translation';
 import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';

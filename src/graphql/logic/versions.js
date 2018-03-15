@@ -76,4 +76,18 @@ export default class VersionService extends PermissionsService {
 
 		return Version.findOne({ where });
 	}
+
+	/**
+	 * update version/edition
+	 */
+	async versionUpdate(id, version) {
+
+		if (this.userIsAdmin) {
+			const versionInstance = await Version.findById(id);
+			versionInstance.updateAttributes(version);
+			return versionInstance.save();
+		} 
+
+		return new Error('Not authorized');
+	}
 }

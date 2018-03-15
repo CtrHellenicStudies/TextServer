@@ -1,5 +1,5 @@
 import _ from 'underscore';
-import { GraphQLObjectType, GraphQLNonNull, GraphQLList, GraphQLSchema, GraphQLInt, GraphQLString } from 'graphql';
+import { GraphQLObjectType, GraphQLInputObjectType } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
 // models
@@ -11,10 +11,15 @@ import Version from '../../models/version';
  */
 const VersionType = new GraphQLObjectType({
 	name: 'Version',
-	description: 'An version of a work (if available)',
+	description: 'A version/edition of a work item (if available)',
 	fields: _.assign(attributeFields(Version)),
-	extend: {
-	},
 });
 
+const VersionInputType = new GraphQLInputObjectType({
+	name: 'VersionInput',
+	description: 'Input type for a version/edition.',
+	fields: _.assign(attributeFields(Version, { exclude: ['id'] })),
+});
+
+export { VersionType, VersionInputType };
 export default VersionType;

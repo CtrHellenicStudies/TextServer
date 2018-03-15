@@ -1,7 +1,5 @@
 import _ from 'underscore';
-import { 
-	GraphQLObjectType, GraphQLInputObjectType
-} from 'graphql';
+import { GraphQLObjectType, GraphQLInputObjectType } from 'graphql';
 import { attributeFields } from 'graphql-sequelize';
 
 import RefsDecl from '../../models/refsDecl';

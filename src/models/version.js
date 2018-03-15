@@ -3,7 +3,7 @@ import SequelizeSlugify from 'sequelize-slugify';
 import db from '../db';
 
 /**
- * A version of a work
+ * A version/edition of a work
  */
 const Version = db.define('versions', {
 	id: {
