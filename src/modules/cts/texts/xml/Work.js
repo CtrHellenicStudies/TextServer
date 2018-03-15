@@ -18,6 +18,7 @@ import Version from './Version';
 import Translation from './Translation';
 import Exemplar from './Exemplar';
 import TextNode from './TextNode';
+import RefsDecl from './RefsDecl';
 
 
 /** Class representing a work in a textgroup */
@@ -39,6 +40,7 @@ class _Work {
 		this.version = null;
 		this.exemplar = null;
 		this.refPatterns = [];
+		this.refsDecls = [];
 		this.textNodes = [];
 
 		this._parseMetadataFromXml();
@@ -178,9 +180,21 @@ class _Work {
 
 		// make pattern label structure
 		const patternLabels = [];
-		this.refPatterns.forEach((refPattern) => {
+		this.refPatterns.forEach((refPattern, structureIndex) => {
 			patternLabels.push(refPattern.label.replace('-', ''));
+
+			// create RefsDecl objs for this work item
+			const refsDecl = new RefsDecl({
+				label: refPattern.label,
+				description: refPattern.description,
+				matchPattern: refPattern.matchPattern,
+				replacementPattern: refPattern.replacementPattern,
+				structureIndex: structureIndex,
+				urn: this.urn
+			});
+			this.refsDecls.push(refsDecl);
 		});
+
 		this.structure = patternLabels.join('-');
 	}
 
@@ -415,7 +429,6 @@ class _Work {
 			structure: this.structure,
 			form: this.form,
 			urn: urn.slice(0, 250),
-			// refs_decl: [],
 		});
 
 		await work.setTextgroup(textGroup);
@@ -435,6 +448,9 @@ class _Work {
 			await this.textNodes[i].save(work); // eslint-disable-line
 		}
 
+		for (let i = 0; i < this.refsDecls.length; i += 1) {
+			await this.refsDecls[i].save(work); // eslint-disable-line
+		}
 	}
 
 	async _createLanguage(work) {

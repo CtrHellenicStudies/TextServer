@@ -48,6 +48,7 @@ Work.associate = ({ models }) => {
 	Work.hasMany(models.exemplars);
 	Work.hasMany(models.translations);
 	Work.hasMany(models.textnodes);
+	Work.hasMany(models.refsdecls);
 };
 
 SequelizeSlugify.slugifyModel(Work, {
