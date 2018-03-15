@@ -9,6 +9,7 @@ import { attributeFields } from 'graphql-sequelize';
 import Work from '../../models/work';
 
 // logic
+import RefsDeclService from '../logic/refsDecls';
 import TextNodeService from '../logic/textNodes';
 import LanguageService from '../logic/languages';
 import ExemplarService from '../logic/exemplars';
@@ -16,6 +17,7 @@ import TranslationService from '../logic/translations';
 import VersionService from '../logic/versions';
 
 // types
+import RefsDeclType from './refsDecl';
 import TextNodeType from './textNode'; // eslint-disable-line
 import LanguageType from './language';
 import VersionType from '../types/version';
@@ -241,6 +243,18 @@ const WorkType = new GraphQLObjectType({
 			async resolve(work, { location, offset }, { token }) {
 				const textNodeService = new TextNodeService(token);
 				return await textNodeService.textLocationPrev(work.id, location, offset);
+			},
+		},
+		refsDecls: {
+			type: new GraphQLList(RefsDeclType),
+			args: {
+				id: {
+					type: GraphQLInt,
+				},
+			},
+			resolve(parent, { id }, { token }) {
+				const refsDeclService = new RefsDeclService({ token });
+				return refsDeclService.getRefsDecls(parent.dataValues.id);
 			},
 		},
 	},

@@ -3,6 +3,7 @@ import { GraphQLObjectType } from 'graphql';
 import authorFields from './authors';
 import collectionFields from './collections';
 import languageFields from './languages';
+import refsDeclFields from './refsDecls';
 import textGroupFields from './textGroups';
 import textNodeFields from './textNodes';
 import workFields from './works';
@@ -22,6 +23,7 @@ const RootQuery = new GraphQLObjectType({
 		...textGroupFields,
 		...textNodeFields,
 		...languageFields,
+		...refsDeclFields,
 		...workFields,
 		...countFields,
 		...perseusCtsFields,
