@@ -34,6 +34,24 @@ const textNodeMutationFields = {
 			// return await textNodeService.textNodeCreate(textNode);
 		}
 	},
+
+	textNodeUpdate: {
+		type: TextNodeType,
+		description: 'Update a piece of text node of a work item.',
+		args: {
+			id: {
+				type: GraphQLInt,
+			},
+			textNode: {
+				type: TextNodeInputType
+			}
+		},
+		async resolve(parent, { id, textNode }, { token }) {
+			const textNodeService = new TextNodeService({ token });
+			return await textNodeService.textNodeUpdate(id, textNode);
+		}
+	},
+
 	textNodeRemove: {
 		type: RemoveType,
 		description: 'Remove a single text node',

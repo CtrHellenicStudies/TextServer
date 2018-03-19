@@ -175,6 +175,21 @@ export default class TextNodeService extends PermissionsService {
 	}
 
 	/**
+	 * Update a text node
+	 * @param {Object} id - id of the text node to be modified
+	 * @param {Object} textNode - text node input type for updating
+	 * @returns {Object} modified text node
+	 */
+	async textNodeUpdate(id, textNode) {
+		if (this.userIsAdmin) {
+			const textNodeInstance = await TextNode.findById(id);
+			textNodeInstance.updateAttributes(textNode);
+			return textNodeInstance.save();
+		}
+		return new Error('Not authorized');
+	}
+
+	/**
 	 * Remove a text node
 	 * @param {string} textNodeId - id of text node
 	 * @returns {boolean} result from mongo orm remove

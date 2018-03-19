@@ -90,6 +90,9 @@ export default class TranslationService extends PermissionsService {
 
 	/**
 	 * update translation
+	 * @param {Object} id - id of the translation to be modified
+	 * @param {Object} translation - translation input type for updating
+	 * @returns {Object} modified translation
 	 */
 	async translationUpdate(id, translation) {
 
