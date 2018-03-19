@@ -4,6 +4,7 @@ RUN mkdir /app
 COPY . /app/.
 WORKDIR /app
 RUN npm i -g yarn
+RUN chmod 777 /usr/local/bin/yarn
 RUN yarn add serve
 RUN yarn add pm2
 RUN yarn pm2 install pm2-logrotate
