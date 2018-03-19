@@ -2,7 +2,7 @@
  * Mutations for works
  */
 
-import { GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
+import { GraphQLInt, GraphQLString, GraphQLNonNull, GraphQLID } from 'graphql';
 
 // types
 import { WorkType, WorkInputType } from '../types/work';
@@ -29,16 +29,16 @@ const worksMutationFields = {
 		type: WorkType,
 		description: 'Update a work',
 		args: {
-			_id: {
-				type: GraphQLString
+			id: {
+				type: new GraphQLNonNull(GraphQLInt)
 			},
 			work: {
-				type: WorkInputType
+				type: new GraphQLNonNull(WorkInputType)
 			}
 		},
-		async resolve(parent, { _id, work }, {token}) {
+		async resolve(parent, { id, work }, {token}) {
 			const worksService = new WorksService({token});
-			return await worksService.workUpdate(_id, work);
+			return await worksService.workUpdate(id, work);
 		}
 	},
 	workRemove: {
@@ -46,7 +46,7 @@ const worksMutationFields = {
 		description: 'Remove a single work',
 		args: {
 			workId: {
-				type: new GraphQLNonNull(GraphQLString)
+				type: new GraphQLNonNull(GraphQLInt)
 			}
 		},
 		async resolve(parent, {workId}, {token}) {

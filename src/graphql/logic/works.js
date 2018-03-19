@@ -34,16 +34,15 @@ export default class WorkService extends PermissionsService {
 
 	/**
 	 * Update a work
-	 * @param {string} _id - id of work
-	 * @param {Object} work - work to update
-	 * @returns {boolean} result from mongo orm update
+	 * @param {string} id - id of work
+	 * @param {Object} work - work input type to be updated with
+	 * @returns {Object} updated work item
 	 */
-	update(_id, work) {
+	async workUpdate(id, work) {
 		if (this.userIsAdmin) {
-			const newWork = work;
-			newWork.subworks = this.rewriteSubworks(work.subworks);
-
-			return Work.update(_id, {$set: newWork});
+			const workInstance = await Work.findById(id);
+			workInstance.updateAttributes(work);
+			return workInstance.save();
 		}
 		return new Error('Not authorized');
 	}

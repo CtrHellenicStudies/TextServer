@@ -267,7 +267,7 @@ const WorkType = new GraphQLObjectType({
 const WorkInputType = new GraphQLInputObjectType({
 	name: 'WorkInput',
 	description: 'Input type for a work',
-	fields: _.assign(attributeFields(Work)),
+	fields: _.assign(attributeFields(Work, { exclude: ['id'] })),
 });
 
 export { WorkType, WorkInputType };

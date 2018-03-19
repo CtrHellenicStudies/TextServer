@@ -20,7 +20,7 @@ import WordType from './word';
 import LanguageType from './language';
 import {VersionType} from '../types/version';
 import ExemplarType from '../types/exemplar';
-import TranslationType from '../types/translation';
+import {TranslationType} from '../types/translation';
 import CtsUrnType from '../../modules/cts/graphql/types/CtsUrn';
 
 
@@ -115,7 +115,7 @@ const TextNodeType = new GraphQLObjectType({
 const TextNodeInputType = new GraphQLInputObjectType({
 	name: 'TextNodeInput',
 	description: 'Input type for a textNode in a work, similar to data model from Draft.js',
-	fields: _.assign(attributeFields(TextNode)),
+	fields: _.assign(attributeFields(TextNode, { exclude: ['id'] })),
 });
 
 export { TextNodeType, TextNodeInputType };
