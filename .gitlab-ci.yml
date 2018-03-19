@@ -7,6 +7,7 @@ test:
   stage: test
   before_script:
     - npm i -g yarn
+    - chmod 777 /usr/local/bin/yarn
     - yarn install
   script:
     - npm run test-ci
