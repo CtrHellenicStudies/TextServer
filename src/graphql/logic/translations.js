@@ -88,9 +88,17 @@ export default class TranslationService extends PermissionsService {
 		return new Error('Not authorized');
 	}
 
-	translationUpdate(id, translation) {
+	/**
+	 * update translation
+	 */
+	async translationUpdate(id, translation) {
+
 		if (this.userIsAdmin) {
-			return Translation.update(id, { $set: translation });
+
+			const translationInstance = await Translation.findById(id);
+			translationInstance.updateAttributes(translation);
+			return translationInstance.save();
+
 		}
 		return new Error('Not authorized');
 	}
