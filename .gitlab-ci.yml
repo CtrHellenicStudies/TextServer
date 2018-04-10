@@ -4,10 +4,17 @@ stages:
 
 test:
   image: node:8-wheezy
+  services:
+  - postgres
+  variables:
+    NODE_ENV: test
+    POSTGRES_DB: textserver_test
+    POSTGRES_USER: runner
+    POSTGRES_PASSWORD: ""
   stage: test
   before_script:
     - npm i -g yarn
-    - chmod 777 /usr/local/bin/yarn
+    - chmod 755 /usr/local/bin/yarn
     - yarn install
   script:
     - npm run test-ci
@@ -25,7 +32,7 @@ deploy:
     - curl -sL https://deb.nodesource.com/setup_6.x | bash -
     - apt-get install -y nodejs
     - npm i -g yarn
-    - chmod 777 /usr/bin/yarn
+    - chmod 755 /usr/bin/yarn
   script:
     - yarn install # Install dependencies
     - yarn build # Build app
