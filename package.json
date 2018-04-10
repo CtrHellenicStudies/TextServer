@@ -138,26 +138,6 @@
 		"type": "git",
 		"url": "git@gitlab.archimedes.digital:archimedes/graphql-textserver.git"
 	},
-	"jest": {
-		"testEnvironment": "node",
-		"testPathIgnorePatterns": [
-			"/node_modules/",
-			"./dist"
-		],
-		"coverageReporters": [
-			"lcov",
-			"html"
-		],
-		"collectCoverageFrom": [
-			"src/**/*.{js,jsx}",
-			"!<rootDir>/node_modules/",
-			"!<rootDir>/docs/",
-			"!<rootDir>/public/",
-			"!<rootDir>/build/",
-			"!<rootDir>/coverage/",
-			"!<rootDir>/k8s/"
-		]
-	},
 	"author": "Archimedes Digital",
 	"license": "MIT"
 }
