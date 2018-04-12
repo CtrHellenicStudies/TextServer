@@ -13,4 +13,30 @@ describe('Database Tests ...', () => {
 		expect(db.connectionManager.config.database).toEqual(expectedTestDBName);
 	});
 
+	it('should have the correct tables in the database', async () => {
+		// SETUP
+		const expectedAllTables = [
+			'SequelizeMeta',
+			'exemplars',
+			'refsdecls',
+			'collections',
+			'textnodes',
+			'translations',
+			'versions',
+			'authors',
+			'languages',
+			'textgroups',
+			'works',
+		];
+
+		// RUN
+		const allTables = await db.getQueryInterface().showAllTables();
+
+		// CHECK
+		const differencesInTables = expectedAllTables 
+			.filter(x => !allTables.includes(x))
+			.concat(allTables.filter(x => !expectedAllTables.includes(x))); // find non-intersection of expected tables and actual tables
+		expect(differencesInTables).toEqual([]);
+	});
+
 });

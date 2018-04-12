@@ -16,6 +16,7 @@ test:
     - npm i -g yarn
     - chmod 755 /usr/local/bin/yarn
     - yarn install
+    - node_modules/.bin/sequelize db:migrate
   script:
     - npm run test-ci
 
