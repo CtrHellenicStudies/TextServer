@@ -3,6 +3,10 @@ import db from '../db';
 
 describe('Database Tests ...', () => {
 
+	afterAll(() => {
+		db.close();
+	});
+
 	it('should be using the correct test database', () => {
 		// SETUP
 		
