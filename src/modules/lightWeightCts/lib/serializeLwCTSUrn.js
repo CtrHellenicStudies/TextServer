@@ -1,3 +1,5 @@
+import parsePassage from './parsePassage';
+
 const serializeLwCTSUrn = (value) => {
 
 	if (!value) {
@@ -33,13 +35,7 @@ const serializeLwCTSUrn = (value) => {
 	}
 
 	if ('passage' in value && value.passage && value.passage.length) {
-		result = `${result}:`;
-		value.passage.forEach((passage, i) => {
-			if (i !== 0) {
-				result = `${result}-`;
-			}
-			result = `${result}${passage.join('.')}`;
-		});
+		result = `${result}:${parsePassage(value.passage)}`;
 	}
 
 	return result;

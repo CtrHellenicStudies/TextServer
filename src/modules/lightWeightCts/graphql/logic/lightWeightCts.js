@@ -20,7 +20,8 @@ export default class LightWeightCtsService extends PermissionsService {
 	 */
 	async getApiResponse({ urn }) {
 		// TODO lwcts urn doesn't use ctsNamespace, if we need it, we will need to make lwcts support it
-		const requestUrl = `${process.env.LWCTS_ENDPOINT}${serializeLwCTSUrn(urn)}`;
+		const serializedURN = encodeURIComponent(serializeLwCTSUrn(urn));
+		const requestUrl = `${process.env.LWCTS_ENDPOINT}${serializedURN}`;
 		const res = await axios.get(requestUrl);
 		return res.data;
 	}
