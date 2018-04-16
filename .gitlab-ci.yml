@@ -17,6 +17,8 @@ test:
     - chmod 755 /usr/local/bin/yarn
     - yarn install
     - node_modules/.bin/sequelize db:migrate
+    - node_modules/.bin/sequelize db:migrate:undo:all # making sure migrate up and down work correctly
+    - node_modules/.bin/sequelize db:migrate 
   script:
     - npm run test-ci
 
