@@ -137,7 +137,7 @@ const parseUrnToQuery = async (urn, language, workId) => {
 				const textNodeLast = await TextNode.findOne(query);
 
 				if (textNodeLast) {
-					query.where.index.$lt = textNodeLast.index;
+					query.where.index.$lte = textNodeLast.index;
 				}
 
 			} else {
