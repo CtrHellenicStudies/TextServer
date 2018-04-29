@@ -1,8 +1,8 @@
 // test LightWrightCTS module and its interactions with LightWeightCTSServer
-import {tester} from 'graphql-tester';
+import { tester } from 'graphql-tester';
 
-import {create as createExpressWrapper} from '../testUtils';
-import app from '../app';
+import { create as createExpressWrapper } from '../testUtils';
+import { app } from '../app';
 
 describe('LightWeightCTS module', () => {
 
