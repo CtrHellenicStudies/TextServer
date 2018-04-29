@@ -6,6 +6,9 @@ test:
   image: node:8-wheezy
   services:
   - postgres
+  only:
+    - master
+    - develop
   variables:
     NODE_ENV: test
     POSTGRES_DB: textserver_test
