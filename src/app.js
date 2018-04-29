@@ -67,5 +67,4 @@ const listen = () => {
 	});
 };
 
-export default app;
-export {db, listen};
+export {app, db, listen};
