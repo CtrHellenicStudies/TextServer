@@ -28,6 +28,12 @@ const ingest = async () => {
 	}
 };
 
+// safety belt
+const expectedTestDBName = 'textserver_test';
+if (db.connectionManager.config.database !== expectedTestDBName) {
+	throw new Error('Not operating on test DB, terminated.');
+}
+
 db.authenticate()
 	.then(async () => {
 		// sync database
