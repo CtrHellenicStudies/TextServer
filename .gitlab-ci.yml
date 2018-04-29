@@ -20,7 +20,7 @@ test:
     - node_modules/.bin/sequelize db:migrate:undo:all # making sure migrate up and down work correctly
     - node_modules/.bin/sequelize db:migrate 
   script:
-    - npm run test-ci
+    - yarn test
 
 deploy:
   image: google/cloud-sdk:latest

@@ -116,7 +116,7 @@
 		"lint:fix": "eslint . --fix",
 		"lint:staged": "lint-staged",
 		"start": "NODE_ENV=development nodemon src --exec babel-node",
-		"test": "jest --verbose",
+		"test": "jest ./src/__tests__/db.test.js && jest --verbose --coverage",
 		"test-ci": "yarn && jest --ci",
 		"oldtest": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
 		"jsdoc": "jsdoc src scripts -r -c .jsdoc.json -d docs",
