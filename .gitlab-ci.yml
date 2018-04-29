@@ -16,10 +16,11 @@ test:
     - npm i -g yarn
     - chmod 755 /usr/local/bin/yarn
     - yarn install
-    - node_modules/.bin/sequelize db:migrate
-    - node_modules/.bin/sequelize db:migrate:undo:all # making sure migrate up and down work correctly
-    - node_modules/.bin/sequelize db:migrate 
+    - yarn db:migrate
+    - yarn db:rollback:all # making sure migrate up and down work correctly
+    - yarn db:migrate 
   script:
+    - yarn db:ingest:test
     - yarn test
 
 deploy:

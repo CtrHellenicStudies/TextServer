@@ -35,8 +35,10 @@ const cloneRepos = async () => {
 	return clonedRepos;
 };
 
-
-const ingestCollections = async () => {
+/**
+ * @param repos for manually specify repositories
+ */
+const ingestCollections = async (repos = []) => {
 
 	// setup tmp dir
 	const dir = './tmp';
@@ -44,15 +46,22 @@ const ingestCollections = async () => {
 		fs.mkdirSync(dir);
 	}
 
-	// clone repos
-	winston.info('Cloning repositories');
-	const _clonedRepos = await cloneRepos();
+	let _clonedRepos;
+	if (repos) {
+		// use specified repos
+		_clonedRepos = repos;
+	} else {
+		// clone repos
+		winston.info('Cloning repositories');
+		_clonedRepos = await cloneRepos();
+	}
+	
 
 	// Ingest collections from cloned repos
 	winston.info('Ingesting texts and metadata');
 	for (let i = 0; i < _clonedRepos.length; i += 1) {
-		winston.info(` -- ingesting from ${_clonedRepos[i].title}`);
-
+		winston.info(` -- ingesting for repo ${_clonedRepos[i].title} at ${_clonedRepos[i].repoLocal}`);
+		
 		// ingest data from texts in repo
 		await ingestCollection(_clonedRepos[i]); // eslint-disable-line
 	}
