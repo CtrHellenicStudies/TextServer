@@ -1,5 +1,8 @@
 # Center for Hellenic Studies Text Server 
 
+[![pipeline status](http://gitlab.archimedes.digital/archimedes/graphql-textserver/badges/develop/pipeline.svg)](http://gitlab.archimedes.digital/archimedes/graphql-textserver/commits/develop)
+[![coverage report](http://gitlab.archimedes.digital/archimedes/graphql-textserver/badges/develop/coverage.svg)](http://gitlab.archimedes.digital/archimedes/graphql-textserver/commits/develop)
+
 For Developers:
 ---
 To setup development workspace:
