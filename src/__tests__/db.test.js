@@ -1,7 +1,7 @@
 
 import db from '../db';
 
-describe('Database Tests ...', () => {
+describe('Database ...', () => {
 
 	afterAll(() => {
 		db.close();

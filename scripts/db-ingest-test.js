@@ -14,11 +14,17 @@ const ingest = async () => {
 	let ingestResult;
 
 	// minimal sample text resource for running currently implemented tests
-	const sampleRepo = [{ 
-		title: 'The Center for Hellenic Studies Greek Texts - Test Sample',
-		repoRemote: '',
+	const cltkGreekLit = { 
+		title: 'The Center for Hellenic Studies Greek Texts',
+		repoRemote: 'http://gitlab.archimedes.digital/archimedes/greek_text_chs',
 		repoLocal: 'src/seeders/samples/greek_text_chs' 
-	}];
+	};
+	const canonicalGreekLit = { 
+		title: 'Canonical Greek Literature',
+		repoRemote: 'https://github.com/PerseusDL/canonical-greekLit.git',
+		repoLocal: 'src/seeders/samples/canonical-greekLit' 
+	};
+	const sampleRepo = [cltkGreekLit];
 
 	try {
 		return await ingestCollections(sampleRepo);
