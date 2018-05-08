@@ -8,6 +8,7 @@ import winston from 'winston';
 import ctsNamespace from '../../lib/ctsNamespace';
 import TextGroup from '../../../../models/textGroup';
 import Work from './Work';
+import { filterByModifiedSourceFile } from '../../lib/ingestionUtils';
 
 class _TextGroup {
 
@@ -38,7 +39,7 @@ class _TextGroup {
 		winston.info(` -- -- generating inventory for textgroup ${this.groupname}`);
 		const workDirs = fs.readdirSync(this.textGroupDir);
 
-		workDirs.forEach((workDir) => {
+		workDirs.forEach(async (workDir) => {
 			// if the content object is a directory
 			if (fs.lstatSync(path.join(this.textGroupDir, workDir)).isDirectory()) {
 
@@ -48,7 +49,10 @@ class _TextGroup {
 
 				const _workMetadataFile = fs.readFileSync(path.join(this.textGroupDir, workDir, '__cts__.xml'), 'utf8');
 				const _workXML = new DOMParser().parseFromString(_workMetadataFile);
-				const workContents = fs.readdirSync(path.join(this.textGroupDir, workDir));
+				let workContents = fs.readdirSync(path.join(this.textGroupDir, workDir));
+
+				// file change check
+				workContents = await filterByModifiedSourceFile(workContents.filter(workFile => !~workFile.indexOf('__cts__.xml')), path.join(this.textGroupDir, workDir));
 
 				workContents.forEach((workContent) => {
 					if (!~workContent.indexOf('__cts__.xml')) {
