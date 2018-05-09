@@ -8,7 +8,7 @@ import winston from 'winston';
 import ctsNamespace from '../../lib/ctsNamespace';
 import TextGroup from '../../../../models/textGroup';
 import Work from './Work';
-import { filterByModifiedSourceFile } from '../../lib/ingestionUtils';
+import { prepareModifiedSourceFiles } from '../../lib/ingestionUtils';
 
 class _TextGroup {
 
@@ -52,7 +52,7 @@ class _TextGroup {
 				let workContents = fs.readdirSync(path.join(this.textGroupDir, workDir));
 
 				// file change check
-				workContents = await filterByModifiedSourceFile(workContents.filter(workFile => !~workFile.indexOf('__cts__.xml')), path.join(this.textGroupDir, workDir));
+				workContents = await prepareModifiedSourceFiles(workContents.filter(workFile => !~workFile.indexOf('__cts__.xml')), path.join(this.textGroupDir, workDir));
 
 				workContents.forEach((workContent) => {
 					if (!~workContent.indexOf('__cts__.xml')) {

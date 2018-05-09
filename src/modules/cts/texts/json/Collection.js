@@ -6,7 +6,7 @@ import slugify from 'slugify';
 import {
 	getCltkCollectionUrn, getCltkTextgroupUrn, getCltkWorkUrn
 } from '../../lib/getCltkUrns';
-import { filterByModifiedSourceFile } from '../../lib/ingestionUtils';
+import { prepareModifiedSourceFiles } from '../../lib/ingestionUtils';
 
 import Collection from '../../../../models/collection';
 import TextGroup from './TextGroup';
@@ -40,10 +40,7 @@ class _Collection {
 		let collectionFiles = fs.readdirSync(sourceDir);
 
 		// file change check
-		collectionFiles = await filterByModifiedSourceFile(collectionFiles, sourceDir);
-		if (collectionFiles.length > 0) {
-			winston.info(' -- -- Modified source text after filtering', collectionFiles);
-		} 
+		collectionFiles = await prepareModifiedSourceFiles(collectionFiles, sourceDir);
 
 		collectionFiles.forEach((filename) => {
 			const jsonTextFile = fs.readFileSync(`${this.repoLocal}/cltk_json/${filename}`);
