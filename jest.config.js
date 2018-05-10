@@ -5,5 +5,8 @@ dotenvSetup();
 
 module.exports = {
 	testEnvironment: 'node',
-	collectCoverageFrom: ['src/**/*.js']
+	collectCoverageFrom: [
+		'src/**/*.js', 
+		'!src/migrations/*' // migrations are sort of being tested in CI
+	]
 };
