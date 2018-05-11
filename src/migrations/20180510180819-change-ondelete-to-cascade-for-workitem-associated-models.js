@@ -33,6 +33,17 @@ module.exports = {
 				},
 				onDelete: 'cascade',
 				onUpdate: 'cascade'
+			}),
+			await queryInterface.removeConstraint('refsdecls', 'refsdecls_workId_fkey'),
+			await queryInterface.addConstraint('refsdecls', ['workId'], {
+				type: 'foreign key',
+				name: 'FK_refsdecls_works',
+				references: {
+					table: 'works',
+					field: 'id'
+				},
+				onDelete: 'cascade',
+				onUpdate: 'cascade'
 			})
 		];
 	},
@@ -65,6 +76,17 @@ module.exports = {
 			await queryInterface.addConstraint('textnodes', ['workId'], {
 				type: 'foreign key',
 				name: 'textnodes_workId_fkey',
+				references: {
+					table: 'works',
+					field: 'id'
+				},
+				onDelete: 'set null',
+				onUpdate: 'cascade'
+			}),
+			await queryInterface.removeConstraint('refsdecls', 'FK_refsdecls_works'),
+			await queryInterface.addConstraint('refsdecls', ['workId'], {
+				type: 'foreign key',
+				name: 'refsdecls_workId_fkey',
 				references: {
 					table: 'works',
 					field: 'id'

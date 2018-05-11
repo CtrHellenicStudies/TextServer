@@ -60,7 +60,7 @@ const prepareModifiedSourceFiles = async (sourceFiles, sourceDir) => {
 	const sourceObjsModified = sourceObjs.filter(sourceObj => sourceObj.modified);
 	// done and return array of filenames
 	if (sourceObjsModified.length > 0) {
-		winston.info(' -- -- Modified source text after filtering ...', sourceObjsModified.map(sourceObj => `${sourceObj.filename} MD5: ${sourceObj.filemd5hash}`));
+		winston.info(' -- -- Updating modified source text ...', sourceObjsModified.map(sourceObj => `${sourceObj.filename} MD5: ${sourceObj.filemd5hash}`));
 	} else {
 		winston.info(' -- -- No change in source text ...', sourceDir);
 	}
