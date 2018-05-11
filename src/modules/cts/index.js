@@ -47,7 +47,7 @@ const ingestCollections = async (repos = []) => {
 	}
 
 	let _clonedRepos;
-	if (repos) {
+	if (repos.length > 0) {
 		// use specified repos
 		winston.info('Using specified repositories ...', repos);
 		_clonedRepos = repos;
