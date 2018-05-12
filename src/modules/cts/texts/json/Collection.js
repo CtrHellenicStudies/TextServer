@@ -109,11 +109,22 @@ class _Collection {
 			return false;
 		}
 
-		const collection = await Collection.create({
-			title: title.slice(0, 250),
-			repository: this.repoRemote,
-			urn: this.urn,
-		});
+		// collection de-dup
+		let collection = await Collection.findOne({where: {repository: this.repoRemote}});
+		if (collection) {
+			collection = await collection.updateAttributes({
+				title: title.slice(0, 250),
+				repository: this.repoRemote,
+				urn: this.urn,
+			});
+		} else {
+			collection = await Collection.create({
+				title: title.slice(0, 250),
+				repository: this.repoRemote,
+				urn: this.urn,
+			});
+		}
+		
 
 		// ingest all textGroups
 		for (let i = 0; i < this.textGroups.length; i += 1) {
