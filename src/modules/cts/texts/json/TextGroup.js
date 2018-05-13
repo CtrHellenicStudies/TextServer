@@ -23,10 +23,24 @@ class _TextGroup {
 		const title = this.title || '';
 		const urn = this.urn || '';
 
-		const textGroup = await TextGroup.create({
-			title: this.title,
-			urn: this.urn,
+		// de-dup and save TextGroup
+		let textGroup = await TextGroup.findOne({
+			where: {
+				collectionId: collection.id,
+				urn: urn
+			}
 		});
+		if (textGroup) {
+			textGroup = await textGroup.updateAttributes({
+				title: this.title,
+				urn: this.urn,
+			});
+		} else {
+			textGroup = await TextGroup.create({
+				title: this.title,
+				urn: this.urn,
+			});
+		}
 
 		await textGroup.setCollection(collection);
 		await collection.addTextgroup(textGroup);

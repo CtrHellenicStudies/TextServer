@@ -39,7 +39,7 @@ class _TextGroup {
 		winston.info(` -- -- generating inventory for textgroup ${this.groupname}`);
 		const workDirs = fs.readdirSync(this.textGroupDir);
 
-		workDirs.forEach(async (workDir) => {
+		await Promise.all(workDirs.map(async (workDir) => { // wait for all done before going to save
 			// if the content object is a directory
 			if (fs.lstatSync(path.join(this.textGroupDir, workDir)).isDirectory()) {
 
@@ -67,9 +67,8 @@ class _TextGroup {
 						this.works.push(work);
 					}
 				});
-
 			}
-		});
+		}));
 
 		await this.save(collection);
 	}
@@ -81,11 +80,24 @@ class _TextGroup {
 		const title = this.groupname || '';
 		const urn = this.urn || '';
 
-		// Save textGroup
-		const textGroup = await TextGroup.create({
-			title: title.slice(0, 250),
-			urn: urn.slice(0, 250),
+		// de-dup and Save textGroup
+		let textGroup = await TextGroup.findOne({
+			where: {
+				collectionId: collection.id,
+				urn: urn
+			}
 		});
+		if (textGroup) {
+			textGroup = await textGroup.updateAttributes({
+				title: title.slice(0, 250),
+				urn: urn.slice(0, 250),
+			});
+		} else {
+			textGroup = await TextGroup.create({
+				title: title.slice(0, 250),
+				urn: urn.slice(0, 250),
+			});
+		}
 
 		await textGroup.setCollection(collection);
 		await collection.addTextgroup(textGroup);
