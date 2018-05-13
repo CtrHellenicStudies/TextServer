@@ -11,6 +11,17 @@ module.exports = {
 				},
 				onDelete: 'cascade',
 				onUpdate: 'cascade'
+			}),
+			await queryInterface.removeConstraint('works', 'works_textgroupId_fkey'),
+			await queryInterface.addConstraint('works', ['textgroupId'], {
+				type: 'foreign key',
+				name: 'FK_works_textgroups',
+				references: {
+					table: 'textgroups',
+					field: 'id'
+				},
+				onDelete: 'cascade',
+				onUpdate: 'cascade'
 			})
 		];
 	},
@@ -23,6 +34,17 @@ module.exports = {
 				name: 'textgroups_collectionId_fkey',
 				references: {
 					table: 'collections',
+					field: 'id'
+				},
+				onDelete: 'set null',
+				onUpdate: 'cascade'
+			}),
+			await queryInterface.removeConstraint('works', 'FK_works_textgroups'),
+			await queryInterface.addConstraint('works', ['textgroupId'], {
+				type: 'foreign key',
+				name: 'works_textgroupId_fkey',
+				references: {
+					table: 'textgroups',
 					field: 'id'
 				},
 				onDelete: 'set null',
