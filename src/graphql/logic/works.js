@@ -68,7 +68,7 @@ export default class WorkService extends PermissionsService {
 	 * @param {number} limit
 	 * @returns {Object[]} array of works
 	 */
-	async getWorks(textsearch, urn, language, offset = 0, limit = 100, textGroupId = null) {
+	async getWorks(textsearch, urn, fullURN, language, offset = 0, limit = 100, textGroupId = null) {
 		const args = {
 			where: {},
 			limit,
@@ -163,6 +163,10 @@ export default class WorkService extends PermissionsService {
 					}
 				}
 			}
+		}
+
+		if (fullURN) {
+			args.where.full_urn = fullURN;
 		}
 
 		const works = await Work.findAll(args);

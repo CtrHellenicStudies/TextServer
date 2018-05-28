@@ -60,6 +60,18 @@ const WorkType = new GraphQLObjectType({
 		urn: {
 			type: CtsUrnType,
 		},
+		full_urn: {
+			type: GraphQLString,
+		},
+		work_type: {
+			type: GraphQLString,
+		},
+		label: {
+			type: GraphQLString,
+		},
+		description: {
+			type: GraphQLString,
+		},
 		language: {
 			type: LanguageType,
 			resolve(parent, __, { token }) {

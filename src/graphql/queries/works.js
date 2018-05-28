@@ -16,6 +16,9 @@ const workFields = {
 			urn: {
 				type: CtsUrnType,
 			},
+			full_urn: {
+				type: GraphQLString,
+			},
 			language: {
 				type: GraphQLString,
 			},
@@ -26,9 +29,9 @@ const workFields = {
 				type: GraphQLInt,
 			},
 		},
-		async resolve(_, { textsearch, urn, language, limit, offset }, { token }) {
+		async resolve(_, { textsearch, urn, full_urn, language, limit, offset }, { token }) {
 			const workService = new WorkService(token);
-			const works = await workService.getWorks(textsearch, urn, language, offset, limit);
+			const works = await workService.getWorks(textsearch, urn, full_urn, language, offset, limit);
 			return works;
 		},
 	},

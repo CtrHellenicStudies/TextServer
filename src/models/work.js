@@ -36,6 +36,22 @@ const Work = db.define('works', {
 	urn: {
 		type: Sequelize.STRING,
 	},
+	work_type: {
+		type: Sequelize.STRING,
+		allowNull: true
+	},
+	label: {
+		type: Sequelize.STRING,
+		allowNull: true
+	},
+	description: {
+		type: Sequelize.STRING,
+		allowNull: true
+	},
+	full_urn: {
+		type: Sequelize.STRING,
+		allowNull: true
+	}
 }, {
 	timestamps: false,
 });

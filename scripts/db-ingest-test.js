@@ -24,7 +24,7 @@ const ingest = async () => {
 		repoRemote: 'https://github.com/PerseusDL/canonical-greekLit.git',
 		repoLocal: 'src/seeders/samples/canonical-greekLit' 
 	};
-	const sampleRepo = [cltkGreekLit];
+	const sampleRepo = [cltkGreekLit, canonicalGreekLit];
 
 	try {
 		return await ingestCollections(sampleRepo);

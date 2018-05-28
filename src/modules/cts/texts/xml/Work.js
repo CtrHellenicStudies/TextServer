@@ -31,6 +31,8 @@ class _Work {
 		this._workXML = _workXML;
 		this._workType = null;
 		this._workTypeURN = null;
+		this.label = null;
+		this.description = null;
 		this.filename = filename;
 		this.english_title = null;
 		this.original_title = null;
@@ -420,6 +422,20 @@ class _Work {
 
 		const urn = this.urn || '';
 
+		// Get Label and Description according to WorkItemType and FullURN
+		[...this._workXML.getElementsByTagNameNS(ctsNamespace, this._workType)]
+			.filter(metaEl => metaEl.getAttributeNode('urn').value === this._workTypeURN)
+			.map((el) => {
+				[...el.getElementsByTagNameNS(ctsNamespace, 'label')]
+					.map((labelEl) => {
+						this.label = labelEl.firstChild.nodeValue;
+					});
+				[...el.getElementsByTagNameNS(ctsNamespace, 'description')]
+					.map((descriptionEl) => {
+						this.description = descriptionEl.firstChild.nodeValue;
+					});
+			});
+
 		// TODO: Add parsing of refs decl information from XML so that Work can self describe its document structure
 		const work = await Work.create({
 			filemd5hash: this.filemd5hash,
@@ -429,6 +445,10 @@ class _Work {
 			structure: this.structure,
 			form: this.form,
 			urn: urn.slice(0, 250),
+			work_type: this._workType,
+			full_urn: this._workTypeURN,
+			label: this.label,
+			description: this.description,
 		});
 
 		await work.setTextgroup(textGroup);
