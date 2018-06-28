@@ -124,8 +124,8 @@
 		"oldtest": "babel-tape-runner ./server/tests/**/*.test.js | faucet",
 		"jsdoc": "jsdoc src scripts -r -c .jsdoc.json -d docs",
 		"build": "babel src -d build",
-		"execute": "yarn pm2 start build/index.js --name express",
-		"build-and-execute": "yarn execute && yarn build"
+		"execute": "yarn pm2 start build/index.js --name textserver-express",
+		"build-and-execute": "yarn build && yarn execute"
 	},
 	"pre-commit": "lint:staged",
 	"lint-staged": {
@@ -142,6 +142,6 @@
 		"type": "git",
 		"url": "git@gitlab.archimedes.digital:archimedes/graphql-textserver.git"
 	},
-	"author": "Archimedes Digital",
+	"author": "The Center for Hellenic Studies",
 	"license": "MIT"
 }
