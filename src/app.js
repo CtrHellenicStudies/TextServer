@@ -10,7 +10,7 @@ import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 
 // db
-import * as models from '../src/models';
+import * as models from './models';
 import db, { dbSetup } from './db';
 
 // dotenv
