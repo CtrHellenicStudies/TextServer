@@ -20,7 +20,7 @@ const parseUrnToQuery = async (urn, language, workId) => {
 
 	const query = {
 		order: ['index'],
-		limit: 30,
+		limit: 999,
 		where: {},
 	};
 
