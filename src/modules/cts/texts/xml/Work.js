@@ -424,7 +424,7 @@ class _Work {
 
 		// Get Label and Description according to WorkItemType and FullURN
 		[...this._workXML.getElementsByTagNameNS(ctsNamespace, this._workType)]
-			.filter(metaEl => metaEl.getAttributeNode('urn').value === this._workTypeURN)
+			.filter(metaEl => metaEl.getAttributeNode('urn') && (metaEl.getAttributeNode('urn').value === this._workTypeURN)) // filter by _workTypeURN
 			.map((el) => {
 				[...el.getElementsByTagNameNS(ctsNamespace, 'label')]
 					.map((labelEl) => {
