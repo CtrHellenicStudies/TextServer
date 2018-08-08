@@ -16,7 +16,9 @@ import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 const parseUrnToQuery = async (urn, language, workId) => {
 	const originalUrn = {...urn};
-	let textNode = null;
+	
+	let textNodes = null;
+	const textNode = null;
 	let works = [];
 
 	const query = {
@@ -121,35 +123,27 @@ const parseUrnToQuery = async (urn, language, workId) => {
 		}
 	}
 
-
 	// parse passage to range query
 	if (urn.passage && urn.passage.length) {
 		query.where.location = urn.passage[0];
-		textNode = await TextNode.findOne(query);
+		textNodes = await TextNode.findAll({
+			...query,
+			order: [['index', 'DESC']],
+		});
 
-		if (textNode) {
+		if (urn.passage.length > 1) {
 			query.where.index = {
-				$gte: textNode.index,
+				$gte: textNodes[0].index,
 			};
 
-			if (urn.passage.length > 1) {
-				query.where.location = urn.passage[1];
-				const textNodeLast = await TextNode.findOne(query);
+			query.where.location = urn.passage[1];
+			const textNodeLast = await TextNode.findOne(query);
 
-				if (textNodeLast) {
-					query.where.index.$lte = textNodeLast.index;
-				}
-
-			} else {
-				query.where.index.$lte = textNode.index;
+			if (textNodeLast) {
+				query.where.index.$lte = textNodeLast.index;
 			}
 
 			delete query.where.location;
-
-		} else {
-
-			// when no textnode is found for location, return nothing for query
-			return null;
 		}
 	}
 
