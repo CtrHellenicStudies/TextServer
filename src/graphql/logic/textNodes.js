@@ -15,6 +15,7 @@ import Translation from '../../models/translation';
 import serializeUrn from '../../modules/cts/lib/serializeUrn';
 
 const parseUrnToQuery = async (urn, language, workId) => {
+	const originalUrn = {...urn};
 	let textNode = null;
 	let works = [];
 
@@ -63,20 +64,19 @@ const parseUrnToQuery = async (urn, language, workId) => {
 		delete urn.translation;
 
 		/**
+		 * where version exists in urn, the query maps to a single work item
+		 * 
 		 * Interesting use case with CTS URNs and perhaps something to address in the future
 		 * querying by verison, exemplar, and translation, but only in that order
 		 */
 		if (version) {
-			const versionRecord = await Version.findOne({
-				where: {
-					urn: `${serializeUrn(urn)}.${version}`,
-				}
-			});
-			if (versionRecord) {
-				workQuery.where = {
-					id: versionRecord.workId,
-				};
-			}
+
+			const versionUrn = originalUrn;
+			delete versionUrn.passage;
+
+			workQuery.where = {
+				full_urn: serializeUrn(versionUrn),
+			};
 
 			if (exemplar) {
 				const exemplarRecord = await Exemplar.findOne({
